@@ -14,6 +14,13 @@
       --accent: #22c55e;
       --gold: #fbbf24;
       --danger: #ef4444;
+      --bk-bg: #f4f5f7;
+      --bk-surface: #ffffff;
+      --bk-border: #d1d5db;
+      --bk-text: #111827;
+      --bk-muted: #6b7280;
+      --bk-winner: #15803d;
+      --bk-loser: #9ca3af;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -23,7 +30,7 @@
       line-height: 1.5;
       min-height: 100vh;
     }
-    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
     header { margin-bottom: 2rem; }
     h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
     .subtitle { color: var(--muted); margin-top: 0.35rem; font-size: 0.95rem; }
@@ -32,8 +39,8 @@
       font-size: 0.85rem; color: var(--muted);
     }
     .meta span { background: var(--surface); border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; margin-bottom: 2rem; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -77,33 +84,6 @@
     .signal-row:last-child { border-bottom: none; }
     .signal-label { color: var(--muted); }
     .signal-val { font-variant-numeric: tabular-nums; font-weight: 600; }
-    .bracket-round { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
-    .bracket-round:last-child { border-bottom: none; }
-    .round-title { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
-    .match {
-      display: flex; flex-direction: column; gap: 0.25rem;
-      padding: 0.5rem 0; font-size: 0.9rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .match:last-child { border-bottom: none; }
-    .match-row {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 0.5rem;
-    }
-    .match-team { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
-    .match-team.away { flex-direction: row-reverse; text-align: right; }
-    .match-team .name { font-weight: 600; min-width: 2.5rem; }
-    .match-team.away .name { text-align: right; }
-    .advance-pct {
-      font-size: 0.8rem; font-variant-numeric: tabular-nums;
-      color: var(--accent); font-weight: 600; min-width: 3rem;
-    }
-    .match-team.away .advance-pct { text-align: left; }
-    .advance-bar-wrap { flex: 1; max-width: 80px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
-    .advance-bar { height: 100%; background: var(--accent); border-radius: 2px; }
-    .match-center { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 0.15rem 0; }
-    .match .vs { color: var(--muted); font-size: 0.75rem; padding: 0 0.5rem; }
-    .winner { color: var(--gold); font-weight: 600; }
     .history { padding: 1rem 1.25rem; }
     .history-row {
       display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;
@@ -114,6 +94,238 @@
     .loading, .error { text-align: center; padding: 4rem 2rem; color: var(--muted); }
     .error { color: var(--danger); }
     footer { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Tournament bracket (Athletic-style) ── */
+    .bracket-panel {
+      background: var(--bk-bg);
+      border-radius: 16px;
+      padding: 2rem 1rem 2.5rem;
+      overflow-x: auto;
+      color: var(--bk-text);
+    }
+    .bracket-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .bracket-title .badge-wc {
+      display: inline-block;
+      background: #15803d;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+    .bracket-title h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--bk-text);
+    }
+    .bracket-title p { font-size: 0.85rem; color: var(--bk-muted); margin-top: 0.25rem; }
+
+    .bracket-tree {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+      min-width: 1100px;
+      margin: 0 auto;
+    }
+    .bracket-half {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .bracket-half.left { align-items: flex-end; }
+    .bracket-half.right { align-items: flex-start; }
+
+    .bk-quarter {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .bracket-half.left .bk-quarter { flex-direction: row; }
+    .bracket-half.right .bk-quarter { flex-direction: row-reverse; }
+
+    .bk-feeders {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .bk-feeder {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .bracket-half.left .bk-feeder { flex-direction: row; }
+    .bracket-half.right .bk-feeder { flex-direction: row-reverse; }
+
+    .bk-r32-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+  /* connector: two r32 boxes → one r16 */
+    .bk-join {
+      width: 20px;
+      align-self: stretch;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .bracket-half.left .bk-join::before {
+      content: '';
+      position: absolute;
+      top: 25%; bottom: 25%;
+      right: 0; width: 10px;
+      border-right: 2px solid var(--bk-border);
+      border-top: 2px solid var(--bk-border);
+      border-bottom: 2px solid var(--bk-border);
+    }
+    .bracket-half.right .bk-join::before {
+      content: '';
+      position: absolute;
+      top: 25%; bottom: 25%;
+      left: 0; width: 10px;
+      border-left: 2px solid var(--bk-border);
+      border-top: 2px solid var(--bk-border);
+      border-bottom: 2px solid var(--bk-border);
+    }
+
+    .bk-join-qf {
+      width: 20px;
+      align-self: stretch;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .bracket-half.left .bk-join-qf::before {
+      content: '';
+      position: absolute;
+      top: 25%; bottom: 25%;
+      right: 0; width: 10px;
+      border-right: 2px solid var(--bk-border);
+      border-top: 2px solid var(--bk-border);
+      border-bottom: 2px solid var(--bk-border);
+    }
+    .bracket-half.right .bk-join-qf::before {
+      content: '';
+      position: absolute;
+      top: 25%; bottom: 25%;
+      left: 0; width: 10px;
+      border-left: 2px solid var(--bk-border);
+      border-top: 2px solid var(--bk-border);
+      border-bottom: 2px solid var(--bk-border);
+    }
+
+    .bk-match {
+      background: var(--bk-surface);
+      border: 1px solid var(--bk-border);
+      border-radius: 6px;
+      width: 148px;
+      overflow: hidden;
+      font-size: 0.8rem;
+    }
+    .bk-match.wide { width: 130px; }
+    .bk-match.slot { width: 120px; min-height: 72px; }
+
+    .bk-date {
+      background: #e5e7eb;
+      color: var(--bk-muted);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 0.2rem 0.4rem;
+      letter-spacing: 0.02em;
+    }
+    .bk-venue {
+      background: #e5e7eb;
+      color: var(--bk-muted);
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 0.25rem 0.4rem;
+      line-height: 1.3;
+    }
+    .bk-venue .city { display: block; font-size: 0.7rem; color: var(--bk-text); font-weight: 700; }
+
+    .bk-team {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.45rem;
+      border-top: 1px solid var(--bk-border);
+    }
+    .bk-team:first-of-type { border-top: none; }
+    .bracket-half.right .bk-team { flex-direction: row-reverse; }
+
+    .bk-code {
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      min-width: 2rem;
+    }
+    .bracket-half.right .bk-code { text-align: right; }
+
+    .bk-flag {
+      width: 18px;
+      height: 13px;
+      object-fit: cover;
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+    .bk-pct {
+      margin-left: auto;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--bk-muted);
+    }
+    .bracket-half.right .bk-pct { margin-left: 0; margin-right: auto; }
+
+    .bk-team.winner .bk-code { color: var(--bk-winner); }
+    .bk-team.winner .bk-pct { color: var(--bk-winner); }
+    .bk-team.loser .bk-code { color: var(--bk-loser); text-decoration: line-through; }
+    .bk-team.loser .bk-pct { color: var(--bk-loser); }
+    .bk-team.fav .bk-pct { color: #2563eb; }
+    .bk-team.tbd .bk-code { color: var(--bk-muted); font-weight: 500; }
+
+    .bracket-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 0 0.75rem;
+      flex-shrink: 0;
+    }
+    .bk-sf-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .bk-label-round {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--bk-muted);
+      text-align: center;
+      margin-top: 0.15rem;
+    }
+    .bk-final-wrap {
+      text-align: center;
+    }
+    .bk-final-wrap .bk-match { width: 140px; margin: 0 auto; }
+
+    @media (max-width: 1100px) {
+      .bracket-panel { padding: 1.25rem 0.5rem; }
+      .bracket-tree { min-width: 960px; }
+      .bk-match { width: 128px; }
+    }
   </style>
 </head>
 <body>
@@ -131,8 +343,71 @@
     const BRACKET_URL = '../data/bracket.json';
     const HISTORY_INDEX_URL = '../data/history/index.json';
 
-    function pct(n) { return (n * 100).toFixed(1) + '%'; }
+    const ISO3_TO_ISO2 = {
+      MEX:'mx',CZE:'cz',RSA:'za',KOR:'kr',CAN:'ca',BIH:'ba',QAT:'qa',SUI:'ch',
+      BRA:'br',HTI:'ht',MAR:'ma',SCO:'gb',USA:'us',AUS:'au',PAR:'py',TUR:'tr',
+      ECU:'ec',GER:'de',CIV:'ci',NED:'nl',JPN:'jp',SWE:'se',TUN:'tn',BEL:'be',
+      EGY:'eg',IRN:'ir',NZL:'nz',CPV:'cv',KSA:'sa',ESP:'es',URU:'uy',FRA:'fr',
+      NOR:'no',SEN:'sn',IRQ:'iq',ALG:'dz',ARG:'ar',AUT:'at',JOR:'jo',COL:'co',
+      COD:'cd',POR:'pt',UZB:'uz',ENG:'gb',CRO:'hr',GHA:'gh',PAN:'pa',
+    };
+
+    const BRACKET_LAYOUT = {
+      left: [
+        {
+          qf: { id: 'qf_m01', venue: 'Boston', date: 'July 9' },
+          feeders: [
+            { r16: { id: 'r16_m89', venue: 'Philadelphia', date: 'July 4' }, r32: ['r32_m74', 'r32_m77'] },
+            { r16: { id: 'r16_m90', venue: 'Houston', date: 'July 4' }, r32: ['r32_m73', 'r32_m75'] },
+          ],
+        },
+        {
+          qf: { id: 'qf_m02', venue: 'Los Angeles', date: 'July 10' },
+          feeders: [
+            { r16: { id: 'r16_m93', venue: 'Dallas', date: 'July 6' }, r32: ['r32_m83', 'r32_m84'] },
+            { r16: { id: 'r16_m94', venue: 'Seattle', date: 'July 6' }, r32: ['r32_m81', 'r32_m82'] },
+          ],
+        },
+      ],
+      right: [
+        {
+          qf: { id: 'qf_m03', venue: 'Miami', date: 'July 11' },
+          feeders: [
+            { r16: { id: 'r16_m91', venue: 'New York', date: 'July 5' }, r32: ['r32_m76', 'r32_m78'] },
+            { r16: { id: 'r16_m92', venue: 'Mexico City', date: 'July 5' }, r32: ['r32_m79', 'r32_m80'] },
+          ],
+        },
+        {
+          qf: { id: 'qf_m04', venue: 'Kansas City', date: 'July 11' },
+          feeders: [
+            { r16: { id: 'r16_m95', venue: 'Atlanta', date: 'July 7' }, r32: ['r32_m86', 'r32_m88'] },
+            { r16: { id: 'r16_m96', venue: 'Vancouver', date: 'July 7' }, r32: ['r32_m85', 'r32_m87'] },
+          ],
+        },
+      ],
+      center: {
+        sf: [
+          { id: 'sf_m01', venue: 'East', date: 'July 14' },
+          { id: 'sf_m02', venue: 'West', date: 'July 15' },
+        ],
+        final: { id: 'final_m01', venue: 'Final', date: 'July 19' },
+      },
+    };
+
+    function pct(n, decimals = 1) {
+      if (n == null || isNaN(n)) return '—';
+      return (n * 100).toFixed(decimals) + '%';
+    }
     function pctBar(n) { return Math.min(100, n * 100 * 4); }
+    function flagUrl(code3) {
+      const iso2 = ISO3_TO_ISO2[code3] || code3.slice(0, 2).toLowerCase();
+      return `https://flagcdn.com/w40/${iso2}.png`;
+    }
+    function fmtDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
 
     function renderMeta(meta) {
       document.getElementById('meta').innerHTML = [
@@ -145,10 +420,8 @@
     function renderSignals(signals) {
       if (!signals) return '<p class="signals" style="color:var(--muted)">No signal data</p>';
       const labels = {
-        elo_normalized: 'Elo',
-        xg_form_ratio: 'xG form',
-        squad_value_normalized: 'Squad value',
-        betting_implied_prob: 'Betting odds',
+        elo_normalized: 'Elo', xg_form_ratio: 'xG form',
+        squad_value_normalized: 'Squad value', betting_implied_prob: 'Betting odds',
         injury_multiplier: 'Injury mult.',
       };
       return `<div class="signals">${Object.entries(labels).map(([k, label]) =>
@@ -156,53 +429,139 @@
       ).join('')}</div>`;
     }
 
-    function teamLabel(id, names) {
-      return names[id] || id;
+    function buildMatchIndex(bracket, matchPredictions) {
+      const byId = {};
+      const rounds = bracket?.rounds || {};
+      for (const rk of Object.keys(rounds)) {
+        for (const m of (rounds[rk].matches || [])) {
+          if (m.match_id) byId[m.match_id] = { ...m, roundKey: rk };
+        }
+      }
+      const predById = {};
+      for (const rk of Object.keys(matchPredictions || {})) {
+        for (const p of (matchPredictions[rk] || [])) {
+          if (p.match_id) predById[p.match_id] = p;
+        }
+      }
+      return { byId, predById };
     }
 
-    function renderMatchTeam(id, names, prob, isWinner, side) {
-      const name = teamLabel(id, names);
-      const pctVal = prob != null ? pct(prob) : '—';
-      const barW = prob != null ? Math.min(100, prob * 100) : 0;
-      return `<div class="match-team ${side}">
-        <span class="name ${isWinner ? 'winner' : ''}">${name}</span>
-        <div class="advance-bar-wrap"><div class="advance-bar" style="width:${barW}%"></div></div>
-        <span class="advance-pct">${pctVal}</span>
+    function teamRow(teamId, match, pred, side, mirror) {
+      if (!teamId) {
+        return `<div class="bk-team tbd"><span class="bk-code">TBD</span></div>`;
+      }
+      const isHome = side === 'home';
+      const prob = pred
+        ? (isHome ? pred.advance_probability_home : pred.advance_probability_away)
+        : null;
+      const isWinner = match.winner === teamId;
+      const isLoser = match.winner && match.winner !== teamId;
+      const isFav = !match.winner && prob != null && prob >= 0.5;
+      const cls = [isWinner ? 'winner' : '', isLoser ? 'loser' : '', isFav ? 'fav' : ''].filter(Boolean).join(' ');
+      const probLabel = match.winner
+        ? (isWinner ? '✓' : '')
+        : (prob != null ? pct(prob, 0) : '');
+      return `<div class="bk-team ${cls}">
+        <span class="bk-code">${teamId}</span>
+        <img class="bk-flag" src="${flagUrl(teamId)}" alt="" loading="lazy">
+        <span class="bk-pct">${probLabel}</span>
       </div>`;
     }
 
-    function renderBracket(bracket, names, matchPredictions) {
-      const rounds = bracket?.rounds || {};
-      const preds = matchPredictions || {};
-      const order = ['round_of_32', 'round_of_16', 'quarter_finals', 'semi_finals', 'final'];
-      const labels = {
-        round_of_32: 'Round of 32', round_of_16: 'Round of 16',
-        quarter_finals: 'Quarter-finals', semi_finals: 'Semi-finals', final: 'Final',
-      };
-      const predById = {};
-      for (const roundKey of order) {
-        for (const m of (preds[roundKey] || [])) {
-          if (m.match_id) predById[m.match_id] = m;
-        }
-      }
+    function renderR32Match(matchId, idx) {
+      const m = byIdGlobal[matchId];
+      if (!m) return '';
+      const pred = predByIdGlobal[matchId];
+      const dateStr = fmtDate(m.date);
+      return `<div class="bk-match" data-id="${matchId}">
+        <div class="bk-date">${dateStr}</div>
+        ${teamRow(m.team_home, m, pred, 'home')}
+        ${teamRow(m.team_away, m, pred, 'away')}
+      </div>`;
+    }
 
-      return order.filter(k => rounds[k]).map(k => {
-        const matches = (rounds[k].matches || []).filter(m => m.team_home && m.team_away);
-        if (!matches.length) return '';
-        return `<div class="bracket-round"><div class="round-title">${labels[k]}</div>${matches.map(m => {
-          const pred = predById[m.match_id] || m;
-          const homeWin = m.winner === m.team_home;
-          const awayWin = m.winner === m.team_away;
-          const probHome = pred.advance_probability_home ?? null;
-          const probAway = pred.advance_probability_away ?? null;
-          const score = m.score_home != null ? `${m.score_home}–${m.score_away}` : 'vs';
-          return `<div class="match">
-            ${renderMatchTeam(m.team_home, names, probHome, homeWin, 'home')}
-            <div class="match-center">${score}</div>
-            ${renderMatchTeam(m.team_away, names, probAway, awayWin, 'away')}
-          </div>`;
-        }).join('')}</div>`;
-      }).join('');
+    function renderSlotMatch(matchId, meta, mirror) {
+      const m = byIdGlobal[matchId] || {};
+      const pred = predByIdGlobal[matchId];
+      const home = m.team_home;
+      const away = m.team_away;
+      const header = meta
+        ? `<div class="bk-venue"><span class="city">${meta.venue}</span>${meta.date}</div>`
+        : '';
+      if (!home && !away) {
+        return `<div class="bk-match slot">
+          ${header}
+          <div class="bk-team tbd"><span class="bk-code">—</span></div>
+          <div class="bk-team tbd"><span class="bk-code">—</span></div>
+        </div>`;
+      }
+      return `<div class="bk-match slot wide">
+        ${header}
+        ${teamRow(home, m, pred, 'home', mirror)}
+        ${teamRow(away, m, pred, 'away', mirror)}
+      </div>`;
+    }
+
+    let byIdGlobal = {};
+    let predByIdGlobal = {};
+
+    function renderFeeder(feeder, mirror) {
+      const [id1, id2] = feeder.r32;
+      return `<div class="bk-feeder">
+        <div class="bk-r32-col">
+          ${renderR32Match(id1)}
+          ${renderR32Match(id2)}
+        </div>
+        <div class="bk-join"></div>
+        ${renderSlotMatch(feeder.r16.id, feeder.r16, mirror)}
+      </div>`;
+    }
+
+    function renderQuarter(quarter, mirror) {
+      const feeders = quarter.feeders.map(f => renderFeeder(f, mirror)).join('');
+      return `<div class="bk-quarter">
+        <div class="bk-feeders">${feeders}</div>
+        <div class="bk-join-qf"></div>
+        ${renderSlotMatch(quarter.qf.id, { ...quarter.qf, venue: quarter.qf.venue, date: quarter.qf.date + '<br>Quarter-final' }, mirror)}
+      </div>`;
+    }
+
+    function renderBracketTree(bracket, matchPredictions, meta) {
+      const idx = buildMatchIndex(bracket, matchPredictions);
+      byIdGlobal = idx.byId;
+      predByIdGlobal = idx.predById;
+
+      const left = BRACKET_LAYOUT.left.map(q => renderQuarter(q, false)).join('');
+      const right = BRACKET_LAYOUT.right.map(q => renderQuarter(q, true)).join('');
+
+      const sf = BRACKET_LAYOUT.center.sf.map(s =>
+        renderSlotMatch(s.id, s, false)
+      ).join('');
+      const finalMatch = renderSlotMatch(
+        BRACKET_LAYOUT.center.final.id,
+        { venue: 'Final', date: BRACKET_LAYOUT.center.final.date },
+        false,
+      );
+
+      return `<div class="bracket-panel">
+        <div class="bracket-title">
+          <div class="badge-wc">WORLD CUP</div>
+          <h2>Knockout Bracket</h2>
+          <p>${meta.round || 'Tournament'} · advancement % from ${(meta.simulations || 10000).toLocaleString()} simulations</p>
+        </div>
+        <div class="bracket-tree">
+          <div class="bracket-half left">${left}</div>
+          <div class="bracket-center">
+            <div class="bk-sf-row">${sf}</div>
+            <div class="bk-label-round">Semi-finals</div>
+            <div class="bk-final-wrap">
+              ${finalMatch}
+              <div class="bk-label-round">Final</div>
+            </div>
+          </div>
+          <div class="bracket-half right">${right}</div>
+        </div>
+      </div>`;
     }
 
     async function renderHistory(currentPreds) {
@@ -252,10 +611,8 @@
         const preds = data.predictions || [];
         const active = preds.filter(p => !p.eliminated);
         const top = active[0];
-        const names = Object.fromEntries(preds.map(p => [p.team_id, p.team_name]));
 
         renderMeta(data._meta || {});
-
         const historyHtml = await renderHistory(preds);
 
         app.innerHTML = `
@@ -281,7 +638,7 @@
               </table>
             </div>
             <div>
-              <div class="card" style="margin-bottom:1.5rem">
+              <div class="card">
                 <div class="top-pick">
                   <div class="label">Most likely champion</div>
                   <div class="name">${top?.team_name || '—'}</div>
@@ -289,12 +646,12 @@
                 </div>
                 ${renderSignals(top?.signals)}
               </div>
-              ${bracket ? `<div class="card"><div class="card-header">Bracket — advancement chances</div>${renderBracket(bracket, names, data.match_predictions)}</div>` : ''}
               ${historyHtml}
             </div>
-          </div>`;
+          </div>
+          ${bracket ? renderBracketTree(bracket, data.match_predictions, data._meta || {}) : ''}`;
       } catch (err) {
-        app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}<br><br>Serve via HTTP: <code>python -m http.server 8000 --directory web</code></div>`;
+        app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}</div>`;
       }
     }
 
