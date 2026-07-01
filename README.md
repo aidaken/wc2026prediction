@@ -32,46 +32,6 @@ No database. No server. No monthly bills. Just Python, three JSON files, and a s
 
 ---
 
-## Quick start
-
-### Prerequisites
-
-- Python 3.10 or higher
-- Git
-- Free API key from [API-Football](https://www.api-football.com/) (500 calls/day on free tier)
-- Optional: free API key from [The Odds API](https://the-odds-api.com/) (500 calls/month free)
-
-### Install
-
-```bash
-# Clone
-git clone https://github.com/yourusername/wc2026prediction.git
-cd wc2026prediction
-
-# Virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Dependencies
-pip install -r requirements.txt
-
-# Environment variables
-cp .env.example .env
-# Open .env and fill in your API keys
-```
-
-### Run
-
-```bash
-python update.py
-```
-
-First run bootstraps everything — fetches all group stage results, builds initial team ratings, runs the simulation, and writes `data/predictions.json`. Open `web/index.html` in your browser to see the dashboard.
-
-See [`docs/SETUP.md`](docs/SETUP.md) for the full walkthrough including GitHub Pages setup.
-
----
-
 ## Updating after each round
 
 Once a round ends and all results are confirmed:
