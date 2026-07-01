@@ -1,0 +1,331 @@
+{
+  "_meta": {
+    "current_round": "Round of 16",
+    "wc_year": 2026,
+    "last_updated": "2026-07-01T20:57:17Z"
+  },
+  "rounds": {
+    "round_of_32": {
+      "status": "completed",
+      "matches": [
+        {
+          "match_id": "r32_m01",
+          "date": "2026-06-28T19:00:00Z",
+          "team_home": "CAN",
+          "team_away": "COL",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "CAN",
+          "xg_home": 1.42,
+          "xg_away": 0.67,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m02",
+          "date": "2026-06-28T21:00:00Z",
+          "team_home": "BRA",
+          "team_away": "KOR",
+          "score_home": 3,
+          "score_away": 1,
+          "winner": "BRA",
+          "xg_home": 2.8,
+          "xg_away": 0.9,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m03",
+          "date": "2026-06-29T18:00:00Z",
+          "team_home": "FRA",
+          "team_away": "BEL",
+          "score_home": 2,
+          "score_away": 0,
+          "winner": "FRA",
+          "xg_home": 2.0,
+          "xg_away": 0.6,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m04",
+          "date": "2026-06-29T20:00:00Z",
+          "team_home": "ENG",
+          "team_away": "SEN",
+          "score_home": 2,
+          "score_away": 0,
+          "winner": "ENG",
+          "xg_home": 2.1,
+          "xg_away": 0.5,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m05",
+          "date": "2026-06-30T18:00:00Z",
+          "team_home": "ESP",
+          "team_away": "GER",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "ESP",
+          "xg_home": 1.3,
+          "xg_away": 0.8,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m06",
+          "date": "2026-06-30T20:00:00Z",
+          "team_home": "NED",
+          "team_away": "USA",
+          "score_home": 2,
+          "score_away": 1,
+          "winner": "NED",
+          "xg_home": 1.7,
+          "xg_away": 1.2,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m07",
+          "date": "2026-07-01T18:00:00Z",
+          "team_home": "POR",
+          "team_away": "URU",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "POR",
+          "xg_home": 1.1,
+          "xg_away": 0.9,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m08",
+          "date": "2026-07-01T20:00:00Z",
+          "team_home": "MEX",
+          "team_away": "JPN",
+          "score_home": 2,
+          "score_away": 1,
+          "winner": "MEX",
+          "xg_home": 1.5,
+          "xg_away": 1.3,
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m09",
+          "team_home": "ARG",
+          "team_away": "CRO",
+          "score_home": 2,
+          "score_away": 1,
+          "winner": "ARG",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m10",
+          "team_home": "MAR",
+          "team_away": "SUI",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "MAR",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m11",
+          "team_home": "USA",
+          "team_away": "ECU",
+          "score_home": 2,
+          "score_away": 0,
+          "winner": "USA",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m12",
+          "team_home": "URU",
+          "team_away": "DEN",
+          "score_home": 1,
+          "score_away": 1,
+          "winner": "URU",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m13",
+          "team_home": "JPN",
+          "team_away": "NOR",
+          "score_home": 2,
+          "score_away": 1,
+          "winner": "JPN",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m14",
+          "team_home": "SEN",
+          "team_away": "POL",
+          "score_home": 2,
+          "score_away": 0,
+          "winner": "SEN",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m15",
+          "team_home": "KOR",
+          "team_away": "AUS",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "KOR",
+          "status": "FT"
+        },
+        {
+          "match_id": "r32_m16",
+          "team_home": "CAN",
+          "team_away": "AUT",
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "CAN",
+          "status": "FT"
+        }
+      ]
+    },
+    "round_of_16": {
+      "status": "in_progress",
+      "matches": [
+        {
+          "match_id": "r16_m01",
+          "date": "2026-07-04T18:00:00Z",
+          "team_home": "CAN",
+          "team_away": "MAR",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m02",
+          "date": "2026-07-04T21:00:00Z",
+          "team_home": "BRA",
+          "team_away": "KOR",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m03",
+          "date": "2026-07-05T18:00:00Z",
+          "team_home": "FRA",
+          "team_away": "ARG",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m04",
+          "date": "2026-07-05T21:00:00Z",
+          "team_home": "ENG",
+          "team_away": "SEN",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m05",
+          "date": "2026-07-06T18:00:00Z",
+          "team_home": "ESP",
+          "team_away": "NED",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m06",
+          "date": "2026-07-06T21:00:00Z",
+          "team_home": "POR",
+          "team_away": "USA",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m07",
+          "date": "2026-07-07T18:00:00Z",
+          "team_home": "MEX",
+          "team_away": "URU",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "r16_m08",
+          "date": "2026-07-07T21:00:00Z",
+          "team_home": "JPN",
+          "team_away": "SUI",
+          "score_home": null,
+          "score_away": null,
+          "winner": null,
+          "status": "NS"
+        }
+      ]
+    },
+    "quarter_finals": {
+      "status": "pending",
+      "matches": [
+        {
+          "match_id": "qf_m01",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "qf_m02",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "qf_m03",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "qf_m04",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        }
+      ]
+    },
+    "semi_finals": {
+      "status": "pending",
+      "matches": [
+        {
+          "match_id": "sf_m01",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        },
+        {
+          "match_id": "sf_m02",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        }
+      ]
+    },
+    "final": {
+      "status": "pending",
+      "matches": [
+        {
+          "match_id": "final_m01",
+          "team_home": null,
+          "team_away": null,
+          "winner": null,
+          "status": "NS"
+        }
+      ]
+    }
+  }
+}
