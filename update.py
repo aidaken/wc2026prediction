@@ -212,6 +212,11 @@ def write_outputs(
             "rank": None if eliminated else active_rank,
         })
 
+    # Active teams first (by win %), then eliminated
+    predictions_list.sort(
+        key=lambda p: (p["eliminated"], -p["win_probability"]),
+    )
+
     predictions_doc = {
         "_meta": {
             "generated_at": _utc_now(),

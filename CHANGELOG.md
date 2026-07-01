@@ -17,7 +17,9 @@ Versioning follows `MAJOR.MINOR.PATCH` — patch for prediction updates, minor f
 - Dashboard history panel and full team names in bracket view
 
 ### Fixed
-- xG home/away assignment bug in API-Football statistics parser
+- Seed data now uses all 48 actual WC 2026 qualified teams (no Poland, Nigeria, etc.)
+- Round of 32 bracket matches FIFA combination 67 with real results through July 1
+- Predictions sorted with active teams first, group-stage eliminated at bottom
 - Live mode now merges bracket fixture history for Elo/xG calculations
 - Penalty shootout winner detection
 - Player stats proxy for injury model in live mode

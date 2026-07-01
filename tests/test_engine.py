@@ -47,7 +47,7 @@ class TestXgForm(unittest.TestCase):
 class TestBracket(unittest.TestCase):
     def test_detect_current_round(self):
         bracket = DEMO_BRACKET
-        self.assertEqual(detect_current_round(bracket), "Round of 16")
+        self.assertEqual(detect_current_round(bracket), "Round of 32")
 
     def test_mark_eliminations(self):
         teams = {"BRA": {"eliminated": False}, "FRA": {"eliminated": False}}
