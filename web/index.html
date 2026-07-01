@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WC 2026 Predictions</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --surface: #141e33;
+      --border: #243049;
+      --text: #e8edf7;
+      --muted: #8b9bb4;
+      --accent: #22c55e;
+      --gold: #fbbf24;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header { margin-bottom: 2rem; }
+    h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+    .subtitle { color: var(--muted); margin-top: 0.35rem; font-size: 0.95rem; }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;
+      font-size: 0.85rem; color: var(--muted);
+    }
+    .meta span { background: var(--surface); border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 999px; }
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.75rem 1.25rem; text-align: left; }
+    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    tr + tr td { border-top: 1px solid var(--border\border); border-top-color: var(--border); }
+    tr.eliminated { opacity: 0.45; }
+    .rank { color: var(--muted); width: 2rem; }
+    .team-name { font-weight: 600; }
+    .prob { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--accent); }
+    .prob-bar-wrap { width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .prob-bar { height: 100%; background: linear-gradient(90deg, var(--accent), #16a34a); border-radius: 3px; }
+    .badge { font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 4px; background: var(--border); color: var(--muted); }
+    .badge.out { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .top-pick {
+      padding: 1.5rem;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(34,197,94,0.08), transparent);
+    }
+    .top-pick .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .top-pick .name { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; color: var(--gold); }
+    .top-pick .pct { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .signals { padding: 1rem 1.25rem; }
+    .signal-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.5rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+    }
+    .signal-row:last-child { border-bottom: none; }
+    .signal-label { color: var(--muted); }
+    .signal-val { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .bracket-round { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+    .bracket-round:last-child { border-bottom: none; }
+    .round-title { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+    .match {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.4rem 0; font-size: 0.9rem;
+    }
+    .match .vs { color: var(--muted); font-size: 0.75rem; padding: 0 0.5rem; }
+    .match .score { color: var(--muted); font-size: 0.8rem; min-width: 2.5rem; text-align: right; }
+    .winner { color: var(--gold); font-weight: 600; }
+    .loading, .error { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+    .error { color: var(--danger); }
+    footer { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🏆 WC 2026 Predictions</h1>
+      <p class="subtitle">Monte Carlo win probabilities updated after each knockout round</p>
+      <div class="meta" id="meta"></div>
+    </header>
+    <div id="app"><div class="loading">Loading predictions…</div></div>
+    <footer>Model v1.0 · Elo + xG + squad value + betting odds + injuries</footer>
+  </div>
+  <script>
+    const DATA_URL = '../data/predictions.json';
+    const BRACKET_URL = '../data/bracket.json';
+
+    function pct(n) { return (n * 100).toFixed(1) + '%'; }
+    function pctBar(n) { return Math.min(100, n * 100 * 4); }
+
+    function renderMeta(meta) {
+      document.getElementById('meta').innerHTML = [
+        `<span>${meta.round || '—'}</span>`,
+        `<span>${(meta.simulations || 0).toLocaleString()} simulations</span>`,
+        `<span>Updated ${new Date(meta.generated_at).toLocaleString()}</span>`,
+      ].join('');
+    }
+
+    function renderSignals(signals) {
+      if (!signals) return '<p class="signals" style="color:var(--muted)">No signal data</p>';
+      const labels = {
+        elo_normalized: 'Elo',
+        xg_form_ratio: 'xG form',
+        squad_value_normalized: 'Squad value',
+        betting_implied_prob: 'Betting odds',
+        injury_multiplier: 'Injury mult.',
+      };
+      return `<div class="signals">${Object.entries(labels).map(([k, label]) =>
+        `<div class="signal-row"><span class="signal-label">${label}</span><span class="signal-val">${(signals[k] ?? 0).toFixed(2)}</span></div>`
+      ).join('')}</div>`;
+    }
+
+    function renderBracket(bracket) {
+      const rounds = bracket?.rounds || {};
+      const order = ['round_of_32', 'round_of_16', 'quarter_finals', 'semi_finals', 'final'];
+      const labels = {
+        round_of_32: 'Round of 32', round_of_16: 'Round of 16',
+        quarter_finals: 'Quarter-finals', semi_finals: 'Semi-finals', final: 'Final',
+      };
+      return order.filter(k => rounds[k]).map(k => {
+        const matches = (rounds[k].matches || []).filter(m => m.team_home && m.team_away);
+        if (!matches.length) return '';
+        return `<div class="bracket-round"><div class="round-title">${labels[k]}</div>${matches.map(m => {
+          const homeWin = m.winner === m.team_home;
+          const awayWin = m.winner === m.team_away;
+          const score = m.score_home != null ? `${m.score_home}–${m.score_away}` : 'vs';
+          return `<div class="match">
+            <span class="${homeWin ? 'winner' : ''}">${m.team_home}</span>
+            <span class="vs">${score}</span>
+            <span class="${awayWin ? 'winner' : ''}">${m.team_away}</span>
+          </div>`;
+        }).join('')}</div>`;
+      }).join('');
+    }
+
+    async function load() {
+      const app = document.getElementById('app');
+      try {
+        const [predRes, bracketRes] = await Promise.all([
+          fetch(DATA_URL), fetch(BRACKET_URL),
+        ]);
+        if (!predRes.ok) throw new Error(`Failed to load predictions (${predRes.status})`);
+        const data = await predRes.json();
+        const bracket = bracketRes.ok ? await bracketRes.json() : null;
+        const preds = data.predictions || [];
+        const active = preds.filter(p => !p.eliminated);
+        const top = active[0];
+
+        renderMeta(data._meta || {});
+
+        app.innerHTML = `
+          <div class="grid">
+            <div class="card">
+              <div class="card-header">Win probabilities</div>
+              <table>
+                <thead><tr><th>#</th><th>Team</th><th>Win</th><th>Final</th><th>Semis</th></tr></thead>
+                <tbody>
+                  ${preds.map((p, i) => `
+                    <tr class="${p.eliminated ? 'eliminated' : ''}">
+                      <td class="rank">${p.eliminated ? '—' : i + 1}</td>
+                      <td><span class="team-name">${p.team_name}</span> ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}</td>
+                      <td>
+                        <div class="prob">${pct(p.win_probability)}</div>
+                        ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
+                      </td>
+                      <td class="prob">${pct(p.reach_final_probability)}</td>
+                      <td class="prob">${pct(p.reach_semis_probability)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:1.5rem">
+                <div class="top-pick">
+                  <div class="label">Most likely champion</div>
+                  <div class="name">${top?.team_name || '—'}</div>
+                  <div class="pct">${top ? pct(top.win_probability) : '—'}</div>
+                </div>
+                ${renderSignals(top?.signals)}
+              </div>
+              ${bracket ? `<div class="card"><div class="card-header">Bracket</div>${renderBracket(bracket)}</div>` : ''}
+            </div>
+          </div>`;
+      } catch (err) {
+        app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}<br><br>Serve via HTTP: <code>python -m http.server 8000 --directory web</code></div>`;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
