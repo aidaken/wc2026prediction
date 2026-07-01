@@ -90,5 +90,20 @@ def get_env_int(name: str, default: int) -> int:
     return int(raw)
 
 
+def normalize_betting_probs(
+    betting: dict[str, float],
+    active_team_ids: list[str],
+) -> dict[str, float]:
+    """Normalize implied betting probabilities across active teams (sum to 1.0)."""
+    if not active_team_ids:
+        return {}
+    raw = {tid: max(float(betting.get(tid, 0.0)), 0.0) for tid in active_team_ids}
+    total = sum(raw.values())
+    if total <= 0:
+        equal = 1.0 / len(active_team_ids)
+        return {tid: round(equal, 4) for tid in active_team_ids}
+    return {tid: round(v / total, 4) for tid, v in raw.items()}
+
+
 def win_probability(strength_a: float, strength_b: float, scale: float = config.ELO_SCALE) -> float:
     return 1.0 / (1.0 + 10 ** ((strength_b - strength_a) / scale))

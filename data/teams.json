@@ -1,8 +1,22 @@
 {
   "_meta": {
-    "last_updated": "2026-07-01T21:22:56Z",
+    "last_updated": "2026-07-01T21:41:58Z",
     "round": "Round of 32",
-    "teams_remaining": 24
+    "teams_remaining": 24,
+    "elo_processed_matches": [
+      "ARG:AUT:2026-06-22",
+      "BRA:MAR:2026-06-18",
+      "ESP:ENG:2026-06-20",
+      "FRA:IRQ:2026-06-15",
+      "r32_m73",
+      "r32_m74",
+      "r32_m75",
+      "r32_m76",
+      "r32_m77",
+      "r32_m78",
+      "r32_m79",
+      "r32_m80"
+    ]
   },
   "teams": {
     "MEX": {

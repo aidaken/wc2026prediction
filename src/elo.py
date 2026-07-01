@@ -34,12 +34,31 @@ def _match_outcome(home_id: str, away_id: str, match: dict[str, Any]) -> tuple[f
     return 0.5, 0.5
 
 
+def _fixture_id(match: dict[str, Any]) -> str | None:
+    if match.get("match_id"):
+        return str(match["match_id"])
+    api_id = match.get("api_fixture_id")
+    if api_id:
+        return f"api:{api_id}"
+    home, away = match.get("team_home"), match.get("team_away")
+    if home and away:
+        return f"{home}:{away}:{match.get('date', '')}"
+    return None
+
+
 def update_ratings(
     teams: dict[str, dict[str, Any]],
     fixtures: list[dict[str, Any]],
-) -> dict[str, float]:
-    """Update Elo in-place for completed fixtures. Returns elo_change per team this run."""
+    processed_ids: set[str] | None = None,
+) -> tuple[dict[str, float], list[str]]:
+    """
+    Update Elo in-place for completed fixtures not yet processed.
+
+    Returns (elo_change per team this run, newly processed fixture ids).
+    """
     changes: dict[str, float] = {tid: 0.0 for tid in teams}
+    already = processed_ids or set()
+    newly_processed: list[str] = []
 
     for match in fixtures:
         status = match.get("status", "")
@@ -51,6 +70,10 @@ def update_ratings(
         if not home_id or not away_id:
             continue
         if home_id not in teams or away_id not in teams:
+            continue
+
+        fid = _fixture_id(match)
+        if fid and fid in already:
             continue
 
         k = k_factor_for_match(match)
@@ -68,10 +91,13 @@ def update_ratings(
         changes[home_id] += delta_home
         changes[away_id] += delta_away
 
+        if fid:
+            newly_processed.append(fid)
+
     for tid, delta in changes.items():
         teams[tid]["elo_change_this_round"] = round(delta, 1)
 
-    return changes
+    return changes, newly_processed
 
 
 def normalize_elo(teams: dict[str, dict[str, Any]], active_only: bool = True) -> dict[str, float]:

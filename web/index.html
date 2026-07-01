@@ -81,9 +81,27 @@
     .bracket-round:last-child { border-bottom: none; }
     .round-title { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
     .match {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.4rem 0; font-size: 0.9rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+      padding: 0.5rem 0; font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
     }
+    .match:last-child { border-bottom: none; }
+    .match-row {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.5rem;
+    }
+    .match-team { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
+    .match-team.away { flex-direction: row-reverse; text-align: right; }
+    .match-team .name { font-weight: 600; min-width: 2.5rem; }
+    .match-team.away .name { text-align: right; }
+    .advance-pct {
+      font-size: 0.8rem; font-variant-numeric: tabular-nums;
+      color: var(--accent); font-weight: 600; min-width: 3rem;
+    }
+    .match-team.away .advance-pct { text-align: left; }
+    .advance-bar-wrap { flex: 1; max-width: 80px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .advance-bar { height: 100%; background: var(--accent); border-radius: 2px; }
+    .match-center { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 0.15rem 0; }
     .match .vs { color: var(--muted); font-size: 0.75rem; padding: 0 0.5rem; }
     .winner { color: var(--gold); font-weight: 600; }
     .history { padding: 1rem 1.25rem; }
@@ -142,26 +160,46 @@
       return names[id] || id;
     }
 
-    function renderBracket(bracket, names) {
+    function renderMatchTeam(id, names, prob, isWinner, side) {
+      const name = teamLabel(id, names);
+      const pctVal = prob != null ? pct(prob) : '—';
+      const barW = prob != null ? Math.min(100, prob * 100) : 0;
+      return `<div class="match-team ${side}">
+        <span class="name ${isWinner ? 'winner' : ''}">${name}</span>
+        <div class="advance-bar-wrap"><div class="advance-bar" style="width:${barW}%"></div></div>
+        <span class="advance-pct">${pctVal}</span>
+      </div>`;
+    }
+
+    function renderBracket(bracket, names, matchPredictions) {
       const rounds = bracket?.rounds || {};
+      const preds = matchPredictions || {};
       const order = ['round_of_32', 'round_of_16', 'quarter_finals', 'semi_finals', 'final'];
       const labels = {
         round_of_32: 'Round of 32', round_of_16: 'Round of 16',
         quarter_finals: 'Quarter-finals', semi_finals: 'Semi-finals', final: 'Final',
       };
+      const predById = {};
+      for (const roundKey of order) {
+        for (const m of (preds[roundKey] || [])) {
+          if (m.match_id) predById[m.match_id] = m;
+        }
+      }
+
       return order.filter(k => rounds[k]).map(k => {
         const matches = (rounds[k].matches || []).filter(m => m.team_home && m.team_away);
         if (!matches.length) return '';
         return `<div class="bracket-round"><div class="round-title">${labels[k]}</div>${matches.map(m => {
-          const home = teamLabel(m.team_home, names);
-          const away = teamLabel(m.team_away, names);
+          const pred = predById[m.match_id] || m;
           const homeWin = m.winner === m.team_home;
           const awayWin = m.winner === m.team_away;
+          const probHome = pred.advance_probability_home ?? null;
+          const probAway = pred.advance_probability_away ?? null;
           const score = m.score_home != null ? `${m.score_home}–${m.score_away}` : 'vs';
           return `<div class="match">
-            <span class="${homeWin ? 'winner' : ''}">${home}</span>
-            <span class="vs">${score}</span>
-            <span class="${awayWin ? 'winner' : ''}">${away}</span>
+            ${renderMatchTeam(m.team_home, names, probHome, homeWin, 'home')}
+            <div class="match-center">${score}</div>
+            ${renderMatchTeam(m.team_away, names, probAway, awayWin, 'away')}
           </div>`;
         }).join('')}</div>`;
       }).join('');
@@ -251,7 +289,7 @@
                 </div>
                 ${renderSignals(top?.signals)}
               </div>
-              ${bracket ? `<div class="card"><div class="card-header">Bracket</div>${renderBracket(bracket, names)}</div>` : ''}
+              ${bracket ? `<div class="card"><div class="card-header">Bracket — advancement chances</div>${renderBracket(bracket, names, data.match_predictions)}</div>` : ''}
               ${historyHtml}
             </div>
           </div>`;

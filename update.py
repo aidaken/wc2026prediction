@@ -24,7 +24,7 @@ from src.odds import get_implied_probs
 from src.seed import DEMO_BRACKET, DEMO_FIXTURES, DEMO_INJURIES, DEMO_ODDS, DEMO_PLAYER_STATS, TEAMS
 from src.simulate import run as run_simulation
 from src.teams import TeamRegistry
-from src.utils import DATA_DIR, get_env_int, load_json, normalize_minmax, setup_logging, write_json
+from src.utils import DATA_DIR, get_env_int, load_json, normalize_betting_probs, normalize_minmax, setup_logging, write_json
 from src.value import get_squad_values
 from src.xg import calculate_form_ratios
 
@@ -113,11 +113,12 @@ def combine_strengths(
     teams: dict[str, dict[str, Any]],
     raw: dict[str, Any],
     weights: dict[str, float],
-) -> tuple[dict[str, float], dict[str, dict[str, float]]]:
+    processed_elo_ids: set[str] | None = None,
+) -> tuple[dict[str, float], dict[str, dict[str, float]], list[str]]:
     active = _active_teams(teams)
     fixtures = raw["fixtures"]
 
-    update_ratings(teams, fixtures)
+    _, newly_processed = update_ratings(teams, fixtures, processed_ids=processed_elo_ids)
     elo_norm = normalize_elo(teams)
     xg_form = calculate_form_ratios(fixtures, active)
     injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
@@ -127,7 +128,7 @@ def combine_strengths(
     squad_norm = normalize_minmax({tid: float(v) for tid, v in squad_raw.items()})
 
     betting = raw.get("betting_probs") or {}
-    betting_active = {tid: betting[tid] for tid in active if tid in betting}
+    betting_active = normalize_betting_probs(betting, active)
 
     strengths: dict[str, float] = {}
     signals: dict[str, dict[str, float]] = {}
@@ -149,7 +150,7 @@ def combine_strengths(
         strengths[tid] = round(base * components["injury_multiplier"], 4)
         signals[tid] = components
 
-    return strengths, signals
+    return strengths, signals, newly_processed
 
 
 def _select_weights(raw: dict[str, Any]) -> dict[str, float]:
@@ -169,16 +170,20 @@ def write_outputs(
     bracket: dict[str, Any],
     strengths: dict[str, float],
     signals: dict[str, dict[str, float]],
-    sim_results: dict[str, dict[str, float]],
+    sim_results: dict[str, Any],
     round_name: str,
     n_sims: int,
+    elo_processed_matches: list[str] | None = None,
 ) -> None:
+    team_sim = sim_results.get("team_predictions", sim_results)
+    match_predictions = sim_results.get("match_predictions", {})
     active_count = len(_active_teams(teams))
     teams_doc = {
         "_meta": {
             "last_updated": _utc_now(),
             "round": round_name,
             "teams_remaining": active_count,
+            "elo_processed_matches": elo_processed_matches or [],
         },
         "teams": teams,
     }
@@ -193,10 +198,10 @@ def write_outputs(
     active_rank = 0
     for tid, team in sorted(
         teams.items(),
-        key=lambda x: sim_results.get(x[0], {}).get("win_probability", 0),
+        key=lambda x: team_sim.get(x[0], {}).get("win_probability", 0),
         reverse=True,
     ):
-        sim = sim_results.get(tid, {})
+        sim = team_sim.get(tid, {})
         eliminated = team.get("eliminated", False)
         if not eliminated:
             active_rank += 1
@@ -225,6 +230,7 @@ def write_outputs(
             "model_version": MODEL_VERSION,
         },
         "predictions": predictions_list,
+        "match_predictions": match_predictions,
     }
 
     write_json(DATA_DIR / "teams.json", teams_doc)
@@ -264,11 +270,13 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
 
     teams_doc = load_json(DATA_DIR / "teams.json")
     bracket = load_json(DATA_DIR / "bracket.json")
+    processed_elo = set(teams_doc.get("_meta", {}).get("elo_processed_matches", []))
 
     if demo or not teams_doc.get("teams"):
         teams = {tid: dict(t) for tid, t in TEAMS.items()}
         bracket = DEMO_BRACKET
         round_name = round_name or bracket["_meta"]["current_round"]
+        processed_elo = set()
     else:
         teams = teams_doc["teams"]
         round_name = round_name or detect_current_round(bracket)
@@ -290,7 +298,10 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
 
     weights = _select_weights(raw)
     logger.info("Calculating team strengths (weights: %s)...", weights)
-    strengths, signals = combine_strengths(teams, raw, weights)
+    strengths, signals, newly_processed = combine_strengths(
+        teams, raw, weights, processed_elo_ids=processed_elo,
+    )
+    all_processed = sorted(processed_elo | set(newly_processed))
 
     for tid, value in raw.get("squad_values", {}).items():
         if tid in teams and value:
@@ -300,11 +311,15 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     sim_results = run_simulation(strengths, bracket, n=n_sims)
 
     logger.info("Writing output files...")
-    write_outputs(teams, bracket, strengths, signals, sim_results, round_name, n_sims)
+    write_outputs(
+        teams, bracket, strengths, signals, sim_results, round_name, n_sims,
+        elo_processed_matches=all_processed,
+    )
     archive_round(round_name)
 
+    team_sim = sim_results.get("team_predictions", sim_results)
     top = max(
-        ((tid, sim_results[tid]["win_probability"]) for tid in _active_teams(teams) if tid in sim_results),
+        ((tid, team_sim[tid]["win_probability"]) for tid in _active_teams(teams) if tid in team_sim),
         key=lambda x: x[1],
         default=(None, 0),
     )

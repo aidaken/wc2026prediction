@@ -3,10 +3,12 @@
 import unittest
 
 from src.bracket import detect_current_round, mark_eliminations
+from src.bracket_topology import MATCH_FEEDERS, propagate_winner
 from src.elo import update_ratings
 from src.seed import DEMO_BRACKET, TEAMS
-from src.simulate import run
+from src.simulate import match_win_probability, run
 from src.teams import ODDS_NAME_TO_ID, TM_SLUG_TO_ID, TeamRegistry
+from src.utils import normalize_betting_probs
 from src.xg import calculate_form_ratios
 
 
@@ -34,12 +36,36 @@ class TestElo(unittest.TestCase):
             "FRA": {"elo": 2000.0, "eliminated": False},
         }
         fixtures = [{
+            "match_id": "test_m01",
             "team_home": "BRA", "team_away": "FRA", "status": "FT",
             "winner": "BRA", "stage": "knockout",
         }]
         update_ratings(teams, fixtures)
         self.assertGreater(teams["BRA"]["elo"], 2000.0)
         self.assertLess(teams["FRA"]["elo"], 2000.0)
+
+    def test_no_double_counting(self):
+        teams = {
+            "BRA": {"elo": 2000.0, "eliminated": False},
+            "FRA": {"elo": 2000.0, "eliminated": False},
+        }
+        fixtures = [{
+            "match_id": "test_m01",
+            "team_home": "BRA", "team_away": "FRA", "status": "FT",
+            "winner": "BRA", "stage": "knockout",
+        }]
+        update_ratings(teams, fixtures)
+        elo_after_first = teams["BRA"]["elo"]
+        update_ratings(teams, fixtures, processed_ids={"test_m01"})
+        self.assertEqual(teams["BRA"]["elo"], elo_after_first)
+
+
+class TestBettingNormalization(unittest.TestCase):
+    def test_normalizes_to_one(self):
+        active = ["BRA", "FRA", "ARG"]
+        raw = {"BRA": 0.20, "FRA": 0.17, "ARG": 0.14}
+        normed = normalize_betting_probs(raw, active)
+        self.assertAlmostEqual(sum(normed.values()), 1.0, places=4)
 
 
 class TestXgForm(unittest.TestCase):
@@ -65,19 +91,57 @@ class TestBracket(unittest.TestCase):
         self.assertIn("FRA", out)
         self.assertTrue(teams["FRA"]["eliminated"])
 
+    def test_feeder_preserves_r16_matchups(self):
+        from copy import deepcopy
+
+        working = deepcopy(DEMO_BRACKET["rounds"])
+        propagate_winner(working, "r32_m74", "PAR")
+        propagate_winner(working, "r32_m77", "FRA")
+        r16_89 = next(
+            m for m in working["round_of_16"]["matches"] if m["match_id"] == "r16_m89"
+        )
+        self.assertEqual(r16_89["team_home"], "PAR")
+        self.assertEqual(r16_89["team_away"], "FRA")
+
+    def test_all_r32_feeders_defined(self):
+        for i in range(73, 89):
+            self.assertIn(f"r32_m{i}", MATCH_FEEDERS)
+
 
 class TestSimulate(unittest.TestCase):
     def test_favorite_wins_more_often(self):
         bracket = {
             "rounds": {
                 "final": {
-                    "matches": [{"team_home": "BRA", "team_away": "CAN", "winner": None, "status": "NS"}],
+                    "matches": [{
+                        "match_id": "final_m01",
+                        "team_home": "BRA", "team_away": "CAN",
+                        "winner": None, "status": "NS",
+                    }],
                 },
             },
         }
         strengths = {"BRA": 0.9, "CAN": 0.2}
         results = run(strengths, bracket, n=2000, seed=7)
-        self.assertGreater(results["BRA"]["win_probability"], results["CAN"]["win_probability"])
+        teams = results["team_predictions"]
+        self.assertGreater(teams["BRA"]["win_probability"], teams["CAN"]["win_probability"])
+
+    def test_match_predictions_returned(self):
+        results = run({"BRA": 0.8, "FRA": 0.7}, DEMO_BRACKET, n=500, seed=1)
+        self.assertIn("team_predictions", results)
+        self.assertIn("match_predictions", results)
+        r32 = results["match_predictions"].get("round_of_32", [])
+        self.assertTrue(len(r32) > 0)
+        por_cro = next((m for m in r32 if m["team_home"] == "POR"), None)
+        self.assertIsNotNone(por_cro)
+        self.assertAlmostEqual(
+            por_cro["advance_probability_home"] + por_cro["advance_probability_away"],
+            1.0, places=1,
+        )
+
+    def test_match_win_probability_favorite(self):
+        prob_home, prob_away = match_win_probability("BRA", "CAN", {"BRA": 0.9, "CAN": 0.2})
+        self.assertGreater(prob_home, prob_away)
 
 
 if __name__ == "__main__":
