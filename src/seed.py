@@ -36,13 +36,9 @@ TEAMS: dict[str, dict[str, Any]] = {
     "SCO": {"id": "SCO", "name": "Scotland", "api_football_id": 1108, "transfermarkt_id": "schottland", "elo": 1690.0, "squad_value_eur": 175000000, "eliminated": True, "group": "AB", "group_position": 3},
     "UKR": {"id": "UKR", "name": "Ukraine", "api_football_id": 772, "transfermarkt_id": "ukraine", "elo": 1760.0, "squad_value_eur": 200000000, "eliminated": True, "group": "AC", "group_position": 3},
     "TUR": {"id": "TUR", "name": "Turkey", "api_football_id": 777, "transfermarkt_id": "turkei", "elo": 1745.0, "squad_value_eur": 230000000, "eliminated": True, "group": "AD", "group_position": 3},
-    "PAR": {"id": "PAR", "name": "Paraguay", "api_football_id": 29, "transfermarkt_id": "paraguay", "elo": 1675.0, "squad_value_eur": 120000000, "eliminated": True, "group": "AE", "group_position": 3},
-    "CRC": {"id": "CRC", "name": "Costa Rica", "api_football_id": 29, "transfermarkt_id": "costa-rica", "elo": 1650.0, "app_value_eur": 85000000, "eliminated": True, "group": "AF", "group_position": 3},
+    "PAR": {"id": "PAR", "name": "Paraguay", "api_football_id": 2379, "transfermarkt_id": "paraguay", "elo": 1675.0, "squad_value_eur": 120000000, "eliminated": True, "group": "AE", "group_position": 3},
+    "CRC": {"id": "CRC", "name": "Costa Rica", "api_football_id": 29, "transfermarkt_id": "costa-rica", "elo": 1650.0, "squad_value_eur": 85000000, "eliminated": True, "group": "AF", "group_position": 3},
 }
-
-# Fix typo in CRC
-TEAMS["CRC"]["squad_value_eur"] = 85000000
-del TEAMS["CRC"]["app_value_eur"]
 
 DEMO_FIXTURES: list[dict[str, Any]] = [
     {"team_home": "CAN", "team_away": "COL", "status": "FT", "winner": "CAN", "score_home": 1, "score_away": 0, "xg_home": 1.42, "xg_away": 0.67, "date": "2026-06-28T19:00:00Z", "stage": "knockout"},

@@ -16,13 +16,14 @@ from datetime import datetime, timezone
 from typing import Any
 
 import config
-from src import seed
+from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures
 from src.elo import normalize_elo, update_ratings
 from src.fetch import DataValidationError, FetchError, get_fixtures, get_injuries, get_player_stats, validate_raw_data
 from src.injury import calculate_multipliers
 from src.odds import get_implied_probs
 from src.seed import DEMO_BRACKET, DEMO_FIXTURES, DEMO_INJURIES, DEMO_ODDS, DEMO_PLAYER_STATS, TEAMS
 from src.simulate import run as run_simulation
+from src.teams import TeamRegistry
 from src.utils import DATA_DIR, get_env_int, load_json, normalize_minmax, setup_logging, write_json
 from src.value import get_squad_values
 from src.xg import calculate_form_ratios
@@ -49,7 +50,9 @@ def _collect_fixtures_from_bracket(bracket: dict[str, Any]) -> list[dict[str, An
 
 def fetch_all_data(
     teams: dict[str, dict[str, Any]],
+    bracket: dict[str, Any],
     round_name: str,
+    registry: TeamRegistry,
     demo: bool = False,
 ) -> dict[str, Any]:
     if demo:
@@ -59,18 +62,37 @@ def fetch_all_data(
             "player_stats": DEMO_PLAYER_STATS,
             "squad_values": {tid: t["squad_value_eur"] for tid, t in TEAMS.items() if t.get("squad_value_eur")},
             "betting_probs": DEMO_ODDS,
+            "api_fixtures": [],
         }
 
-    fixtures = get_fixtures(round_name)
+    api_fixtures: list[dict[str, Any]] = []
+    try:
+        api_fixtures = get_fixtures(round_name, registry)
+    except FetchError as exc:
+        logger = setup_logging()
+        logger.warning("API fetch failed (%s) — using bracket fixture history", exc)
+
+    bracket_fixtures = _collect_fixtures_from_bracket(bracket)
+    seen_ids = {f.get("api_fixture_id") for f in api_fixtures if f.get("api_fixture_id")}
+    merged = list(api_fixtures)
+    for fix in bracket_fixtures:
+        fid = fix.get("api_fixture_id")
+        if fid and fid in seen_ids:
+            continue
+        merged.append(fix)
+
     injuries: dict[str, list] = {}
     player_stats: dict[str, list] = {}
     for tid, team in teams.items():
+        if team.get("eliminated"):
+            continue
         api_id = team.get("api_football_id")
         if not api_id:
             continue
         try:
-            injuries[tid] = get_injuries(api_id)
-            player_stats[tid] = get_player_stats(api_id)
+            stats = get_player_stats(api_id, starting_player_ids=set(config.KEY_PLAYERS.keys()))
+            player_stats[tid] = stats
+            injuries[tid] = get_injuries(api_id, stats)
         except FetchError as exc:
             setup_logging().warning("Player/injury fetch failed for %s: %s", tid, exc)
 
@@ -78,11 +100,12 @@ def fetch_all_data(
     active = _active_teams(teams)
     betting_probs = get_implied_probs(active)
     return {
-        "fixtures": fixtures,
+        "fixtures": merged,
         "injuries": injuries,
         "player_stats": player_stats,
         "squad_values": squad_values,
         "betting_probs": betting_probs,
+        "api_fixtures": api_fixtures,
     }
 
 
@@ -167,9 +190,16 @@ def write_outputs(
     }
 
     predictions_list = []
-    for tid, team in sorted(teams.items(), key=lambda x: sim_results.get(x[0], {}).get("win_probability", 0), reverse=True):
+    active_rank = 0
+    for tid, team in sorted(
+        teams.items(),
+        key=lambda x: sim_results.get(x[0], {}).get("win_probability", 0),
+        reverse=True,
+    ):
         sim = sim_results.get(tid, {})
         eliminated = team.get("eliminated", False)
+        if not eliminated:
+            active_rank += 1
         predictions_list.append({
             "team_id": tid,
             "team_name": team["name"],
@@ -179,6 +209,7 @@ def write_outputs(
             "signals": None if eliminated else signals.get(tid),
             "team_strength": None if eliminated else strengths.get(tid),
             "eliminated": eliminated,
+            "rank": None if eliminated else active_rank,
         })
 
     predictions_doc = {
@@ -205,6 +236,21 @@ def archive_round(round_name: str) -> None:
     src = DATA_DIR / "predictions.json"
     if src.exists():
         shutil.copy2(src, history_dir / filename)
+    _update_history_index(history_dir)
+
+
+def _update_history_index(history_dir) -> None:
+    index = []
+    for round_name, filename in config.HISTORY_FILENAMES.items():
+        path = history_dir / filename
+        if path.exists():
+            data = load_json(path)
+            index.append({
+                "round": round_name,
+                "file": filename,
+                "generated_at": data.get("_meta", {}).get("generated_at"),
+            })
+    write_json(history_dir / "index.json", {"rounds": index})
 
 
 def run_update(round_name: str | None = None, demo: bool = False) -> None:
@@ -220,10 +266,19 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
         round_name = round_name or bracket["_meta"]["current_round"]
     else:
         teams = teams_doc["teams"]
-        round_name = round_name or bracket.get("_meta", {}).get("current_round", config.ROUND_NAMES[0])
+        round_name = round_name or detect_current_round(bracket)
+
+    registry = TeamRegistry(teams)
 
     logger.info("Fetching data for %s...", round_name)
-    raw = fetch_all_data(teams, round_name, demo=demo)
+    raw = fetch_all_data(teams, bracket, round_name, registry, demo=demo)
+
+    if raw.get("api_fixtures"):
+        completed = sync_bracket_from_fixtures(bracket, raw["api_fixtures"], round_name)
+        if completed:
+            newly_out = mark_eliminations(teams, completed)
+            if newly_out:
+                logger.info("Marked eliminated: %s", ", ".join(newly_out))
 
     active_count = len(_active_teams(teams))
     validate_raw_data(raw["fixtures"], active_count)

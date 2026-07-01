@@ -9,6 +9,7 @@ from typing import Any
 import requests
 
 import config
+from src.teams import TeamRegistry
 from src.utils import retry
 
 logger = logging.getLogger("wc2026")
@@ -44,7 +45,44 @@ def _get(path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
     return payload
 
 
-def _normalize_fixture(item: dict[str, Any], stage: str = "knockout") -> dict[str, Any]:
+def _resolve_winner(
+    registry: TeamRegistry,
+    status: str,
+    home: dict[str, Any],
+    away: dict[str, Any],
+    goals: dict[str, Any],
+    score: dict[str, Any],
+) -> str | None:
+    if status not in ("FT", "PEN", "AET"):
+        return None
+
+    home_goals = goals.get("home") or 0
+    away_goals = goals.get("away") or 0
+    home_id = registry.resolve(home.get("id")) or registry.resolve(home.get("name"))
+    away_id = registry.resolve(away.get("id")) or registry.resolve(away.get("name"))
+
+    if home_goals > away_goals:
+        return home_id
+    if away_goals > home_goals:
+        return away_id
+
+    if status == "PEN":
+        pen = score.get("penalty") or {}
+        pen_home = pen.get("home") or 0
+        pen_away = pen.get("away") or 0
+        if pen_home > pen_away:
+            return home_id
+        if pen_away > pen_home:
+            return away_id
+
+    return None
+
+
+def _normalize_fixture(
+    item: dict[str, Any],
+    registry: TeamRegistry,
+    stage: str = "knockout",
+) -> dict[str, Any]:
     fixture = item.get("fixture", {})
     teams = item.get("teams", {})
     goals = item.get("goals", {})
@@ -53,18 +91,15 @@ def _normalize_fixture(item: dict[str, Any], stage: str = "knockout") -> dict[st
     home = teams.get("home", {})
     away = teams.get("away", {})
 
-    winner = None
-    if status in ("FT", "PEN", "AET"):
-        if goals.get("home", 0) > goals.get("away", 0):
-            winner = home.get("name")
-        elif goals.get("away", 0) > goals.get("home", 0):
-            winner = away.get("name")
+    home_id = registry.resolve(home.get("id")) or registry.resolve(home.get("name"))
+    away_id = registry.resolve(away.get("id")) or registry.resolve(away.get("name"))
+    winner = _resolve_winner(registry, status, home, away, goals, score)
 
     return {
         "api_fixture_id": fixture.get("id"),
         "date": fixture.get("date"),
-        "team_home": home.get("name"),
-        "team_away": away.get("name"),
+        "team_home": home_id,
+        "team_away": away_id,
         "api_team_home_id": home.get("id"),
         "api_team_away_id": away.get("id"),
         "score_home": goals.get("home"),
@@ -80,36 +115,52 @@ def _normalize_fixture(item: dict[str, Any], stage: str = "knockout") -> dict[st
 
 
 @retry()
-def get_fixture_xg(fixture_id: int) -> tuple[float | None, float | None]:
+def get_fixture_xg(
+    fixture_id: int,
+    home_api_id: int | None,
+    away_api_id: int | None,
+) -> tuple[float | None, float | None]:
     payload = _get("/fixtures/statistics", {"fixture": fixture_id})
     xg_home = xg_away = None
     for block in payload.get("response", []):
-        team_side = "home" if block.get("team", {}).get("id") else "away"
+        team_id = block.get("team", {}).get("id")
         for stat in block.get("statistics", []):
-            if stat.get("type") == "expected_goals":
-                value = stat.get("value")
-                if isinstance(value, str):
-                    value = float(value) if value else None
-                if team_side == "home":
-                    xg_home = value
-                else:
-                    xg_away = value
+            if stat.get("type") != "expected_goals":
+                continue
+            value = stat.get("value")
+            if isinstance(value, str):
+                value = float(value) if value else None
+            if team_id == home_api_id:
+                xg_home = value
+            elif team_id == away_api_id:
+                xg_away = value
     return xg_home, xg_away
 
 
-def get_fixtures(round_name: str, stage: str = "knockout") -> list[dict[str, Any]]:
+def get_fixtures(
+    round_name: str,
+    registry: TeamRegistry,
+    stage: str = "knockout",
+) -> list[dict[str, Any]]:
     params = {
         "league": config.API_FOOTBALL_WC_ID,
         "season": config.API_FOOTBALL_SEASON,
         "round": round_name,
     }
     payload = _get("/fixtures", params)
-    fixtures = [_normalize_fixture(item, stage=stage) for item in payload.get("response", [])]
+    fixtures = [
+        _normalize_fixture(item, registry, stage=stage)
+        for item in payload.get("response", [])
+    ]
 
     for match in fixtures:
         if match["status"] in ("FT", "PEN", "AET") and match.get("api_fixture_id"):
             try:
-                xg_home, xg_away = get_fixture_xg(match["api_fixture_id"])
+                xg_home, xg_away = get_fixture_xg(
+                    match["api_fixture_id"],
+                    match.get("api_team_home_id"),
+                    match.get("api_team_away_id"),
+                )
                 match["xg_home"] = xg_home
                 match["xg_away"] = xg_away
             except Exception as exc:
@@ -118,13 +169,14 @@ def get_fixtures(round_name: str, stage: str = "knockout") -> list[dict[str, Any
     return fixtures
 
 
-def get_player_stats(api_team_id: int) -> list[dict[str, Any]]:
+def get_player_stats(api_team_id: int, starting_player_ids: set[int] | None = None) -> list[dict[str, Any]]:
     params = {
         "league": config.API_FOOTBALL_WC_ID,
         "season": config.API_FOOTBALL_SEASON,
         "team": api_team_id,
     }
     payload = _get("/players", params)
+    starting = starting_player_ids or set()
     players: list[dict[str, Any]] = []
     for block in payload.get("response", []):
         player = block.get("player", {})
@@ -133,43 +185,61 @@ def get_player_stats(api_team_id: int) -> list[dict[str, Any]]:
         goals = stats.get("goals") or {}
         minutes = games.get("minutes") or 0
         played = max(minutes / 90.0, 0.01)
+        player_id = player.get("id")
+        appearances = games.get("appearences") or games.get("appearances") or 0
         players.append({
-            "player_id": player.get("id"),
+            "player_id": player_id,
             "name": player.get("name"),
             "position": games.get("position"),
             "goals": goals.get("total") or 0,
             "assists": goals.get("assists") or 0,
-            "xg_per90": 0.0,
-            "xa_per90": 0.0,
-            "is_starting_xi": games.get("appearences", 0) >= 2,
+            "xg_per90": (goals.get("total") or 0) / played,
+            "xa_per90": (goals.get("assists") or 0) / played,
+            "is_starting_xi": player_id in starting or appearances >= 2,
         })
     return players
 
 
-def get_injuries(api_team_id: int) -> list[dict[str, Any]]:
+def get_injuries(api_team_id: int, player_stats: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     params = {
         "league": config.API_FOOTBALL_WC_ID,
         "season": config.API_FOOTBALL_SEASON,
         "team": api_team_id,
     }
     payload = _get("/injuries", params)
+    starters = {
+        p["player_id"] for p in (player_stats or [])
+        if p.get("is_starting_xi") and p.get("player_id")
+    }
     injuries: list[dict[str, Any]] = []
     for item in payload.get("response", []):
         player = item.get("player", {})
+        player_id = player.get("id")
         injuries.append({
-            "player_id": player.get("id"),
+            "player_id": player_id,
             "name": player.get("name"),
             "status": player.get("type", "Missing Fixture"),
             "reason": player.get("reason"),
-            "is_starting_xi": True,
+            "is_starting_xi": player_id in starters or player_id in config.KEY_PLAYERS,
         })
     return injuries
 
 
-def validate_raw_data(fixtures: list[dict[str, Any]], teams_remaining: int) -> None:
-    if teams_remaining < 16:
-        raise DataValidationError(f"Expected at least 16 teams remaining, got {teams_remaining}")
+def validate_raw_data(
+    fixtures: list[dict[str, Any]],
+    teams_remaining: int,
+    require_complete: bool = False,
+) -> None:
+    if teams_remaining < 2:
+        raise DataValidationError(f"Expected at least 2 teams remaining, got {teams_remaining}")
 
     incomplete = [f for f in fixtures if f.get("status") not in ("FT", "PEN", "AET", "NS")]
     if incomplete:
         logger.warning("%d fixtures have unexpected status", len(incomplete))
+
+    if require_complete:
+        unfinished = [f for f in fixtures if f.get("status") == "NS" and f.get("team_home")]
+        if unfinished:
+            raise DataValidationError(
+                f"{len(unfinished)} matches in the current fetch are not finished yet"
+            )
