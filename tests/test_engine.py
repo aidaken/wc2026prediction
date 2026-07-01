@@ -6,7 +6,7 @@ from src.bracket import detect_current_round, mark_eliminations
 from src.elo import update_ratings
 from src.seed import DEMO_BRACKET, TEAMS
 from src.simulate import run
-from src.teams import TeamRegistry
+from src.teams import ODDS_NAME_TO_ID, TM_SLUG_TO_ID, TeamRegistry
 from src.xg import calculate_form_ratios
 
 
@@ -16,6 +16,15 @@ class TestTeamRegistry(unittest.TestCase):
         self.assertEqual(reg.resolve("Brazil"), "BRA")
         self.assertEqual(reg.resolve(6), "BRA")
         self.assertEqual(reg.resolve("BRA"), "BRA")
+
+    def test_external_maps_only_wc2026_teams(self):
+        valid = set(TEAMS.keys())
+        for tid in ODDS_NAME_TO_ID.values():
+            self.assertIn(tid, valid, f"Odds map contains non-WC2026 team: {tid}")
+        for tid in TM_SLUG_TO_ID.values():
+            self.assertIn(tid, valid, f"Transfermarkt map contains non-WC2026 team: {tid}")
+        self.assertNotIn("POL", valid)
+        self.assertNotIn("NGA", valid)
 
 
 class TestElo(unittest.TestCase):

@@ -43,7 +43,7 @@ Total wall-clock time: ~15–30 seconds (dominated by network calls).
 
 ### `data/teams.json`
 
-Registry of all 32 teams with current ratings and metadata. Updated in-place after each round.
+Registry of all 48 qualified teams with current ratings and metadata. Updated in-place after each round.
 
 ```json
 {

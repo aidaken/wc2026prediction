@@ -73,7 +73,7 @@ Approximate starting range:
 - Elite (Brazil, France, Spain, Argentina): 1950–2100
 - Strong (England, Germany, Portugal, Netherlands): 1800–1950
 - Mid-tier (USA, Mexico, Senegal, Morocco): 1600–1800
-- Lower (Cabo Verde, Bolivia, Canada): 1400–1600
+- Lower (Curaçao, Haiti, Jordan): 1400–1600
 
 ### Normalization
 

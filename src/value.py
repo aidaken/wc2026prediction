@@ -11,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import config
+from src.teams import TM_SLUG_TO_ID
 from src.utils import retry
 
 logger = logging.getLogger("wc2026")
@@ -21,44 +22,6 @@ HEADERS = {
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     ),
 }
-
-# Maps Transfermarkt slug fragments to internal team IDs
-TM_SLUG_TO_ID: dict[str, str] = {
-    "brasilien": "BRA",
-    "frankreich": "FRA",
-    "argentinien": "ARG",
-    "spanien": "ESP",
-    "england": "ENG",
-    "deutschland": "GER",
-    "portugal": "POR",
-    "niederlande": "NED",
-    "belgien": "BEL",
-    "italien": "ITA",
-    "kroatien": "CRO",
-    "uruguay": "URU",
-    "kolumbien": "COL",
-    "mexiko": "MEX",
-    "usa": "USA",
-    "kanada": "CAN",
-    "japan": "JPN",
-    "sudkorea": "KOR",
-    "australien": "AUS",
-    "marokko": "MAR",
-    "senegal": "SEN",
-    "nigeria": "NGA",
-    "schweiz": "SUI",
-    "danemark": "DEN",
-    "norwegen": "NOR",
-    "polen": "POL",
-    "osterreich": "AUT",
-    "schottland": "SCO",
-    "ukraine": "UKR",
-    "turkei": "TUR",
-    "paraguay": "PAR",
-    "ecuador": "ECU",
-    "costa-rica": "CRC",
-}
-
 
 def _parse_market_value(raw: str) -> int | None:
     if not raw:

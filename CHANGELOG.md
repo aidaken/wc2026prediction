@@ -17,7 +17,8 @@ Versioning follows `MAJOR.MINOR.PATCH` — patch for prediction updates, minor f
 - Dashboard history panel and full team names in bracket view
 
 ### Fixed
-- Seed data now uses all 48 actual WC 2026 qualified teams (no Poland, Nigeria, etc.)
+- Centralize team name mappings in `src/teams.py`; remove stale Odds/Transfermarkt maps
+- Delete outdated `data/history/round_16.json` snapshot from pre-2026 seed data
 - Round of 32 bracket matches FIFA combination 67 with real results through July 1
 - Predictions sorted with active teams first, group-stage eliminated at bottom
 - Live mode now merges bracket fixture history for Elo/xG calculations
@@ -26,43 +27,9 @@ Versioning follows `MAJOR.MINOR.PATCH` — patch for prediction updates, minor f
 
 ---
 
-## [1.1.0] — 2026-07-01
+## [1.0.0] — 2026-06-30
 
-### Added
-- Prediction engine, ingestion layer, orchestrator, dashboard, and seed data (see git history)
-
----
-
-### Added
-- Initial project setup
-- API-Football integration: fixtures, xG, player stats, injuries
-- Transfermarkt squad value scraper
-- The Odds API betting probability integration
-- Elo rating system seeded from World Football Elo Ratings
-- xG form ratio calculation (last 5 games, WC games weighted 2×)
-- Injury multiplier based on player xG/xA importance scores
-- Monte Carlo simulation engine (10,000 runs)
-- Five-signal weighted combination formula
-- `data/teams.json`, `data/bracket.json`, `data/predictions.json` schemas
-- Static HTML/JS dashboard in `web/index.html`
-- GitHub Pages deployment
-- Full documentation: MODEL.md, DATA_SOURCES.md, DATA_PIPELINE.md, SETUP.md, DECISIONS.md
-
-### Predictions — Round of 32
-
-Updated: 2026-06-30
-
-Top 5 win probabilities after Round of 32 group stage completion:
-
-| Team | Win % |
-|---|---|
-| Brazil | 18.4% |
-| France | 12.1% |
-| Spain | 11.8% |
-| Argentina | 9.7% |
-| England | 8.3% |
-
-Eliminated after Round of 32: Germany, Netherlands, Japan, South Africa
+Initial project scaffold and documentation.
 
 ---
 

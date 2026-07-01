@@ -1,4 +1,4 @@
-"""Central team registry — maps API-Football IDs and names to internal 3-letter codes."""
+"""Central team registry — single source for all team ID / name mappings."""
 
 from __future__ import annotations
 
@@ -6,22 +6,52 @@ from typing import Any
 
 from src.seed import TEAMS
 
-NAME_ALIASES: dict[str, str] = {
-    "Brazil": "BRA", "France": "FRA", "Argentina": "ARG", "Spain": "ESP", "England": "ENG",
-    "Germany": "GER", "Portugal": "POR", "Netherlands": "NED", "USA": "USA", "United States": "USA",
-    "Mexico": "MEX", "Canada": "CAN", "Morocco": "MAR", "Senegal": "SEN", "Japan": "JPN",
-    "South Korea": "KOR", "Korea Republic": "KOR", "Uruguay": "URU", "Colombia": "COL",
-    "Belgium": "BEL", "Croatia": "CRO", "Switzerland": "SUI", "Norway": "NOR", "Poland": "POL",
-    "Austria": "AUT", "Scotland": "SCO", "Turkey": "TUR", "Türkiye": "TUR", "Paraguay": "PAR",
-    "Ecuador": "ECU", "Australia": "AUS", "Nigeria": "NGA", "Czechia": "CZE", "Czech Republic": "CZE",
-    "Bosnia and Herzegovina": "BIH", "Bosnia-Herzegovina": "BIH", "South Africa": "RSA",
-    "Ivory Coast": "CIV", "Côte d'Ivoire": "CIV", "DR Congo": "COD", "Congo DR": "COD",
-    "Cape Verde": "CPV", "Cabo Verde": "CPV", "Saudi Arabia": "KSA", "Egypt": "EGY",
-    "Algeria": "ALG", "Ghana": "GHA", "Iraq": "IRQ", "Jordan": "JOR", "Qatar": "QAT",
-    "Iran": "IRN", "IR Iran": "IRN", "Uzbekistan": "UZB", "Panama": "PAN", "Haiti": "HTI",
-    "Curaçao": "CUW", "Curacao": "CUW", "Tunisia": "TUN", "New Zealand": "NZL",
-    "Sweden": "SWE", "Bosnia & Herzegovina": "BIH",
+# Extra name variants used by Odds API, API-Football, or bookmakers
+# (canonical names come from TEAMS; only add aliases here)
+EXTRA_ALIASES: dict[str, str] = {
+    "USA": "USA",
+    "United States": "USA",
+    "South Korea": "KOR",
+    "Korea Republic": "KOR",
+    "Turkey": "TUR",
+    "Ivory Coast": "CIV",
+    "Côte d'Ivoire": "CIV",
+    "DR Congo": "COD",
+    "Congo DR": "COD",
+    "Democratic Republic of the Congo": "COD",
+    "Cape Verde": "CPV",
+    "Cabo Verde": "CPV",
+    "IR Iran": "IRN",
+    "Curaçao": "CUW",
+    "Curacao": "CUW",
+    "Bosnia and Herzegovina": "BIH",
+    "Bosnia-Herzegovina": "BIH",
+    "Bosnia & Herzegovina": "BIH",
+    "Czech Republic": "CZE",
 }
+
+
+def build_name_map(teams: dict[str, dict[str, Any]] | None = None) -> dict[str, str]:
+    """Map display names and aliases → internal team ID (WC 2026 squads only)."""
+    teams = teams or TEAMS
+    mapping = {team["name"]: tid for tid, team in teams.items()}
+    mapping.update(EXTRA_ALIASES)
+    return mapping
+
+
+def build_transfermarkt_map(teams: dict[str, dict[str, Any]] | None = None) -> dict[str, str]:
+    """Map Transfermarkt URL slugs → internal team ID."""
+    teams = teams or TEAMS
+    return {
+        team["transfermarkt_id"]: tid
+        for tid, team in teams.items()
+        if team.get("transfermarkt_id")
+    }
+
+
+# Module-level maps derived from seed data (48 WC 2026 teams)
+ODDS_NAME_TO_ID = build_name_map()
+TM_SLUG_TO_ID = build_transfermarkt_map()
 
 
 class TeamRegistry:
@@ -40,8 +70,7 @@ class TeamRegistry:
             api_id = team.get("api_football_id")
             if api_id:
                 self._by_api_id[int(api_id)] = tid
-        for name, tid in NAME_ALIASES.items():
-            self._by_name[name] = tid
+        self._by_name.update(build_name_map(self.teams))
 
     def resolve(self, value: str | int | None) -> str | None:
         if value is None:

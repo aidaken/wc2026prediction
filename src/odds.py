@@ -9,48 +9,10 @@ from typing import Any
 import requests
 
 import config
+from src.teams import ODDS_NAME_TO_ID
 from src.utils import retry
 
 logger = logging.getLogger("wc2026")
-
-# Maps Odds API team names to internal IDs
-ODDS_NAME_TO_ID: dict[str, str] = {
-    "Brazil": "BRA",
-    "France": "FRA",
-    "Argentina": "ARG",
-    "Spain": "ESP",
-    "England": "ENG",
-    "Germany": "GER",
-    "Portugal": "POR",
-    "Netherlands": "NED",
-    "Belgium": "BEL",
-    "Italy": "ITA",
-    "Croatia": "CRO",
-    "Uruguay": "URU",
-    "Colombia": "COL",
-    "Mexico": "MEX",
-    "USA": "USA",
-    "United States": "USA",
-    "Canada": "CAN",
-    "Japan": "JPN",
-    "South Korea": "KOR",
-    "Korea Republic": "KOR",
-    "Australia": "AUS",
-    "Morocco": "MAR",
-    "Senegal": "SEN",
-    "Nigeria": "NGA",
-    "Switzerland": "SUI",
-    "Denmark": "DEN",
-    "Norway": "NOR",
-    "Poland": "POL",
-    "Austria": "AUT",
-    "Scotland": "SCO",
-    "Ukraine": "UKR",
-    "Turkey": "TUR",
-    "Paraguay": "PAR",
-    "Ecuador": "ECU",
-    "Costa Rica": "CRC",
-}
 
 
 @retry(max_attempts=2)
