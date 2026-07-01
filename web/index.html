@@ -52,7 +52,7 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 0.75rem 1.25rem; text-align: left; }
     th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
-    tr + tr td { border-top: 1px solid var(--border\border); border-top-color: var(--border); }
+    tr + tr td { border-top: 1px solid var(--border); }
     tr.eliminated { opacity: 0.45; }
     .rank { color: var(--muted); width: 2rem; }
     .team-name { font-weight: 600; }
@@ -85,8 +85,14 @@
       padding: 0.4rem 0; font-size: 0.9rem;
     }
     .match .vs { color: var(--muted); font-size: 0.75rem; padding: 0 0.5rem; }
-    .match .score { color: var(--muted); font-size: 0.8rem; min-width: 2.5rem; text-align: right; }
     .winner { color: var(--gold); font-weight: 600; }
+    .history { padding: 1rem 1.25rem; }
+    .history-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;
+      padding: 0.4rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+    }
+    .history-row:last-child { border-bottom: none; }
+    .history-round { color: var(--muted); font-size: 0.75rem; }
     .loading, .error { text-align: center; padding: 4rem 2rem; color: var(--muted); }
     .error { color: var(--danger); }
     footer { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
@@ -105,6 +111,7 @@
   <script>
     const DATA_URL = '../data/predictions.json';
     const BRACKET_URL = '../data/bracket.json';
+    const HISTORY_INDEX_URL = '../data/history/index.json';
 
     function pct(n) { return (n * 100).toFixed(1) + '%'; }
     function pctBar(n) { return Math.min(100, n * 100 * 4); }
@@ -131,7 +138,11 @@
       ).join('')}</div>`;
     }
 
-    function renderBracket(bracket) {
+    function teamLabel(id, names) {
+      return names[id] || id;
+    }
+
+    function renderBracket(bracket, names) {
       const rounds = bracket?.rounds || {};
       const order = ['round_of_32', 'round_of_16', 'quarter_finals', 'semi_finals', 'final'];
       const labels = {
@@ -142,16 +153,53 @@
         const matches = (rounds[k].matches || []).filter(m => m.team_home && m.team_away);
         if (!matches.length) return '';
         return `<div class="bracket-round"><div class="round-title">${labels[k]}</div>${matches.map(m => {
+          const home = teamLabel(m.team_home, names);
+          const away = teamLabel(m.team_away, names);
           const homeWin = m.winner === m.team_home;
           const awayWin = m.winner === m.team_away;
           const score = m.score_home != null ? `${m.score_home}–${m.score_away}` : 'vs';
           return `<div class="match">
-            <span class="${homeWin ? 'winner' : ''}">${m.team_home}</span>
+            <span class="${homeWin ? 'winner' : ''}">${home}</span>
             <span class="vs">${score}</span>
-            <span class="${awayWin ? 'winner' : ''}">${m.team_away}</span>
+            <span class="${awayWin ? 'winner' : ''}">${away}</span>
           </div>`;
         }).join('')}</div>`;
       }).join('');
+    }
+
+    async function renderHistory(currentPreds) {
+      try {
+        const res = await fetch(HISTORY_INDEX_URL);
+        if (!res.ok) return '';
+        const index = await res.json();
+        const rounds = index.rounds || [];
+        if (!rounds.length) return '';
+
+        const snapshots = await Promise.all(rounds.map(async r => {
+          const snap = await fetch(`../data/history/${r.file}`);
+          if (!snap.ok) return null;
+          const data = await snap.json();
+          const top = (data.predictions || []).find(p => !p.eliminated);
+          return { round: r.round, top: top?.team_name, prob: top?.win_probability };
+        }));
+
+        const rows = snapshots.filter(Boolean).map(s =>
+          `<div class="history-row">
+            <div><div>${s.top || '—'}</div><div class="history-round">${s.round}</div></div>
+            <div class="prob">${s.prob != null ? pct(s.prob) : '—'}</div>
+          </div>`
+        ).join('');
+
+        const currentTop = currentPreds.find(p => !p.eliminated);
+        rows += `<div class="history-row">
+          <div><div>${currentTop?.team_name || '—'}</div><div class="history-round">Current</div></div>
+          <div class="prob">${currentTop ? pct(currentTop.win_probability) : '—'}</div>
+        </div>`;
+
+        return `<div class="card" style="margin-top:1.5rem"><div class="card-header">Prediction history</div><div class="history">${rows}</div></div>`;
+      } catch {
+        return '';
+      }
     }
 
     async function load() {
@@ -166,8 +214,11 @@
         const preds = data.predictions || [];
         const active = preds.filter(p => !p.eliminated);
         const top = active[0];
+        const names = Object.fromEntries(preds.map(p => [p.team_id, p.team_name]));
 
         renderMeta(data._meta || {});
+
+        const historyHtml = await renderHistory(preds);
 
         app.innerHTML = `
           <div class="grid">
@@ -176,9 +227,9 @@
               <table>
                 <thead><tr><th>#</th><th>Team</th><th>Win</th><th>Final</th><th>Semis</th></tr></thead>
                 <tbody>
-                  ${preds.map((p, i) => `
+                  ${preds.map(p => `
                     <tr class="${p.eliminated ? 'eliminated' : ''}">
-                      <td class="rank">${p.eliminated ? '—' : i + 1}</td>
+                      <td class="rank">${p.eliminated ? '—' : (p.rank || '—')}</td>
                       <td><span class="team-name">${p.team_name}</span> ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}</td>
                       <td>
                         <div class="prob">${pct(p.win_probability)}</div>
@@ -200,7 +251,8 @@
                 </div>
                 ${renderSignals(top?.signals)}
               </div>
-              ${bracket ? `<div class="card"><div class="card-header">Bracket</div>${renderBracket(bracket)}</div>` : ''}
+              ${bracket ? `<div class="card"><div class="card-header">Bracket</div>${renderBracket(bracket, names)}</div>` : ''}
+              ${historyHtml}
             </div>
           </div>`;
       } catch (err) {

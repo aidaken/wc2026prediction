@@ -110,7 +110,7 @@ wc2026prediction/
 | Language | Python 3.10+ | Excellent data libraries, readable |
 | HTTP | `requests` | Simple, no overhead |
 | Scraping | `beautifulsoup4` | Lightweight Transfermarkt scraper |
-| Numerics | `numpy` | Fast Monte Carlo simulation arrays |
+| Numerics | stdlib `random` | Monte Carlo simulation |
 | Data storage | JSON files | Zero infrastructure, Git-versionable |
 | Frontend | Vanilla HTML + JS | No build step, works on GitHub Pages |
 | Hosting | GitHub Pages | Free, auto-updates on push |

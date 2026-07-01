@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-07-01T20:57:17Z",
+    "last_updated": "2026-07-01T21:07:27Z",
     "round": "Round of 16",
     "teams_remaining": 16
   },
@@ -368,7 +368,7 @@
     "PAR": {
       "id": "PAR",
       "name": "Paraguay",
-      "api_football_id": 29,
+      "api_football_id": 2379,
       "transfermarkt_id": "paraguay",
       "elo": 1675.0,
       "squad_value_eur": 120000000,
@@ -383,10 +383,10 @@
       "api_football_id": 29,
       "transfermarkt_id": "costa-rica",
       "elo": 1650.0,
+      "squad_value_eur": 85000000,
       "eliminated": true,
       "group": "AF",
       "group_position": 3,
-      "squad_value_eur": 85000000,
       "elo_change_this_round": 0.0
     }
   }

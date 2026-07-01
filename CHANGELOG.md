@@ -9,9 +9,27 @@ Versioning follows `MAJOR.MINOR.PATCH` — patch for prediction updates, minor f
 
 ## [Unreleased]
 
+### Added
+- Team registry (`src/teams.py`) for API name/ID → internal code mapping
+- Bracket sync module — merges API results, marks eliminations, auto-detects round
+- Unit tests (`tests/test_engine.py`) and CI workflow with GitHub Pages deploy
+- Backtest script (`scripts/backtest.py`) with Brier score support
+- Dashboard history panel and full team names in bracket view
+
+### Fixed
+- xG home/away assignment bug in API-Football statistics parser
+- Live mode now merges bracket fixture history for Elo/xG calculations
+- Penalty shootout winner detection
+- Player stats proxy for injury model in live mode
+
 ---
 
-## [1.0.0] — 2026-06-30
+## [1.1.0] — 2026-07-01
+
+### Added
+- Prediction engine, ingestion layer, orchestrator, dashboard, and seed data (see git history)
+
+---
 
 ### Added
 - Initial project setup

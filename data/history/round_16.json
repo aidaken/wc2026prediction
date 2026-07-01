@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-01T20:57:17Z",
+    "generated_at": "2026-07-01T21:07:27Z",
     "round": "Round of 16",
     "simulations": 10000,
     "model_version": "1.0.0"
@@ -20,7 +20,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.726,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 1
     },
     {
       "team_id": "ARG",
@@ -36,7 +37,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.528,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 2
     },
     {
       "team_id": "ESP",
@@ -52,7 +54,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.5988,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 3
     },
     {
       "team_id": "ENG",
@@ -68,7 +71,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.5983,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 4
     },
     {
       "team_id": "POR",
@@ -84,7 +88,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.4531,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 5
     },
     {
       "team_id": "FRA",
@@ -100,7 +105,8 @@
         "injury_multiplier": 0.8
       },
       "team_strength": 0.4842,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 6
     },
     {
       "team_id": "CAN",
@@ -116,7 +122,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.2416,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 7
     },
     {
       "team_id": "NED",
@@ -132,7 +139,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.4001,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 8
     },
     {
       "team_id": "MAR",
@@ -148,7 +156,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.296,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 9
     },
     {
       "team_id": "URU",
@@ -164,7 +173,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.2519,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 10
     },
     {
       "team_id": "JPN",
@@ -180,7 +190,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.1842,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 11
     },
     {
       "team_id": "USA",
@@ -196,7 +207,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.176,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 12
     },
     {
       "team_id": "MEX",
@@ -212,7 +224,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.2409,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 13
     },
     {
       "team_id": "SEN",
@@ -228,7 +241,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.0879,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 14
     },
     {
       "team_id": "KOR",
@@ -244,7 +258,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.0762,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 15
     },
     {
       "team_id": "GER",
@@ -254,7 +269,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "COL",
@@ -264,7 +280,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "BEL",
@@ -274,7 +291,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "CRO",
@@ -284,7 +302,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "SUI",
@@ -300,7 +319,8 @@
         "injury_multiplier": 1.0
       },
       "team_strength": 0.1786,
-      "eliminated": false
+      "eliminated": false,
+      "rank": 16
     },
     {
       "team_id": "DEN",
@@ -310,7 +330,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "NOR",
@@ -320,7 +341,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "AUS",
@@ -330,7 +352,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "NGA",
@@ -340,7 +363,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "ECU",
@@ -350,7 +374,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "POL",
@@ -360,7 +385,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "AUT",
@@ -370,7 +396,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "SCO",
@@ -380,7 +407,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "UKR",
@@ -390,7 +418,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "TUR",
@@ -400,7 +429,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "PAR",
@@ -410,7 +440,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     },
     {
       "team_id": "CRC",
@@ -420,7 +451,8 @@
       "reach_semis_probability": 0.0,
       "signals": null,
       "team_strength": null,
-      "eliminated": true
+      "eliminated": true,
+      "rank": null
     }
   ]
 }
