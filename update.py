@@ -18,17 +18,29 @@ import config
 from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures
 from src.bracket_topology import ROUND_ORDER, propagate_winner
 from src.elo import normalize_elo, update_ratings
-from src.fetch import DataValidationError, FetchError, get_fixtures, get_injuries, get_player_stats, validate_raw_data
+from src.fetch import (
+    DataValidationError,
+    FetchError,
+    enrich_bracket_with_xg,
+    get_all_season_fixtures,
+    get_fixtures,
+    get_injuries,
+    get_player_stats,
+    merge_fixtures,
+    validate_raw_data,
+)
 from src.injury import calculate_multipliers
 from src.odds import get_implied_probs
 from src.seed import DEMO_BRACKET, DEMO_FIXTURES, DEMO_INJURIES, DEMO_ODDS, DEMO_PLAYER_STATS, TEAMS
 from src.simulate import run as run_simulation
+from src.strength import compute_strength, shrink_xg_toward_neutral
 from src.teams import TeamRegistry
 from src.utils import DATA_DIR, get_env_int, load_json, normalize_betting_probs, normalize_minmax, setup_logging, write_json
 from src.value import get_squad_values
 from src.xg import calculate_form_ratios
 
-MODEL_VERSION = "1.1.0"
+MODEL_VERSION = "1.2.0"
+FIXTURES_CACHE_PATH = DATA_DIR / "fixtures_cache.json"
 
 
 def _utc_now() -> str:
@@ -67,6 +79,18 @@ def _apply_bracket_state(teams: dict[str, dict[str, Any]], bracket: dict[str, An
     return mark_eliminations(teams, completed)
 
 
+def _load_fixtures_cache() -> list[dict[str, Any]]:
+    doc = load_json(FIXTURES_CACHE_PATH)
+    return list(doc.get("fixtures", []))
+
+
+def _save_fixtures_cache(fixtures: list[dict[str, Any]], source: str) -> None:
+    write_json(FIXTURES_CACHE_PATH, {
+        "_meta": {"last_updated": _utc_now(), "source": source, "count": len(fixtures)},
+        "fixtures": fixtures,
+    })
+
+
 def fetch_all_data(
     teams: dict[str, dict[str, Any]],
     bracket: dict[str, Any],
@@ -75,56 +99,105 @@ def fetch_all_data(
     demo: bool = False,
 ) -> dict[str, Any]:
     if demo:
+        fixtures = merge_fixtures(
+            DEMO_FIXTURES,
+            _collect_fixtures_from_bracket(DEMO_BRACKET),
+        )
         return {
-            "fixtures": DEMO_FIXTURES + _collect_fixtures_from_bracket(DEMO_BRACKET),
+            "fixtures": fixtures,
             "injuries": DEMO_INJURIES,
             "player_stats": DEMO_PLAYER_STATS,
             "squad_values": {tid: t["squad_value_eur"] for tid, t in TEAMS.items() if t.get("squad_value_eur")},
             "betting_probs": DEMO_ODDS,
             "api_fixtures": [],
+            "data_sources": {
+                "api_football": "demo",
+                "odds_api": "demo",
+                "transfermarkt": "demo",
+                "fixtures_count": len(fixtures),
+            },
         }
 
-    api_fixtures: list[dict[str, Any]] = []
+    logger = setup_logging()
+    api_season_fixtures: list[dict[str, Any]] = []
+    api_round_fixtures: list[dict[str, Any]] = []
+    api_football_status = "unavailable"
+
     try:
-        api_fixtures = get_fixtures(round_name, registry)
+        api_season_fixtures = get_all_season_fixtures(registry, enrich_xg=True)
+        api_football_status = "ok"
+        logger.info("API-Football: %d season fixtures (with xG backfill)", len(api_season_fixtures))
     except FetchError as exc:
-        logger = setup_logging()
-        logger.warning("API fetch failed (%s) — using bracket fixture history", exc)
+        logger.warning("API-Football season fetch failed (%s)", exc)
+        try:
+            api_round_fixtures = get_fixtures(round_name, registry)
+            api_football_status = "partial"
+            logger.info("API-Football: %d fixtures for %s", len(api_round_fixtures), round_name)
+        except FetchError as exc2:
+            logger.warning("API-Football round fetch failed (%s) — using cache + bracket", exc2)
+
+    if api_season_fixtures or api_round_fixtures:
+        merged_api = merge_fixtures(api_season_fixtures, api_round_fixtures)
+        _save_fixtures_cache(merged_api, source=api_football_status)
+    else:
+        merged_api = _load_fixtures_cache()
+        if merged_api:
+            logger.info("Using %d cached fixtures", len(merged_api))
+
+    try:
+        enriched = enrich_bracket_with_xg(bracket, registry)
+        if enriched:
+            logger.info("Backfilled xG on %d bracket matches", enriched)
+    except FetchError:
+        pass
 
     bracket_fixtures = _collect_fixtures_from_bracket(bracket)
-    seen_ids = {f.get("api_fixture_id") for f in api_fixtures if f.get("api_fixture_id")}
-    merged = list(api_fixtures)
-    for fix in bracket_fixtures:
-        fid = fix.get("api_fixture_id")
-        if fid and fid in seen_ids:
-            continue
-        merged.append(fix)
+    # Group-stage xG from seed when API cache is thin; bracket knockouts use goals fallback
+    seed_group = [f for f in DEMO_FIXTURES if f.get("stage") == "group"]
+    fixtures = merge_fixtures(seed_group, merged_api, bracket_fixtures)
+    if fixtures and api_football_status == "unavailable" and not merged_api:
+        _save_fixtures_cache(fixtures, source="bracket+seed")
 
     injuries: dict[str, list] = {}
     player_stats: dict[str, list] = {}
-    for tid, team in teams.items():
-        if team.get("eliminated"):
-            continue
-        api_id = team.get("api_football_id")
-        if not api_id:
-            continue
-        try:
-            stats = get_player_stats(api_id, starting_player_ids=set(config.KEY_PLAYERS.keys()))
-            player_stats[tid] = stats
-            injuries[tid] = get_injuries(api_id, stats)
-        except FetchError as exc:
-            setup_logging().warning("Player/injury fetch failed for %s: %s", tid, exc)
+    injury_status = "skipped"
+    if api_football_status != "unavailable":
+        injury_status = "ok"
+        for tid, team in teams.items():
+            if team.get("eliminated"):
+                continue
+            api_id = team.get("api_football_id")
+            if not api_id:
+                continue
+            try:
+                stats = get_player_stats(api_id, starting_player_ids=set(config.KEY_PLAYERS.keys()))
+                player_stats[tid] = stats
+                injuries[tid] = get_injuries(api_id, stats)
+            except FetchError as exc:
+                injury_status = "partial"
+                logger.warning("Player/injury fetch failed for %s: %s", tid, exc)
 
     squad_values = get_squad_values(teams, fallback=teams)
+    squad_status = "ok" if len(squad_values) >= 12 else "partial"
+
     active = _active_teams(teams)
     betting_probs = get_implied_probs(active)
+    odds_status = "ok" if betting_probs else "unavailable"
+
     return {
-        "fixtures": merged,
+        "fixtures": fixtures,
         "injuries": injuries,
         "player_stats": player_stats,
         "squad_values": squad_values,
         "betting_probs": betting_probs,
-        "api_fixtures": api_fixtures,
+        "api_fixtures": api_season_fixtures or api_round_fixtures,
+        "data_sources": {
+            "api_football": api_football_status,
+            "odds_api": odds_status,
+            "transfermarkt": squad_status,
+            "fixtures_count": len(fixtures),
+            "injuries_teams": len(injuries),
+        },
     }
 
 
@@ -133,21 +206,25 @@ def combine_strengths(
     raw: dict[str, Any],
     weights: dict[str, float],
     processed_elo_ids: set[str] | None = None,
-) -> tuple[dict[str, float], dict[str, dict[str, float]], list[str]]:
+) -> tuple[dict[str, float], dict[str, dict[str, float]], list[str], dict[str, Any]]:
     active = _active_teams(teams)
     fixtures = raw["fixtures"]
 
     _, newly_processed = update_ratings(teams, fixtures, processed_ids=processed_elo_ids)
     elo_norm = normalize_elo(teams)
-    xg_form = calculate_form_ratios(fixtures, active)
+    xg_form, xg_meta = calculate_form_ratios(fixtures, active)
     injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
 
     squad_raw = {tid: raw["squad_values"].get(tid, teams[tid].get("squad_value_eur", 0)) for tid in active}
     squad_raw = {tid: v for tid, v in squad_raw.items() if v}
     squad_norm = normalize_minmax({tid: float(v) for tid, v in squad_raw.items()})
 
-    betting = raw.get("betting_probs") or {}
-    betting_active = normalize_betting_probs(betting, active)
+    betting_raw = raw.get("betting_probs") or {}
+    betting_available = bool(betting_raw)
+    betting_active = normalize_betting_probs(betting_raw, active) if betting_available else {}
+
+    xg_with_data = sum(1 for tid in active if xg_meta.get(tid, {}).get("has_xg_data"))
+    xg_coverage = xg_with_data / len(active) if active else 0.0
 
     strengths: dict[str, float] = {}
     signals: dict[str, dict[str, float]] = {}
@@ -155,29 +232,52 @@ def combine_strengths(
     strength_ids = list(teams.keys())
     for tid in strength_ids:
         if teams[tid].get("eliminated") and tid not in active:
-            # keep last strength on file for backtest, don't recompute
             if teams[tid].get("team_strength") is not None:
                 strengths[tid] = teams[tid]["team_strength"]
             continue
 
+        meta = xg_meta.get(tid, {})
+        has_xg = bool(meta.get("has_xg_data"))
+        form_source = meta.get("form_source", "default")
+        form_ratio = xg_form.get(tid, 0.5)
+        if has_xg:
+            form_ratio = shrink_xg_toward_neutral(
+                form_ratio,
+                has_xg=True,
+                coverage=xg_coverage,
+            )
+        has_form = form_source != "default"
+        has_team_odds = betting_available and tid in betting_raw and betting_raw.get(tid, 0) > 0
+
         components = {
             "elo_normalized": elo_norm.get(tid, 0.5),
-            "xg_form_ratio": xg_form.get(tid, 0.5),
+            "xg_form_ratio": form_ratio,
             "squad_value_normalized": squad_norm.get(tid, 0.5),
-            "betting_implied_prob": betting_active.get(tid, 0.0),
+            "betting_implied_prob": betting_active.get(tid, 0.0) if betting_available else 0.0,
             "injury_multiplier": injury_mult.get(tid, 1.0),
         }
-        base = (
-            components["elo_normalized"] * weights["elo"]
-            + components["xg_form_ratio"] * weights["xg_form"]
-            + components["squad_value_normalized"] * weights["squad_value"]
-            + components["betting_implied_prob"] * weights["betting_odds"]
+        strength, eff_weights = compute_strength(
+            components,
+            weights,
+            has_xg=has_form,
+            has_betting=has_team_odds,
         )
-        strengths[tid] = round(base * components["injury_multiplier"], 4)
+        strengths[tid] = strength
         if tid in active:
-            signals[tid] = components
+            signals[tid] = {
+                **components,
+                "has_xg_data": has_xg,
+                "form_source": meta.get("form_source", "default"),
+                "matches_used": meta.get("matches_used", 0),
+                "effective_weights": eff_weights,
+            }
 
-    return strengths, signals, newly_processed
+    strength_meta = {
+        "xg_coverage": round(xg_coverage, 3),
+        "betting_available": betting_available,
+        "teams_with_xg": xg_with_data,
+    }
+    return strengths, signals, newly_processed, strength_meta
 
 
 def _select_weights(raw: dict[str, Any]) -> dict[str, float]:
@@ -201,6 +301,10 @@ def write_outputs(
     round_name: str,
     n_sims: int,
     elo_processed_matches: list[str] | None = None,
+    *,
+    weights: dict[str, float] | None = None,
+    data_sources: dict[str, Any] | None = None,
+    strength_meta: dict[str, Any] | None = None,
 ) -> None:
     team_sim = sim_results.get("team_predictions", sim_results)
     match_predictions = sim_results.get("match_predictions", {})
@@ -259,6 +363,10 @@ def write_outputs(
             "round": round_name,
             "simulations": n_sims,
             "model_version": MODEL_VERSION,
+            "weights": weights or config.WEIGHTS,
+            "strength_scale": config.STRENGTH_SCALE,
+            "data_sources": data_sources or {},
+            "strength_meta": strength_meta or {},
         },
         "predictions": predictions_list,
         "match_predictions": match_predictions,
@@ -331,7 +439,7 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
 
     weights = _select_weights(raw)
     logger.info("Calculating team strengths (weights: %s)...", weights)
-    strengths, signals, newly_processed = combine_strengths(
+    strengths, signals, newly_processed, strength_meta = combine_strengths(
         teams, raw, weights, processed_elo_ids=processed_elo,
     )
     all_processed = sorted(processed_elo | set(newly_processed))
@@ -339,6 +447,14 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     for tid, value in raw.get("squad_values", {}).items():
         if tid in teams and value:
             teams[tid]["squad_value_eur"] = value
+
+    logger.info(
+        "xG coverage: %s/%s teams | betting: %s | fixtures: %s",
+        strength_meta.get("teams_with_xg"),
+        active_count,
+        raw.get("data_sources", {}).get("odds_api"),
+        raw.get("data_sources", {}).get("fixtures_count"),
+    )
 
     logger.info("Running %s Monte Carlo simulations...", f"{n_sims:,}")
     active_strengths = {tid: s for tid, s in strengths.items() if tid in _active_teams(teams)}
@@ -348,6 +464,9 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     write_outputs(
         teams, bracket, strengths, signals, sim_results, round_name, n_sims,
         elo_processed_matches=all_processed,
+        weights=weights,
+        data_sources=raw.get("data_sources"),
+        strength_meta=strength_meta,
     )
     archive_round(round_name)
 

@@ -74,9 +74,19 @@ class TestXgForm(unittest.TestCase):
             "team_home": "BRA", "team_away": "KOR", "status": "FT",
             "xg_home": 2.0, "xg_away": 0.5, "date": "2026-06-28", "stage": "knockout",
         }]
-        ratios = calculate_form_ratios(fixtures, ["BRA", "KOR"])
+        ratios, meta = calculate_form_ratios(fixtures, ["BRA", "KOR"])
         self.assertGreater(ratios["BRA"], 0.5)
         self.assertLess(ratios["KOR"], 0.5)
+        self.assertTrue(meta["BRA"]["has_xg_data"])
+
+    def test_goals_fallback_when_no_xg(self):
+        fixtures = [{
+            "team_home": "BRA", "team_away": "KOR", "status": "FT",
+            "score_home": 3, "score_away": 0, "date": "2026-06-28", "stage": "knockout",
+        }]
+        ratios, meta = calculate_form_ratios(fixtures, ["BRA", "KOR"])
+        self.assertGreater(ratios["BRA"], 0.5)
+        self.assertEqual(meta["BRA"]["form_source"], "goals")
 
 
 class TestBracket(unittest.TestCase):

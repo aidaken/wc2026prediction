@@ -83,3 +83,9 @@ class TeamRegistry:
 
     def name(self, team_id: str) -> str:
         return self.teams.get(team_id, {}).get("name", team_id)
+
+    def api_id(self, team_id: str | None) -> int | None:
+        if not team_id:
+            return None
+        raw = self.teams.get(team_id, {}).get("api_football_id")
+        return int(raw) if raw else None

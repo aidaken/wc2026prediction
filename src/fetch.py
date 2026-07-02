@@ -169,6 +169,99 @@ def get_fixtures(
     return fixtures
 
 
+def get_all_season_fixtures(
+    registry: TeamRegistry,
+    *,
+    enrich_xg: bool = True,
+) -> list[dict[str, Any]]:
+    """Fetch every WC 2026 fixture (group + knockouts) for form / Elo history."""
+    params = {
+        "league": config.API_FOOTBALL_WC_ID,
+        "season": config.API_FOOTBALL_SEASON,
+    }
+    payload = _get("/fixtures", params)
+    fixtures: list[dict[str, Any]] = []
+    for item in payload.get("response", []):
+        round_name = (item.get("league", {}) or {}).get("round", "")
+        stage = "group" if "group" in round_name.lower() else "knockout"
+        fixtures.append(_normalize_fixture(item, registry, stage=stage))
+
+    if enrich_xg:
+        for match in fixtures:
+            if match["status"] not in ("FT", "PEN", "AET"):
+                continue
+            if match.get("xg_home") is not None:
+                continue
+            fid = match.get("api_fixture_id")
+            if not fid:
+                continue
+            try:
+                xg_home, xg_away = get_fixture_xg(
+                    fid,
+                    match.get("api_team_home_id"),
+                    match.get("api_team_away_id"),
+                )
+                match["xg_home"] = xg_home
+                match["xg_away"] = xg_away
+            except Exception as exc:
+                logger.warning("xG unavailable for fixture %s: %s", fid, exc)
+
+    return fixtures
+
+
+def merge_fixtures(*lists: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Merge fixture lists; later entries override on match_id or api_fixture_id."""
+    by_key: dict[str, dict[str, Any]] = {}
+    for fixtures in lists:
+        for match in fixtures:
+            key = match.get("match_id")
+            if not key and match.get("api_fixture_id"):
+                key = f"api:{match['api_fixture_id']}"
+            if not key and match.get("team_home") and match.get("team_away"):
+                key = f"{match['team_home']}:{match['team_away']}:{match.get('date', '')}"
+            if not key:
+                continue
+            if key in by_key:
+                by_key[key] = {**by_key[key], **match}
+            else:
+                by_key[key] = dict(match)
+    return sorted(by_key.values(), key=lambda m: m.get("date", ""))
+
+
+def enrich_bracket_with_xg(
+    bracket: dict[str, Any],
+    registry: TeamRegistry,
+) -> int:
+    """Backfill xG on finished bracket matches via API. Returns count enriched."""
+    enriched = 0
+    for round_data in bracket.get("rounds", {}).values():
+        for match in round_data.get("matches", []):
+            if match.get("status") not in ("FT", "PEN", "AET"):
+                continue
+            if match.get("xg_home") is not None and match.get("xg_away") is not None:
+                continue
+            fid = match.get("api_fixture_id")
+            if not fid:
+                home_api = registry.api_id(match.get("team_home")) if match.get("team_home") else None
+                away_api = registry.api_id(match.get("team_away")) if match.get("team_away") else None
+                # can't fetch without fixture id
+                _ = (home_api, away_api)
+                continue
+            try:
+                xg_home, xg_away = get_fixture_xg(
+                    fid,
+                    match.get("api_team_home_id") or registry.api_id(match.get("team_home")),
+                    match.get("api_team_away_id") or registry.api_id(match.get("team_away")),
+                )
+                if xg_home is not None or xg_away is not None:
+                    match["xg_home"] = xg_home
+                    match["xg_away"] = xg_away
+                    enriched += 1
+            except Exception as exc:
+                logger.warning("Bracket xG backfill failed for %s: %s", fid, exc)
+    return enriched
+
+
 def get_player_stats(api_team_id: int, starting_player_ids: set[int] | None = None) -> list[dict[str, Any]]:
     params = {
         "league": config.API_FOOTBALL_WC_ID,

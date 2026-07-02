@@ -24,7 +24,10 @@ ELO_SCALE = 400
 
 # team_strength is 0-1. using ELO_SCALE here makes every match look like a coin flip.
 # python scripts/backtest.py --sweep to tune this
-STRENGTH_SCALE = 0.50
+STRENGTH_SCALE = 0.68
+
+# when fewer than this share of active teams have real xG, shrink form toward 0.5
+XG_COVERAGE_FULL = 0.75
 
 MAX_PLAYER_IMPORTANCE   = 0.20
 GK_PENALTY              = 0.05

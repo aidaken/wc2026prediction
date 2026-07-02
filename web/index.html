@@ -1140,7 +1140,7 @@
       </div>
     </section>
 
-    <footer>Model v1.1 · updated after each knockout round</footer>
+    <footer>Model v1.2 · updated after each knockout round</footer>
   </div>
   <script>
     const DATA_URL = '../data/predictions.json';
@@ -1228,11 +1228,38 @@
     }
 
     function renderMeta(meta) {
+      const ds = meta.data_sources || {};
+      const src = ds.api_football && ds.api_football !== 'unavailable'
+        ? `API ${ds.api_football}` : 'cached/bracket data';
+      const odds = ds.odds_api === 'ok' ? ' · odds live' : '';
       document.getElementById('meta').innerHTML = [
         `<span>${meta.round || '—'}</span>`,
         `<span>${(meta.simulations || 0).toLocaleString()} simulations</span>`,
+        `<span>Model v${meta.model_version || '1.0'}</span>`,
+        `<span>${src}${odds}</span>`,
         `<span>Updated ${new Date(meta.generated_at).toLocaleString()}</span>`,
       ].join('');
+    }
+
+    function teamWeights(signals, fallback) {
+      return signals?.effective_weights || fallback || MODEL_WEIGHTS;
+    }
+
+    function weightLabel(w) {
+      const e = Math.round((w.elo || 0) * 100);
+      const f = Math.round((w.xg_form || 0) * 100);
+      const s = Math.round((w.squad_value || 0) * 100);
+      const o = Math.round((w.betting_odds || 0) * 100);
+      return `Elo×${e}% + Form×${f}% + Squad×${s}% + Odds×${o}%`;
+    }
+
+    function formSourceNote(signals) {
+      if (!signals) return '';
+      const src = signals.form_source || 'default';
+      const n = signals.matches_used || 0;
+      if (src === 'xg') return `Form from xG (${n} matches)`;
+      if (src === 'goals') return `Form from results (${n} matches, xG sparse)`;
+      return 'Form default — no recent matches';
     }
 
     function renderChampionChips(signals) {
@@ -1327,14 +1354,16 @@
       </li>`;
     }
 
-    function renderSignalBreakdown(signals) {
+    function renderSignalBreakdown(signals, baseWeights) {
+      const wts = teamWeights(signals, baseWeights);
       let rows = Object.entries(SIGNAL_LABELS).map(([key, label]) => {
         const val = signals[key] ?? 0;
         const weightKey = key === 'elo_normalized' ? 'elo'
           : key === 'xg_form_ratio' ? 'xg_form'
           : key === 'squad_value_normalized' ? 'squad_value'
           : 'betting_odds';
-        const w = MODEL_WEIGHTS[weightKey];
+        const w = wts[weightKey] || 0;
+        if (w <= 0) return '';
         const pts = val * w;
         return `<div class="signal-item">
           <span class="sig-label">${label}</span>
@@ -1387,30 +1416,28 @@
       }
 
       const s = p.signals;
-      const base = (
-        s.elo_normalized * MODEL_WEIGHTS.elo +
-        s.xg_form_ratio * MODEL_WEIGHTS.xg_form +
-        s.squad_value_normalized * MODEL_WEIGHTS.squad_value +
-        s.betting_implied_prob * MODEL_WEIGHTS.betting_odds
-      );
+      const wts = teamWeights(s, ctx.weights);
+      const we = wts.elo || 0, wf = wts.xg_form || 0, ws = wts.squad_value || 0, wo = wts.betting_odds || 0;
       const inj = s.injury_multiplier ?? 1;
       const eloChg = meta.elo_change_this_round;
       const chgCls = eloChg > 0 ? 'up' : eloChg < 0 ? 'down' : '';
       const chgTxt = eloChg ? `${eloChg > 0 ? '+' : ''}${eloChg.toFixed(1)}` : '—';
+      const oddsTerm = wo > 0 ? ` + ${s.betting_implied_prob.toFixed(3)}×${wo.toFixed(2)}` : '';
 
       return `<div class="team-detail-panel">
         <div class="detail-grid">
           <div class="detail-block">
             <h4>Strength score</h4>
             <div class="detail-formula">
-              (Elo×35% + Form×30% + Squad×15% + Odds×20%) × Injury<br>
-              = (${s.elo_normalized.toFixed(2)}×0.35 + ${s.xg_form_ratio.toFixed(2)}×0.30 + ${s.squad_value_normalized.toFixed(2)}×0.15 + ${s.betting_implied_prob.toFixed(3)}×0.20) × ${inj.toFixed(2)}<br>
+              (${weightLabel(wts)}) × Injury<br>
+              = (${s.elo_normalized.toFixed(2)}×${we.toFixed(2)} + ${s.xg_form_ratio.toFixed(2)}×${wf.toFixed(2)} + ${s.squad_value_normalized.toFixed(2)}×${ws.toFixed(2)}${oddsTerm}) × ${inj.toFixed(2)}<br>
               <span class="result">= ${p.team_strength.toFixed(3)} strength → ${pct(p.win_probability)} to win WC</span>
             </div>
+            <p class="detail-note" style="margin-top:0.5rem;margin-bottom:0">${formSourceNote(s)}</p>
           </div>
           <div class="detail-block">
             <h4>Signal breakdown</h4>
-            ${renderSignalBreakdown(s)}
+            ${renderSignalBreakdown(s, ctx.weights)}
           </div>
           <div class="detail-block">
             <h4>Raw numbers</h4>
@@ -1751,6 +1778,9 @@
           teamsById,
           bracket,
           nSims: data._meta?.simulations || 10000,
+          weights: data._meta?.weights || MODEL_WEIGHTS,
+          strengthMeta: data._meta?.strength_meta || {},
+          dataSources: data._meta?.data_sources || {},
         };
 
         renderMeta(data._meta || {});
