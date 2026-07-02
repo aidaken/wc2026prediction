@@ -1328,7 +1328,7 @@
     }
 
     function renderSignalBreakdown(signals) {
-      const rows = Object.entries(SIGNAL_LABELS).map(([key, label]) => {
+      let rows = Object.entries(SIGNAL_LABELS).map(([key, label]) => {
         const val = signals[key] ?? 0;
         const weightKey = key === 'elo_normalized' ? 'elo'
           : key === 'xg_form_ratio' ? 'xg_form'
