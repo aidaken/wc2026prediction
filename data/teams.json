@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-02T01:55:52Z",
+    "last_updated": "2026-07-02T02:51:32Z",
     "round": "Round of 32",
-    "teams_remaining": 24,
+    "teams_remaining": 22,
     "elo_processed_matches": [
       "ARG:AUT:2026-06-22",
       "BRA:MAR:2026-06-18",
@@ -15,7 +15,9 @@
       "r32_m77",
       "r32_m78",
       "r32_m79",
-      "r32_m80"
+      "r32_m80",
+      "r32_m81",
+      "r32_m82"
     ]
   },
   "teams": {
@@ -29,8 +31,8 @@
       "eliminated": false,
       "group": "A",
       "group_position": 1,
-      "elo_change_this_round": 47.2,
-      "team_strength": 0.3151
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.3992
     },
     "CZE": {
       "id": "CZE",
@@ -54,7 +56,7 @@
       "eliminated": true,
       "group": "A",
       "group_position": 2,
-      "elo_change_this_round": -42.0
+      "elo_change_this_round": 0.0
     },
     "KOR": {
       "id": "KOR",
@@ -78,21 +80,21 @@
       "eliminated": false,
       "group": "B",
       "group_position": 2,
-      "elo_change_this_round": 42.0,
-      "team_strength": 0.2651
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.3408
     },
     "BIH": {
       "id": "BIH",
       "name": "Bosnia and Herzegovina",
       "api_football_id": 1113,
       "transfermarkt_id": "bosnien-herzegowina",
-      "elo": 1710.0,
+      "elo": 1687.2,
       "squad_value_eur": 120000000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "B",
       "group_position": 3,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.1723
+      "elo_change_this_round": -22.8,
+      "team_strength": 0.226
     },
     "QAT": {
       "id": "QAT",
@@ -117,7 +119,7 @@
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3038
+      "team_strength": 0.3856
     },
     "BRA": {
       "id": "BRA",
@@ -129,8 +131,8 @@
       "eliminated": false,
       "group": "C",
       "group_position": 1,
-      "elo_change_this_round": 35.4,
-      "team_strength": 0.6993
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.8229
     },
     "HTI": {
       "id": "HTI",
@@ -154,8 +156,8 @@
       "eliminated": false,
       "group": "C",
       "group_position": 2,
-      "elo_change_this_round": 50.1,
-      "team_strength": 0.3578
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.4933
     },
     "SCO": {
       "id": "SCO",
@@ -174,13 +176,13 @@
       "name": "USA",
       "api_football_id": 2384,
       "transfermarkt_id": "usa",
-      "elo": 1795.0,
+      "elo": 1817.8,
       "squad_value_eur": 420000000,
       "eliminated": false,
       "group": "D",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.2864
+      "elo_change_this_round": 22.8,
+      "team_strength": 0.3786
     },
     "AUS": {
       "id": "AUS",
@@ -193,7 +195,7 @@
       "group": "D",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1911
+      "team_strength": 0.251
     },
     "PAR": {
       "id": "PAR",
@@ -205,8 +207,8 @@
       "eliminated": false,
       "group": "D",
       "group_position": 3,
-      "elo_change_this_round": 83.4,
-      "team_strength": 0.285
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.3684
     },
     "TUR": {
       "id": "TUR",
@@ -242,7 +244,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 3,
-      "elo_change_this_round": -47.2
+      "elo_change_this_round": 0.0
     },
     "GER": {
       "id": "GER",
@@ -254,7 +256,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 1,
-      "elo_change_this_round": -83.4
+      "elo_change_this_round": 0.0
     },
     "CIV": {
       "id": "CIV",
@@ -266,7 +268,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 2,
-      "elo_change_this_round": -45.7
+      "elo_change_this_round": 0.0
     },
     "NED": {
       "id": "NED",
@@ -278,7 +280,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 1,
-      "elo_change_this_round": -63.9
+      "elo_change_this_round": 0.0
     },
     "JPN": {
       "id": "JPN",
@@ -290,7 +292,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 2,
-      "elo_change_this_round": -21.6
+      "elo_change_this_round": 0.0
     },
     "SWE": {
       "id": "SWE",
@@ -302,7 +304,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 3,
-      "elo_change_this_round": -24.6
+      "elo_change_this_round": 0.0
     },
     "TUN": {
       "id": "TUN",
@@ -321,13 +323,13 @@
       "name": "Belgium",
       "api_football_id": 1,
       "transfermarkt_id": "belgien",
-      "elo": 1895.0,
+      "elo": 1915.8,
       "squad_value_eur": 450000000,
       "eliminated": false,
       "group": "G",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.3721
+      "elo_change_this_round": 20.8,
+      "team_strength": 0.4906
     },
     "EGY": {
       "id": "EGY",
@@ -340,7 +342,7 @@
       "group": "G",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1971
+      "team_strength": 0.2582
     },
     "IRN": {
       "id": "IRN",
@@ -377,7 +379,7 @@
       "group": "H",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.15
+      "team_strength": 0.2
     },
     "KSA": {
       "id": "KSA",
@@ -401,8 +403,8 @@
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 24.3,
-      "team_strength": 0.5785
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.6637
     },
     "URU": {
       "id": "URU",
@@ -426,8 +428,8 @@
       "eliminated": false,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": 29.7,
-      "team_strength": 0.5572
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.8307
     },
     "NOR": {
       "id": "NOR",
@@ -439,21 +441,21 @@
       "eliminated": false,
       "group": "I",
       "group_position": 2,
-      "elo_change_this_round": 45.7,
-      "team_strength": 0.351
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.4429
     },
     "SEN": {
       "id": "SEN",
       "name": "Senegal",
       "api_football_id": 13,
       "transfermarkt_id": "senegal",
-      "elo": 1785.0,
+      "elo": 1764.2,
       "squad_value_eur": 290000000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "I",
       "group_position": 3,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.2576
+      "elo_change_this_round": -20.8,
+      "team_strength": 0.3279
     },
     "IRQ": {
       "id": "IRQ",
@@ -465,7 +467,7 @@
       "eliminated": true,
       "group": "I",
       "group_position": 4,
-      "elo_change_this_round": -5.1
+      "elo_change_this_round": 0.0
     },
     "ALG": {
       "id": "ALG",
@@ -478,7 +480,7 @@
       "group": "J",
       "group_position": 3,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.2049
+      "team_strength": 0.2665
     },
     "ARG": {
       "id": "ARG",
@@ -490,8 +492,8 @@
       "eliminated": false,
       "group": "J",
       "group_position": 1,
-      "elo_change_this_round": 12.5,
-      "team_strength": 0.6236
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.6442
     },
     "AUT": {
       "id": "AUT",
@@ -503,8 +505,8 @@
       "eliminated": false,
       "group": "J",
       "group_position": 2,
-      "elo_change_this_round": -12.5,
-      "team_strength": 0.1854
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.3418
     },
     "JOR": {
       "id": "JOR",
@@ -529,7 +531,7 @@
       "group": "K",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3242
+      "team_strength": 0.4066
     },
     "COD": {
       "id": "COD",
@@ -541,7 +543,7 @@
       "eliminated": true,
       "group": "K",
       "group_position": 3,
-      "elo_change_this_round": -21.1
+      "elo_change_this_round": 0.0
     },
     "POR": {
       "id": "POR",
@@ -554,7 +556,7 @@
       "group": "K",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.4312
+      "team_strength": 0.5238
     },
     "UZB": {
       "id": "UZB",
@@ -578,8 +580,8 @@
       "eliminated": false,
       "group": "L",
       "group_position": 1,
-      "elo_change_this_round": -3.2,
-      "team_strength": 0.5369
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.6572
     },
     "CRO": {
       "id": "CRO",
@@ -592,7 +594,7 @@
       "group": "L",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3299
+      "team_strength": 0.4211
     },
     "GHA": {
       "id": "GHA",
@@ -605,7 +607,7 @@
       "group": "L",
       "group_position": 3,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1908
+      "team_strength": 0.247
     },
     "PAN": {
       "id": "PAN",
