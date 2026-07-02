@@ -6,102 +6,310 @@
   <title>WC 2026 Predictions</title>
   <style>
     :root {
-      --bg: #0b1220;
-      --surface: #141e33;
-      --border: #243049;
-      --text: #e8edf7;
-      --muted: #8b9bb4;
-      --accent: #22c55e;
-      --gold: #fbbf24;
-      --danger: #ef4444;
-      --bk-bg: #f4f5f7;
+      --page-bg: #eef1f6;
+      --page-bg-soft: linear-gradient(165deg, #f8fafc 0%, #eef2ff 45%, #f0fdf4 100%);
+      --surface: #ffffff;
+      --surface-raised: #ffffff;
+      --border: #e2e8f0;
+      --border-soft: #f1f5f9;
+      --text: #0f172a;
+      --text-soft: #334155;
+      --muted: #64748b;
+      --accent: #16a34a;
+      --accent-soft: #dcfce7;
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --gold: #d97706;
+      --gold-soft: #fef3c7;
+      --purple: #7c3aed;
+      --purple-soft: #ede9fe;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --bk-bg: transparent;
       --bk-surface: #ffffff;
-      --bk-border: #d1d5db;
-      --bk-text: #111827;
-      --bk-muted: #6b7280;
+      --bk-border: #e2e8f0;
+      --bk-text: #0f172a;
+      --bk-muted: #64748b;
       --bk-winner: #15803d;
-      --bk-loser: #9ca3af;
+      --bk-loser: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      background: var(--page-bg);
+      background: var(--page-bg-soft);
       color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
     }
     .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-    header { margin-bottom: 2rem; }
-    h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
-    .subtitle { color: var(--muted); margin-top: 0.35rem; font-size: 0.95rem; }
-    .meta {
-      display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;
-      font-size: 0.85rem; color: var(--muted);
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
     }
-    .meta span { background: var(--surface); border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 999px; }
-    .grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; margin-bottom: 2rem; }
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #15803d, #22c55e);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .subtitle {
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      max-width: 36rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.25rem;
+      font-size: 0.82rem;
+    }
+    .meta span {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-soft);
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      box-shadow: var(--shadow-sm);
+      font-weight: 500;
+    }
+
+    /* ── Layout ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
+      box-shadow: var(--shadow-md);
     }
     .card-header {
       padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      font-weight: 600;
-      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border-soft);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: #fafbfc;
+    }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.8rem 1.1rem; text-align: left; }
+    th {
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      font-weight: 700;
     }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.75rem 1.25rem; text-align: left; }
-    th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
-    tr + tr td { border-top: 1px solid var(--border); }
-    tr.eliminated { opacity: 0.45; }
-    .rank { color: var(--muted); width: 2rem; }
-    .team-name { font-weight: 600; }
-    .prob { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--accent); }
-    .prob-bar-wrap { width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-    .prob-bar { height: 100%; background: linear-gradient(90deg, var(--accent), #16a34a); border-radius: 3px; }
-    .badge { font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 4px; background: var(--border); color: var(--muted); }
-    .badge.out { background: rgba(239,68,68,0.15); color: var(--danger); }
+    tbody tr {
+      transition: background 0.15s ease;
+    }
+    tbody tr:hover:not(.eliminated) {
+      background: #f8fafc;
+    }
+    tr + tr td { border-top: 1px solid var(--border-soft); }
+    tr.eliminated { opacity: 0.5; background: #fafafa; }
+    tr.rank-1 { background: linear-gradient(90deg, rgba(254, 243, 199, 0.35), transparent); }
+    tr.rank-2 { background: linear-gradient(90deg, rgba(241, 245, 249, 0.8), transparent); }
+    tr.rank-3 { background: linear-gradient(90deg, rgba(255, 237, 213, 0.35), transparent); }
+    .rank {
+      color: var(--muted);
+      width: 2.5rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .rank-1 .rank { color: var(--gold); }
+    .rank-2 .rank { color: #64748b; }
+    .rank-3 .rank { color: #b45309; }
+    .team-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .table-flag {
+      width: 22px;
+      height: 16px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+    }
+    .team-name { font-weight: 700; color: var(--text); }
+    .prob {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .prob-bar-wrap {
+      width: 88px;
+      height: 6px;
+      background: var(--border-soft);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .prob-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #60a5fa, #2563eb);
+      border-radius: 999px;
+    }
+    tr.rank-1 .prob-bar {
+      background: linear-gradient(90deg, #fbbf24, #d97706);
+    }
+    .badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: var(--border-soft);
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .badge.out {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    /* ── Champion card ── */
     .top-pick {
-      padding: 1.5rem;
+      padding: 1.75rem 1.5rem 1.25rem;
       text-align: center;
-      background: linear-gradient(180deg, rgba(34,197,94,0.08), transparent);
+      background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 55%);
+      border-bottom: 1px solid var(--border-soft);
     }
-    .top-pick .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .top-pick .name { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; color: var(--gold); }
-    .top-pick .pct { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
-    .signals { padding: 1rem 1.25rem; }
+    .top-pick .label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+    .top-pick .champ-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin: 0.65rem 0 0.35rem;
+    }
+    .top-pick .champ-flag {
+      width: 36px;
+      height: 26px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+    .top-pick .name {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .top-pick .pct {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-top: 0.15rem;
+    }
+    .signals { padding: 1rem 1.25rem 1.15rem; }
     .signal-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.5rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border-soft);
     }
     .signal-row:last-child { border-bottom: none; }
-    .signal-label { color: var(--muted); }
-    .signal-val { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .signal-label { color: var(--muted); font-weight: 500; }
+    .signal-val {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--text-soft);
+      background: var(--blue-soft);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    /* ── History ── */
     .history { padding: 1rem 1.25rem; }
     .history-row {
-      display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;
-      padding: 0.4rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      padding: 0.55rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border-soft);
     }
     .history-row:last-child { border-bottom: none; }
-    .history-round { color: var(--muted); font-size: 0.75rem; }
-    .loading, .error { text-align: center; padding: 4rem 2rem; color: var(--muted); }
-    .error { color: var(--danger); }
-    footer { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+    .history-round { color: var(--muted); font-size: 0.72rem; font-weight: 500; }
+    .history-row .prob { font-size: 0.9rem; }
 
-    /* ── Tournament bracket (Athletic-style) ── */
+    .loading, .error {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+    .error { color: var(--danger); background: var(--danger-soft); }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* ── Tournament bracket ── */
     .bracket-panel {
-      background: var(--bk-bg);
-      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 2rem 1rem 2.5rem;
       overflow-x: auto;
       color: var(--bk-text);
+      box-shadow: var(--shadow-lg);
+      margin-top: 0.5rem;
     }
     .bracket-title {
       text-align: center;
@@ -224,16 +432,17 @@
     .bk-match {
       background: var(--bk-surface);
       border: 1px solid var(--bk-border);
-      border-radius: 6px;
+      border-radius: 8px;
       width: 148px;
       overflow: hidden;
       font-size: 0.8rem;
+      box-shadow: var(--shadow-sm);
     }
     .bk-match.wide { width: 130px; }
     .bk-match.slot { width: 120px; min-height: 72px; }
 
     .bk-date {
-      background: #e5e7eb;
+      background: #f1f5f9;
       color: var(--bk-muted);
       font-size: 0.65rem;
       font-weight: 600;
@@ -242,7 +451,7 @@
       letter-spacing: 0.02em;
     }
     .bk-venue {
-      background: #e5e7eb;
+      background: #f1f5f9;
       color: var(--bk-muted);
       font-size: 0.6rem;
       font-weight: 600;
@@ -331,7 +540,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>🏆 WC 2026 Predictions</h1>
+      <div class="hero-badge">WORLD CUP 2026</div>
+      <h1>Predictions</h1>
       <p class="subtitle">Monte Carlo win probabilities updated after each knockout round</p>
       <div class="meta" id="meta"></div>
     </header>
@@ -623,9 +833,15 @@
                 <thead><tr><th>#</th><th>Team</th><th>Win</th><th>Final</th><th>Semis</th></tr></thead>
                 <tbody>
                   ${preds.map(p => `
-                    <tr class="${p.eliminated ? 'eliminated' : ''}">
+                    <tr class="${p.eliminated ? 'eliminated' : ''} ${!p.eliminated && p.rank <= 3 ? 'rank-' + p.rank : ''}">
                       <td class="rank">${p.eliminated ? '—' : (p.rank || '—')}</td>
-                      <td><span class="team-name">${p.team_name}</span> ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}</td>
+                      <td>
+                        <div class="team-cell">
+                          ${!p.eliminated ? `<img class="table-flag" src="${flagUrl(p.team_id)}" alt="" loading="lazy">` : ''}
+                          <span class="team-name">${p.team_name}</span>
+                          ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}
+                        </div>
+                      </td>
                       <td>
                         <div class="prob">${pct(p.win_probability)}</div>
                         ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
@@ -641,7 +857,10 @@
               <div class="card">
                 <div class="top-pick">
                   <div class="label">Most likely champion</div>
-                  <div class="name">${top?.team_name || '—'}</div>
+                  <div class="champ-row">
+                    ${top?.team_id ? `<img class="champ-flag" src="${flagUrl(top.team_id)}" alt="">` : ''}
+                    <div class="name">${top?.team_name || '—'}</div>
+                  </div>
                   <div class="pct">${top ? pct(top.win_probability) : '—'}</div>
                 </div>
                 ${renderSignals(top?.signals)}
