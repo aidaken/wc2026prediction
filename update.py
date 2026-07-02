@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Orchestrator — run after every round to refresh predictions.
+run this after each round to refresh predictions.
 
-Usage:
-    python update.py           # live API mode (requires API_FOOTBALL_KEY)
-    python update.py --demo    # offline demo using seed data
-    python update.py --round "Round of 16"
+  python update.py           # live (needs API_FOOTBALL_KEY)
+  python update.py --demo    # offline seed data
+  python update.py --round "Round of 16"
 """
 
 from __future__ import annotations
@@ -28,7 +27,7 @@ from src.utils import DATA_DIR, get_env_int, load_json, normalize_betting_probs,
 from src.value import get_squad_values
 from src.xg import calculate_form_ratios
 
-MODEL_VERSION = "1.0.0"
+MODEL_VERSION = "1.1.0"
 
 
 def _utc_now() -> str:
@@ -133,7 +132,14 @@ def combine_strengths(
     strengths: dict[str, float] = {}
     signals: dict[str, dict[str, float]] = {}
 
-    for tid in active:
+    strength_ids = list(teams.keys())
+    for tid in strength_ids:
+        if teams[tid].get("eliminated") and tid not in active:
+            # keep last strength on file for backtest, don't recompute
+            if teams[tid].get("team_strength") is not None:
+                strengths[tid] = teams[tid]["team_strength"]
+            continue
+
         components = {
             "elo_normalized": elo_norm.get(tid, 0.5),
             "xg_form_ratio": xg_form.get(tid, 0.5),
@@ -148,7 +154,8 @@ def combine_strengths(
             + components["betting_implied_prob"] * weights["betting_odds"]
         )
         strengths[tid] = round(base * components["injury_multiplier"], 4)
-        signals[tid] = components
+        if tid in active:
+            signals[tid] = components
 
     return strengths, signals, newly_processed
 
@@ -178,6 +185,10 @@ def write_outputs(
     team_sim = sim_results.get("team_predictions", sim_results)
     match_predictions = sim_results.get("match_predictions", {})
     active_count = len(_active_teams(teams))
+    for tid, strength in strengths.items():
+        if tid in teams:
+            teams[tid]["team_strength"] = strength
+
     teams_doc = {
         "_meta": {
             "last_updated": _utc_now(),
@@ -308,7 +319,8 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
             teams[tid]["squad_value_eur"] = value
 
     logger.info("Running %s Monte Carlo simulations...", f"{n_sims:,}")
-    sim_results = run_simulation(strengths, bracket, n=n_sims)
+    active_strengths = {tid: s for tid, s in strengths.items() if tid in _active_teams(teams)}
+    sim_results = run_simulation(active_strengths, bracket, n=n_sims)
 
     logger.info("Writing output files...")
     write_outputs(

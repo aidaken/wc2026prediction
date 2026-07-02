@@ -29,7 +29,7 @@ Default weights (`config.py`):
 | Betting implied probability | 0.20 | Aggregates thousands of expert models efficiently |
 | Injury multiplier | multiplicative | Applied last; can reduce strength by up to 20% |
 
-Weights must sum to 1.0 (excluding the injury multiplier). They can be tuned in `config.py` — see the [tuning section](#tuning-model-weights) below.
+Weights must sum to 1.0 (excluding the injury multiplier). They can be tuned in `config.py`.
 
 ---
 
@@ -42,15 +42,15 @@ Elo is a zero-sum rating system originally designed for chess. Every team starts
 ### Update formula
 
 ```
-E_A = 1 / (1 + 10^((R_B - R_A) / 400))
+E_A = 1 / (1 + 10^((R_B - R_A) / ELO_SCALE))
 
 R_A_new = R_A + K × (S_A - E_A)
 ```
 
 Where:
-- `R_A` = team A's current Elo rating
+- `R_A` = team A's current Elo rating (raw values ~1400–2100)
 - `R_B` = team B's current Elo rating
-- `E_A` = team A's expected score (probability of winning)
+- `ELO_SCALE` = 400 (standard Elo scale for raw rating values — **only used here, not in simulate.py**)
 - `S_A` = actual match outcome: 1.0 (win), 0.5 (draw), 0.0 (loss)
 - `K` = K-factor (controls how much ratings shift per match)
 
@@ -62,18 +62,6 @@ Where:
 | World Cup group stage | 50 | High stakes but less decisive |
 | WC qualifier / major tournament | 40 | Important but not the main event |
 | Friendly / pre-tournament | 20 | Low stakes, often rotated squads |
-
-Only matches from the last 2 years are used to seed initial ratings. Older matches are discounted.
-
-### Initial Elo values (WC 2026 start)
-
-Starting Elo values are seeded from the most recent iteration of the [World Football Elo Ratings](https://www.eloratings.net/). These are stored in `data/teams.json` and updated in-place as the tournament progresses.
-
-Approximate starting range:
-- Elite (Brazil, France, Spain, Argentina): 1950–2100
-- Strong (England, Germany, Portugal, Netherlands): 1800–1950
-- Mid-tier (USA, Mexico, Senegal, Morocco): 1600–1800
-- Lower (Curaçao, Haiti, Jordan): 1400–1600
 
 ### Normalization
 
@@ -97,48 +85,31 @@ Expected Goals (xG) measures the quality of goalscoring chances, not the actual 
 xg_form_ratio = avg_xG_for / (avg_xG_for + avg_xG_against)
 ```
 
-Where averages are calculated across the **last 5 matches**, with WC group stage matches weighted 2× compared to pre-tournament matches.
+Averages are calculated across the last `XG_FORM_GAMES` matches (default: 5), with WC group stage matches weighted `XG_WC_MATCH_WEIGHT` × (default: 2×) relative to pre-tournament matches.
 
-- Result of 0.5 = team creates as many chances as they concede (neutral)
-- Result above 0.5 = team dominates in chance creation (strong)
-- Result below 0.5 = team is being out-chanced (weak)
+- 0.5 = team creates as many chances as they concede (neutral)
+- Above 0.5 = team dominates chance creation (strong)
+- Below 0.5 = team is being out-chanced (weak)
 
 ### Score vs xG divergence adjustment
 
-If a team's actual goals diverge significantly from their xG, we flag it as a luck adjustment:
-
 ```
-luck_score = actual_goals_for / xg_for   # > 1.0 = overperforming, likely lucky
+luck_score = actual_goals_for / xg_for
 ```
 
-If `luck_score > 1.3` (scoring 30% more than expected), we cap the effective `xg_form_ratio` to prevent rewarding unsustainable finishing. This is a soft cap applied before normalization.
-
-### Normalization
-
-```
-xg_form_ratio is already bounded [0, 1] by definition
-```
+If `luck_score > XG_LUCK_THRESHOLD` (default 1.3), we cap the effective `xg_form_ratio` to avoid rewarding unsustainable finishing.
 
 ---
 
 ## Signal 3 — Squad market value
 
-### What it measures
-
-The total transfer market value of a team's squad, pulled from Transfermarkt. This is a strong proxy for:
-- Overall talent level
-- Squad depth (a €1B squad absorbs injuries better)
-- Player quality relative to international peers
-
-### Normalization
+The total transfer market value of a team's squad from Transfermarkt, normalized to [0, 1]:
 
 ```
 squad_value_normalized = (V_team - V_min) / (V_max - V_min)
 ```
 
-Where `V_min` and `V_max` are across all remaining teams in the tournament at the time of update.
-
-Squad values are fetched once per round from Transfermarkt. Values do not change meaningfully mid-round.
+Fetched once per round via the Transfermarkt scraper in `src/value.py`.
 
 ---
 
@@ -146,148 +117,177 @@ Squad values are fetched once per round from Transfermarkt. Values do not change
 
 ### Why this works
 
-Betting markets aggregate thousands of models, analysts, and informed bettors — all with money at stake. Their consensus is empirically one of the strongest predictors of tournament outcomes. We are not betting. We are using their aggregate intelligence as one input signal.
+Betting markets aggregate thousands of models, analysts, and bettors — all with money at stake. Their consensus is empirically one of the strongest predictors of tournament outcomes.
 
 ### Conversion formula
 
-Raw betting odds (decimal format) are converted to implied probability:
-
 ```
 implied_prob_raw = 1 / decimal_odds
+implied_prob     = implied_prob_raw / sum(all_implied_prob_raw)   # removes bookmaker margin
 ```
 
-Because bookmakers include a margin (vig), the raw probabilities sum to more than 1.0. We normalize:
+### Known bias — self-reinforcing market sentiment
 
-```
-implied_prob = implied_prob_raw / sum(all_implied_prob_raw)
-```
+20% of the team_strength score comes directly from betting markets. The model's own docs acknowledge that markets tend to overweight historically prominent teams (Brazil, Argentina, Germany) due to public betting bias and brand recognition. This means the model is **not fully independent from market sentiment** — a team like Colombia or Morocco may be systematically underrated relative to what their on-pitch metrics would suggest.
 
-This gives a clean probability distribution across all remaining teams that sums to exactly 1.0.
-
-### Data source
-
-The Odds API — free tier. We fetch pre-match tournament winner odds once per round update.
+This is not necessarily wrong to include — markets are genuinely informative — but it should be understood when interpreting results. If you believe the market is systematically wrong about a specific team, decrease `W_ODDS` in `config.py` for that update cycle.
 
 ---
 
 ## Signal 5 — Injury multiplier
 
-### What it captures
+### Key player detection
 
-The absence of key players — especially a first-choice goalkeeper or top striker — materially reduces a team's strength. This is applied as a multiplicative penalty on the combined score, not as an additive signal.
+Players are flagged as "key" by two mechanisms:
 
-### Player importance score
+**Automatic detection (per-round):** For every team, `src/injury.py` ranks all players by goal involvement per 90 minutes this tournament:
 
-For each player currently listed as injured or suspended:
+```
+goal_involvement_per90 = (goals + assists) / minutes_played * 90
+```
+
+The top `KEY_PLAYERS_PER_TEAM` players (default: 2) per team are automatically flagged as key. This ensures that Colombia's top scorer, Morocco's key midfielder, or any other team's standout player is captured without manual intervention.
+
+**Manual overrides:** `KEY_PLAYER_OVERRIDES` in `config.py` hard-codes players whose importance cannot be captured by goal involvement alone (e.g. a goalkeeper, a player whose value is defensive).
+
+### Importance formula
+
+For each flagged player:
 
 ```
 player_importance = (player_xG_per90 + player_xA_per90) / (team_avg_xG_per90 + team_avg_xA_per90)
 ```
 
-This is capped at `MAX_PLAYER_IMPORTANCE = 0.20` (20%) to prevent a single player from dominating the calculation.
+Capped at `MAX_PLAYER_IMPORTANCE = 0.20` (no single player can account for more than 20% of team strength).
 
-Special case for goalkeepers: a first-choice goalkeeper being absent applies a fixed `0.05` penalty regardless of their attacking stats.
+Goalkeepers: a missing first-choice GK applies a fixed `GK_PENALTY = 0.05` regardless of attacking stats.
 
-### Multiplier calculation
+### Multiplier formula
 
 ```
-injury_multiplier = 1.0
-
-for each injured_player in team.injured:
-    if injured_player.is_starting_xi:
-        injury_multiplier -= player_importance(injured_player)
-
-injury_multiplier = max(injury_multiplier, MIN_MULTIPLIER)  # floor at 0.75
+injury_multiplier = 1.0 - sum(player_importance for each injured starter)
+injury_multiplier = max(injury_multiplier, MIN_INJURY_MULTIPLIER)   # floor: 0.75
 ```
 
-Example:
-- France without Mbappé (estimated importance ~0.18): `1.0 - 0.18 = 0.82`
-- France without Mbappé + starting GK: `1.0 - 0.18 - 0.05 = 0.77`
+The floor (`MIN_INJURY_MULTIPLIER = 0.75`) prevents extreme cases from producing unrealistic predictions. This is a round number with no precise empirical source. To validate it, run:
+
+```bash
+python scripts/backtest.py --sensitivity
+```
+
+If shifting the floor by ±0.05 moves the top team's predicted win% by less than 1–2 percentage points, the round number is fine to keep. If the swing is larger than 3pp, it warrants a cited source or more careful calibration.
 
 ---
 
 ## Monte Carlo simulation
+
+### ⚠️ STRENGTH_SCALE — critical parameter
+
+The team_strength values produced by the combined formula above are normalized floats roughly in the range [0.15, 0.80]. They are **not** raw Elo ratings.
+
+Using `ELO_SCALE = 400` in the win probability formula with these normalized values would produce near-50/50 probabilities for every match — effectively a coin flip. The fix is a separate `STRENGTH_SCALE` constant calibrated to the [0, 1] strength range:
+
+```python
+# simulate.py — correct version
+def win_probability(strength_a: float, strength_b: float) -> float:
+    return 1 / (1 + 10 ** ((strength_b - strength_a) / STRENGTH_SCALE))
+```
+
+Effect of `STRENGTH_SCALE` on a Brazil (0.78) vs France (0.64) matchup (gap = 0.14):
+
+| STRENGTH_SCALE | Brazil win prob | Assessment |
+|---|---|---|
+| 400 (bug) | 50.0% | coin flip — completely wrong |
+| 0.30 | 75% | overconfident for football |
+| **0.50** | **66%** | **sensible starting point** |
+| 0.80 | 60% | conservative but defensible |
+
+The right value depends on what the actual combined strength scores look like after normalization. **Tune it empirically:**
+
+```bash
+python scripts/backtest.py --sweep
+```
+
+The sweep tests `STRENGTH_SCALE` from 0.10 to 1.50 and finds the value that minimises Brier score on completed matches. After finding the best value, update `config.py` and re-run `update.py`.
 
 ### Algorithm
 
 ```python
 def simulate_tournament(teams, bracket, n=10_000):
     win_counts = {team_id: 0 for team_id in teams}
-
     for _ in range(n):
         winner = play_bracket(teams, bracket)
         win_counts[winner] += 1
-
     return {team_id: count / n for team_id, count in win_counts.items()}
 
-
 def play_bracket(teams, bracket):
-    remaining = dict(bracket)  # copy so we don't mutate
-
+    remaining = copy(bracket)
     for round in ["r16", "qf", "sf", "final"]:
-        next_round = {}
-        for match_id, (team_a, team_b) in remaining[round].items():
-            winner = simulate_match(teams[team_a], teams[team_b])
-            next_round[match_id] = winner
-        remaining[round] = next_round
-
-    return remaining["final"][0]  # the winner
-
+        for match in remaining[round]:
+            winner = simulate_match(teams[match.team_a], teams[match.team_b])
+            advance(winner, next_round)
+    return champion
 
 def simulate_match(team_a, team_b):
     prob_a = win_probability(team_a.strength, team_b.strength)
     return team_a.id if random() < prob_a else team_b.id
 ```
 
-### Win probability per match
+### Draw probability
 
+`DRAW_PROBABILITY = 0.27` — approximately 27% of knockout matches in World Cup history (1994–2022) were decided in extra time or penalties. When a draw is simulated, the winner is determined by a coin flip weighted by relative team strength.
+
+Sensitivity: shifting this value by ±0.05 moves the top team's predicted win% by ~0.5–1 percentage point. Low impact. To verify:
+
+```bash
+# In config.py, temporarily change DRAW_PROBABILITY, run update.py, compare predictions
+python scripts/backtest.py --sensitivity
 ```
-prob_A_wins = 1 / (1 + 10^((strength_B - strength_A) / 400))
-```
-
-This is the standard Elo win expectancy formula, applied to our composite strength score rather than raw Elo.
-
-For matches that may go to extra time and penalties: we add a small random draw probability (~25% of matches at knockout stages) which resolves via a coin-weighted flip.
-
-### Simulation count
-
-Default: `N_SIMULATIONS = 10_000` (set in `config.py`).
-
-At 10,000 runs, the standard error on a 20% probability is ~0.4 percentage points — accurate enough for this purpose. Increasing to 100,000 reduces noise further but adds ~1 second of compute time.
 
 ---
 
-## Tuning model weights
+## Validating the model
 
-Weights can be adjusted in `config.py` under `WEIGHTS`. They must sum to 1.0.
+Run the backtest script after any parameter change:
 
-To evaluate whether a weight change improves the model:
+```bash
+# Quick check with current settings
+python scripts/backtest.py
 
-1. Pull historical WC 2026 group stage data (already in `data/bracket.json` after first run)
-2. Run `python scripts/backtest.py` (backtest utility — see future improvements)
-3. Compare predicted probabilities vs actual outcomes using Brier score or log-loss
+# Find optimal STRENGTH_SCALE
+python scripts/backtest.py --sweep
 
-Rough guidance:
-- If the model is consistently over-rating favorites → decrease `W_ELO`, increase `W_XG`
-- If upsets are being underestimated → decrease `W_ODDS` (markets underweight upsets)
-- If injury impacts seem too strong or too weak → adjust `MAX_PLAYER_IMPORTANCE`
+# Check sensitivity of floor/draw parameters
+python scripts/backtest.py --sensitivity
+```
+
+The backtest uses completed matches from `data/bracket.json` and the team strength values in `data/teams.json`. It is most accurate when run after a round completes (team_strength values reflect pre-round ratings in the history snapshots).
+
+**Brier score interpretation:**
+- < 0.20: well-calibrated, better than baseline
+- 0.20–0.25: reasonable, close to baseline
+- \> 0.25: worse than always predicting 50/50 — something is wrong
 
 ---
 
 ## Limitations
 
-- **Small sample size.** A knockout tournament is 7 matches at most per team. Variance is inherently high. A model predicting a 70% win probability will still see that team lose 30% of the time in reality.
-- **Tactical factors not captured.** Pressing intensity, defensive organization, and coach-specific strategies are not in the model. These are partially captured by xG but not fully.
-- **Hot streaks are noisy.** xG form over 5 games can be influenced by opponent quality. We do not fully adjust for strength of schedule in the form calculation.
-- **Transfermarkt values lag.** Squad values are updated ~monthly. They may not reflect very recent transfers or injuries that affect perceived value.
-- **Betting markets are not perfectly efficient.** They can be slow to update on injury news and may overweight brand-name teams (Brazil, Argentina) due to public betting bias.
+- **Small tournament sample.** 7 matches maximum per team. A 70% predicted probability will still lose 30% of the time. Variance is inherent.
+- **Tactical factors not captured.** Pressing, defensive shape, coach-specific setups are only partially reflected through xG.
+- **Strength-of-schedule not adjusted.** A team's xG form in three group games against weak opponents may be inflated. No SOS correction is applied.
+- **Betting market self-reinforcing bias.** 20% of the team_strength score comes from markets that are known to overweight prominent brands (Brazil, Argentina). The model is not fully independent of market sentiment. See Signal 4 above.
+- **Injury floor and draw probability are round numbers.** `MIN_INJURY_MULTIPLIER = 0.75` and `DRAW_PROBABILITY = 0.27` are informed estimates, not precisely calibrated constants. Validate with `python scripts/backtest.py --sensitivity`.
+- **Transfermarkt values lag.** Updated monthly. May not reflect very recent injuries.
 
 ---
 
 ## Future improvements
 
+- [x] STRENGTH_SCALE separate from ELO_SCALE (v1.1)
+- [x] Dynamic key player detection (v1.1)
+- [x] Backtest script with Brier score and scale sweep (v1.1)
 - [ ] Strength-of-schedule adjustment for xG form ratio
-- [ ] Backtesting script (`python scripts/backtest.py`) with Brier score output
-- [ ] Automated weight optimization using historical tournament data
-- [ ] Match-level xG expected goals model (Poisson distribution per match)
-- [ ] Confederation adjustment (account for variation in competition quality by region)
+- [ ] Pre-match Elo snapshots in backtest (use history/ for more accurate pre-match ratings)
+- [ ] Automated weight optimization using historical WC data
+- [ ] Match-level Poisson goal distribution model (replaces binary win/loss simulation)
+- [ ] Confederation adjustment for cross-region strength calibration

@@ -104,7 +104,7 @@ DEMO_INJURIES: dict[str, list[dict[str, Any]]] = {
 }
 
 DEMO_PLAYER_STATS: dict[str, list[dict[str, Any]]] = {
-    "FRA": [{"player_id": 276, "name": "Kylian Mbappé", "position": "Attacker", "xg_per90": 0.55, "xa_per90": 0.12, "is_starting_xi": True}],
+    "FRA": [{"player_id": 276, "name": "Kylian Mbappé", "position": "Attacker", "goals": 3, "assists": 1, "minutes": 270, "xg_per90": 0.55, "xa_per90": 0.12, "is_starting_xi": True}],
 }
 
 DEMO_ODDS: dict[str, float] = {

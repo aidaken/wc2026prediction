@@ -1,4 +1,4 @@
-"""Monte Carlo tournament simulation engine."""
+"""knockout sim. runs the bracket 10k times, spits out win % and per-match advance %."""
 
 from __future__ import annotations
 
@@ -11,14 +11,6 @@ import config
 from src.bracket_topology import ROUND_ORDER, propagate_winner
 from src.utils import win_probability
 
-# Composite strength is on [0, 1]; map to Elo-like scale for match win formula.
-STRENGTH_FLOOR = 1400.0
-STRENGTH_CEILING = 2100.0
-
-
-def _to_match_rating(strength: float) -> float:
-    return STRENGTH_FLOOR + strength * (STRENGTH_CEILING - STRENGTH_FLOOR)
-
 
 def match_win_probability(
     team_home: str,
@@ -26,9 +18,9 @@ def match_win_probability(
     strengths: dict[str, float],
 ) -> tuple[float, float]:
     """Analytical home/away win probability (pre-draw adjustment)."""
-    sa = _to_match_rating(strengths.get(team_home, 0.5))
-    sb = _to_match_rating(strengths.get(team_away, 0.5))
-    prob_home = win_probability(sa, sb)
+    sa = strengths.get(team_home, 0.5)
+    sb = strengths.get(team_away, 0.5)
+    prob_home = win_probability(sa, sb, scale=config.STRENGTH_SCALE)
     return prob_home, 1.0 - prob_home
 
 
@@ -38,11 +30,12 @@ def _simulate_match(
     strengths: dict[str, float],
     rng: random.Random,
 ) -> str:
-    sa = _to_match_rating(strengths.get(team_a, 0.5))
-    sb = _to_match_rating(strengths.get(team_b, 0.5))
-    prob_a = win_probability(sa, sb)
+    sa = strengths.get(team_a, 0.5)
+    sb = strengths.get(team_b, 0.5)
+    prob_a = win_probability(sa, sb, scale=config.STRENGTH_SCALE)
 
     if rng.random() < config.DRAW_PROBABILITY:
+        # pens vibes: pull prob toward 50/50, upsets happen more
         prob_a = 0.5 + (prob_a - 0.5) * 0.6
 
     return team_a if rng.random() < prob_a else team_b

@@ -163,16 +163,19 @@ A team can have high advancement % in Round of 32 (easy opponent) but lower tour
 
 ## Engine fixes (v1.1)
 
-This round-prediction work also addresses three structural bugs:
+This round-prediction work also addresses structural bugs and model calibration:
 
 ### 1. Bracket topology
 Replaced sequential winner pairing with `MATCH_FEEDERS` topology map.
 
 ### 2. Elo deduplication
-`teams.json` `_meta.elo_processed_matches` tracks which fixture IDs have already updated Elo. Re-running `update.py` does not compound rating changes.
+`teams.json` `_meta.elo_processed_matches` tracks which fixture IDs have already updated Elo.
 
 ### 3. Betting odds normalization
-`normalize_betting_probs()` in `src/utils.py` renormalizes implied probabilities across all active teams (sum = 1.0), applied in `combine_strengths()`.
+`normalize_betting_probs()` renormalizes implied probabilities across all active teams.
+
+### 4. STRENGTH_SCALE (critical)
+`simulate.py` uses `STRENGTH_SCALE` (default 0.50) on normalized `[0, 1]` team strengths — not `ELO_SCALE=400`. See `docs/MODEL.md` and `python scripts/backtest.py --sweep`.
 
 ---
 

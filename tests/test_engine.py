@@ -142,6 +142,12 @@ class TestSimulate(unittest.TestCase):
     def test_match_win_probability_favorite(self):
         prob_home, prob_away = match_win_probability("BRA", "CAN", {"BRA": 0.9, "CAN": 0.2})
         self.assertGreater(prob_home, prob_away)
+        self.assertGreater(prob_home, 0.6)
+
+    def test_strength_scale_not_coin_flip(self):
+        prob_home, _ = match_win_probability("BRA", "FRA", {"BRA": 0.78, "FRA": 0.64})
+        self.assertGreater(prob_home, 0.55)
+        self.assertLess(prob_home, 0.85)
 
 
 if __name__ == "__main__":

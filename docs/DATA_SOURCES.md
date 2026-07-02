@@ -148,7 +148,7 @@ Per-player stats table for the tournament:
 - `xg` (expected goals per player), `xag` (expected assists per player)
 - `npxg` (non-penalty xG)
 
-This supplements API-Football player data when player-level xG is not available there. We only call FBref for players flagged as "key" in `config.py` (`KEY_PLAYERS` dict).
+This supplements API-Football player data when player-level xG is not available there. We only call FBref for players flagged as key in `config.py` (`KEY_PLAYER_OVERRIDES` and auto-detected top scorers).
 
 FBref is the most fragile data source. If the scraper fails, the model falls back to API-Football player goal/assist data. This is documented in `src/fetch.py`.
 

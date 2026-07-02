@@ -193,6 +193,7 @@ def get_player_stats(api_team_id: int, starting_player_ids: set[int] | None = No
             "position": games.get("position"),
             "goals": goals.get("total") or 0,
             "assists": goals.get("assists") or 0,
+            "minutes": minutes,
             "xg_per90": (goals.get("total") or 0) / played,
             "xa_per90": (goals.get("assists") or 0) / played,
             "is_starting_xi": player_id in starting or appearances >= 2,
