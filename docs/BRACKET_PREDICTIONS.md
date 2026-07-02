@@ -161,7 +161,7 @@ Easy R32 opponent can mean high advance % but lower trophy % if the other side o
 1. **Topology** — `MATCH_FEEDERS` instead of sequential pairing
 2. **Elo dedup** — `_meta.elo_processed_matches` in `teams.json`
 3. **Odds norm** — `normalize_betting_probs()` over active teams
-4. **STRENGTH_SCALE** — sim uses 0.50 on [0,1] strengths, not Elo 400 scale. See `docs/MODEL.md`, `backtest.py --sweep`
+4. **STRENGTH_SCALE** — sim uses **0.68** on [0,1] strengths (v1.2 default), not Elo 400 scale. See `docs/MODEL.md`, `backtest.py --sweep`
 
 ---
 

@@ -1,93 +1,106 @@
 # Architecture
 
-How this repo fits together. Three layers, and they only talk through JSON on disk
+High-level map of how this repo fits together. For signal math see [`docs/MODEL.md`](docs/MODEL.md). For data ingestion see [`docs/DATA_PIPELINE.md`](docs/DATA_PIPELINE.md).
 
 ---
 
-## The flow
+## Data flow
 
 ```
-INGESTION     fetch, scrape, odds APIs
-     ↓
-ENGINE        elo, xg, injuries, monte carlo
-     ↓ writes
-data/*.json   teams, bracket, predictions
-     ↓ fetch()
-WEB           static dashboard on GitHub Pages
+                    ┌─────────────────────┐
+                    │  scripts/fetch_public.py  │
+                    │  (Wikipedia MediaWiki API)  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ▼                ▼                ▼
+      data/bracket.json  fixtures_cache.json   (group + KO results)
+              │
+              │     ┌──────────────────────┐
+              │     │  update.py (optional) │
+              │     │  API-Football, Odds,   │
+              │     │  Transfermarkt, Elo    │
+              │     └──────────┬───────────┘
+              │                │
+              ▼                ▼
+      data/teams.json    data/predictions.json
+      (strengths)        (_meta.weights, sim results)
+              │                │
+              └────────┬───────┘
+                       ▼
+              web/index.html
+              (static fetch of predictions.json)
 ```
 
-### Ingestion
+**Primary path:** `fetch_public.py` → `update.py`. No keys required.
 
-Raw data in, dicts out. No math.
-
-| File | What | From |
-|---|---|---|
-| `fetch.py` | Fixtures, xG, players, injuries | API-Football |
-| `value.py` | Squad € | Transfermarkt scrape |
-| `odds.py` | Tournament winner odds | The Odds API |
-
-Keys in `.env`. More detail in [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
-
-### Engine
-
-This is where predictions actually happen. `update.py` calls modules in order and writes JSON.
-
-| File | What |
-|---|---|
-| `elo.py` | Ratings after each result |
-| `xg.py` | Form from last 5 games |
-| `injury.py` | Penalty when key players are out |
-| `simulate.py` | 10k bracket runs |
-| `bracket_topology.py` | Fixed WC tree (combination 67) |
-
-Weights and scales live in `config.py`. Math in [docs/MODEL.md](docs/MODEL.md).
-
-### Web
-
-One HTML file. Loads `predictions.json` and `bracket.json`. No build step.
-
-GitHub Pages hosts it. Push new JSON, site updates in ~30s.
+**Optional enrichers** in `update.py`: API-Football (injuries, extra fixtures), Odds API or `manual_odds.json`, Transfermarkt scrape, ClubElo CSV. Each module fails soft; `strength.py` redistributes missing signal weights per team.
 
 ---
 
-## What `update.py` runs, in order
+## Core modules
 
-1. Fetch fixtures, players, injuries, squad values, odds
-2. Sanity check (teams still in, bracket makes sense)
-3. Update Elo, xG form, injury multipliers
-4. Combine into `team_strength` per active team
-5. Monte Carlo the remaining bracket
-6. Write `teams.json`, `bracket.json`, `predictions.json`
-7. Snapshot to `data/history/`
-
-Step-by-step: [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md).
-
----
-
-## Why I split it this way
-
-- **`update.py`** is glue only. I didn't want business logic hiding in there.
-- **`config.py`** is the one knob board for weights and API constants.
-- **`src/`** modules don't import each other. Circular imports get ugly fast; `update.py` wires everything.
-- **`data/`** is the whole state. Git history = prediction history for free.
-- **`web/`** is swappable. Anything that can read JSON works.
+| Module | Role |
+|--------|------|
+| `config.py` | `MODEL` weights, `STRENGTH_SCALE`, sim count, injury caps |
+| `update.py` | Orchestrator: load data → signals → strengths → simulate → write JSON |
+| `src/public_fetch.py` | Parse Wikipedia WC 2026 page, merge into bracket + fixtures cache |
+| `src/strength.py` | Weighted signal blend + per-team effective weights when sources missing |
+| `src/xg.py` | Rolling form from match xG; goals-based fallback when xG absent |
+| `src/simulate.py` | Monte Carlo over `bracket_topology.MATCH_FEEDERS` |
+| `src/fetch.py` | API-Football client + `merge_fixtures()` (keeps seed fixtures without `match_id`) |
+| `src/elo.py` | ClubElo load + FIFA rank fallback |
+| `src/value.py` | Transfermarkt squad values (cached in teams.json) |
+| `src/odds.py` | Odds API + `load_manual_odds()` from `data/manual_odds.json` |
 
 ---
 
-## Assumptions (on purpose)
+## Outputs
 
-- Bracket is locked after groups (combination 67). No re-draws.
-- I update once per round, not per match. Good enough for knockouts.
-- Free API tiers only (~15-20 API-Football calls per run).
-- Weights stay in `config.py` unless I deliberately change them.
+### `data/predictions.json`
+
+- `teams[]`: `win_probability`, `strength`, signal breakdown
+- `matches[]`: per-knockout advancement probabilities
+- `_meta`: `model_version`, `weights`, `strength_scale`, `data_sources`, `strength_meta` (per-team effective weights, form source notes)
+
+The web UI reads `_meta` so displayed formulas match what the engine actually used.
+
+### `data/bracket.json`
+
+Single source of truth for bracket structure, group standings, knockout results. `fetch_public.py` updates scores by team pairing; manual edits still work for edge cases Wikipedia hasn't caught up on.
+
+### `data/fixtures_cache.json`
+
+Persisted match list (groups + knockouts) for xG/form even when API-Football free tier can't serve 2026.
 
 ---
 
-## Adding a signal
+## Web UI
 
-1. New `src/your_signal.py` → `dict[team_id, float]`
-2. Call it from `update.py` before `combine_strengths`
-3. Weight in `config.py` (still sum to 1.0)
-4. Note it in `docs/MODEL.md` and `docs/DATA_SOURCES.md`
+Static `web/index.html`. No build step. Fetches `../data/predictions.json` relative to Pages root.
 
-Why JSON, why Monte Carlo, why manual updates: [docs/DECISIONS.md](docs/DECISIONS.md).
+Features: athletic bracket layout, champion hero, expandable team rows (strength formula + signals), tiered team list, background watermarks.
+
+---
+
+## Testing
+
+```bash
+pytest tests/
+python scripts/backtest.py
+python scripts/backtest.py --sweep   # STRENGTH_SCALE calibration
+```
+
+Backtest uses completed knockouts in `bracket.json` vs strengths in `teams.json`.
+
+---
+
+## Deployment
+
+GitHub Pages from `main`. `predictions.json` and `teams.json` are committed so the site always has data without a CI build. Push after `update.py` when you want the public bracket to refresh.
+
+---
+
+## Versioning
+
+Model version in `config.py` (`MODEL_VERSION`) and `predictions.json` `_meta`. Breaking signal or sim changes → bump minor. Doc-only → patch in CHANGELOG.

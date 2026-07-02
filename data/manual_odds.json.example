@@ -1,0 +1,21 @@
+{
+  "_comment": "Copy to manual_odds.json and fill tournament winner implied probs (should sum to ~1.0). Used when Odds API is unavailable.",
+  "odds": {
+    "BRA": 0.18,
+    "FRA": 0.16,
+    "ARG": 0.14,
+    "ESP": 0.12,
+    "ENG": 0.10,
+    "POR": 0.06,
+    "NED": 0.04,
+    "USA": 0.04,
+    "MEX": 0.03,
+    "COL": 0.03,
+    "MAR": 0.02,
+    "NOR": 0.02,
+    "SUI": 0.02,
+    "BEL": 0.02,
+    "CAN": 0.01,
+    "PAR": 0.01
+  }
+}

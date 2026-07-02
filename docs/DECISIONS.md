@@ -80,7 +80,7 @@ Pipeline should run after each knockout round. Could automate with cron or Actio
 
 ### Decision
 
-I run `python update.py` by hand when the round is actually done.
+I run `fetch_public.py` then `update.py` by hand when the round is actually done.
 
 ### Didn't use
 
@@ -162,3 +162,38 @@ Learned weights need labeled history and infra. Equal weights ignore that Elo an
 ### Why fixed
 
 Transparent, tunable in `config.py` without touching sim code, good enough for a 7-round sprint. Can optimize later if I care enough.
+
+**v1.2 note:** Nominal weights are 35/30/15/20, but `strength.py` redistributes missing signals per team. UI reads `effective_weights` from `_meta.strength_meta`.
+
+---
+
+## ADR-007: Wikipedia-first results ingestion
+
+**Date:** 2026-07-01  
+**Status:** Accepted
+
+### Context
+
+API-Football free tier doesn't serve WC 2026 season. Odds API often has no outright market. I still need fresh scores and fixture history for form and Elo.
+
+### Decision
+
+`scripts/fetch_public.py` scrapes the Wikipedia 2026 World Cup page via MediaWiki API, updates `bracket.json` and `fixtures_cache.json`. Run before every `update.py`.
+
+### Didn't use
+
+| Option | Why not |
+|---|---|
+| Paid API-Football only | Cost + still want offline reproducibility |
+| Manual bracket edits only | Too slow every match day, error-prone |
+| FIFA official API | No public free API for live WC data |
+
+### Why Wikipedia
+
+Free, no keys, humans update it fast during the tournament, structured enough to parse. We already had bracket topology in JSON; Wikipedia fills scores and builds fixture history.
+
+### Tradeoffs
+
+- Parser breaks if Wikipedia reformats tables (fix and re-run)
+- No match xG from Wikipedia (goals fallback + optional API-Football)
+- Trust but verify weird scores against another source if something looks off

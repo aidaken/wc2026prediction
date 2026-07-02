@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Round of 32",
     "wc_year": 2026,
-    "last_updated": "2026-07-02T04:09:05Z"
+    "last_updated": "2026-07-02T13:59:26Z"
   },
   "rounds": {
     "round_of_32": {
@@ -17,7 +17,9 @@
           "score_away": 1,
           "winner": "CAN",
           "status": "FT",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m74",
@@ -26,8 +28,8 @@
           "team_away": "PAR",
           "score_home": 1,
           "score_away": 1,
-          "penalties_home": 3,
-          "penalties_away": 4,
+          "penalties_home": 1,
+          "penalties_away": 1,
           "winner": "PAR",
           "status": "PEN",
           "stage": "knockout"
@@ -39,8 +41,8 @@
           "team_away": "MAR",
           "score_home": 1,
           "score_away": 1,
-          "penalties_home": 2,
-          "penalties_away": 3,
+          "penalties_home": 1,
+          "penalties_away": 1,
           "winner": "MAR",
           "status": "PEN",
           "stage": "knockout"
@@ -56,7 +58,9 @@
           "status": "FT",
           "stage": "knockout",
           "xg_home": 2.1,
-          "xg_away": 1.3
+          "xg_away": 1.3,
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m77",
@@ -69,7 +73,9 @@
           "status": "FT",
           "stage": "knockout",
           "xg_home": 2.4,
-          "xg_away": 0.6
+          "xg_away": 0.6,
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m78",
@@ -80,7 +86,9 @@
           "score_away": 2,
           "winner": "NOR",
           "status": "FT",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m79",
@@ -91,7 +99,9 @@
           "score_away": 0,
           "winner": "MEX",
           "status": "FT",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m80",
@@ -102,7 +112,9 @@
           "score_away": 1,
           "winner": "ENG",
           "status": "FT",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m81",
@@ -113,7 +125,9 @@
           "score_away": 0,
           "winner": "USA",
           "status": "FT",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m82",
@@ -124,7 +138,9 @@
           "score_away": 2,
           "winner": "BEL",
           "status": "AET",
-          "stage": "knockout"
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m83",

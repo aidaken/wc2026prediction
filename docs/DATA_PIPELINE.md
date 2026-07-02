@@ -1,47 +1,70 @@
 # Data pipeline
 
-What `update.py` actually does, step by step. Read this when something in the output looks off.
+What actually runs, in order. Read this when output looks wrong or you're onboarding.
 
 ---
 
 ## Overview
 
 ```
-fetch everything → validate → score teams → sim bracket → write JSON → archive
+fetch_public.py  →  update.py  →  commit data/*.json  →  GitHub Pages
+     │                  │
+ Wikipedia          signals + sim
+ bracket + cache
 ```
 
-One script. No queue, no worker. Takes a few minutes if APIs are happy.
+Two scripts. No queue, no worker. A few minutes end to end.
+
+---
+
+## Step 0: Public fetch (do this first)
+
+```bash
+python scripts/fetch_public.py
+```
+
+| Action | Module | Output |
+|---|---|---|
+| Scrape WC 2026 Wikipedia page | `public_fetch.py` | Parsed group + KO results |
+| Merge into bracket | `public_fetch.py` | Updated `data/bracket.json` |
+| Build match history | `public_fetch.py` | `data/fixtures_cache.json` |
+
+No API keys. This is how bracket scores and fixture history stay current when API-Football free tier can't serve 2026.
+
+Re-run after each match day before `update.py`.
 
 ---
 
 ## Step 1: Load config and data
 
-- Read `config.py` weights, `STRENGTH_SCALE`, API settings
-- Load existing `data/teams.json`, `data/bracket.json` if present
-- Read `_meta.elo_processed_matches` so we don't double-count Elo
+`update.py` starts by loading:
+
+- `config.py` — weights, `STRENGTH_SCALE`, sim count
+- `data/teams.json`, `data/bracket.json`, `data/fixtures_cache.json`
+- `_meta.elo_processed_matches` so Elo isn't double-applied
 
 ---
 
-## Step 2: Fetch
+## Step 2: Optional API fetch
 
-| Call | Module | Output |
-|---|---|---|
-| Fixtures + results | `fetch.py` | Match list, scores |
-| xG per match | `fetch.py` | xG for/against |
-| Player stats | `fetch.py` | Goals, assists |
-| Injuries | `fetch.py` | Who's out |
-| Squad values | `value.py` | € per team |
-| Winner odds | `odds.py` | Implied probs |
+| Call | Module | Output | If it fails |
+|---|---|---|---|
+| Fixtures + xG | `fetch.py` | Merged into fixture list | Use cache + bracket |
+| Player stats | `fetch.py` | Goals, assists | Skip / last known |
+| Injuries | `fetch.py` | Who's out | Multiplier 1.0 |
+| Squad values | `value.py` | € per team | Last cached |
+| Winner odds | `odds.py` | Implied probs | `manual_odds.json` or redistribute weight |
+| ClubElo | `elo.py` | Base ratings | FIFA fallback |
 
-All in memory. Nothing persisted until the end except what we already had on disk.
+`merge_fixtures()` keeps seed group matches even without `match_id`. Important when Wikipedia gives results but API doesn't.
 
 ---
 
 ## Step 3: Validate
 
-- Enough teams still in the tournament
-- Bracket matches line up with known structure
-- Fail loud if critical fetch failed (unless `--demo`)
+- Enough active teams in bracket
+- Structure matches `bracket_topology.py`
+- Fail loud on critical errors unless `--demo`
 
 ---
 
@@ -49,36 +72,38 @@ All in memory. Nothing persisted until the end except what we already had on dis
 
 `elo.py`:
 
-- Only process fixtures whose IDs aren't in `elo_processed_matches`
-- Update ratings for both teams per result
+- Process only fixtures not in `elo_processed_matches`
+- Update both teams per result
 - Append new IDs to `_meta`
 
-This was a real bug before: every run re-applied all matches and ratings blew up.
+Re-running all historical matches every time was a real bug. Fixed.
 
 ---
 
 ## Step 5: Signals per team
 
-For each **active** team (still in bracket):
+For each **active** team:
 
 | Signal | Module | Notes |
 |---|---|---|
-| Elo | `elo.py` | Normalized to ~[0,1] band |
-| xG form | `xg.py` | Last 5 games |
+| Elo | `elo.py` | Normalized ~[0,1] |
+| Form | `xg.py` | Last N games: xG if present, else goals-based fallback |
 | Squad value | `value.py` | Log-scaled € |
-| Betting | `odds.py` | Normalized across active teams only |
+| Betting | `odds.py` | API or manual; renormalized across active teams |
 | Injury | `injury.py` | Multiplier on key players out |
+
+Partial data? `strength.py` computes **effective_weights** per team (missing signal's share goes to what's left). Logged in `_meta.strength_meta`.
 
 ---
 
 ## Step 6: Combine strength
 
-Weighted sum from `config.py` (must sum to 1.0):
-
-```
-team_strength = w_elo * elo_norm + w_xg * xg_norm + ... 
+```python
+team_strength = sum(w_i * signal_i)   # w_i may differ per team
 team_strength *= injury_multiplier
 ```
+
+xG coverage shrink: if only a few teams have match xG, don't let form dominate the whole field.
 
 Stored on each team in `teams.json`.
 
@@ -88,15 +113,15 @@ Stored on each team in `teams.json`.
 
 `simulate.py`:
 
-- Uses `bracket_topology.MATCH_FEEDERS` so winners land in the right next match
-- `STRENGTH_SCALE` on [0,1] strengths (not raw Elo 400 scale)
-- `DRAW_PROBABILITY` for group-stage style ties if applicable; knockouts go to pens logic as coded
+- `bracket_topology.MATCH_FEEDERS` for correct winner placement
+- `STRENGTH_SCALE = 0.68` on [0,1] strengths (tune with `backtest.py --sweep`)
+- `DRAW_PROBABILITY` for simulated draws in applicable stages
 - 10,000 iterations (configurable)
 
 Outputs:
 
 - `win_probability` per team
-- `match_predictions` — P(team advances) per knockout match
+- `match_predictions` — P(advance) per knockout match
 
 ---
 
@@ -104,36 +129,38 @@ Outputs:
 
 | File | Contents |
 |---|---|
-| `teams.json` | All teams, strengths, signals, `_meta` |
-| `bracket.json` | Remaining fixtures, winners filled where known |
-| `predictions.json` | Win %, match_predictions, model version, timestamp |
+| `teams.json` | Strengths, signals, Elo, `_meta` |
+| `bracket.json` | Structure + results (may have been touched in step 0) |
+| `predictions.json` | Win %, match_predictions, `_meta` (weights, scale, sources) |
 
 ---
 
 ## Step 9: History
 
-Copy snapshot to `data/history/predictions_YYYYMMDD_HHMMSS.json` (or similar). Lets you diff how predictions moved round to round.
+Snapshot to `data/history/` when configured. Diff predictions round to round.
 
 ---
 
 ## Demo mode
 
-`python update.py --demo`:
+```bash
+python update.py --demo
+```
 
-- Skips live API calls where possible
-- Uses bundled/cached data so you can test the pipeline without burning quota
+Skips live API calls where possible. Uses bundled/cached data. Good for CI and UI work without burning quota.
 
-Good for CI and local UI work.
+**Note:** Demo doesn't replace `fetch_public.py` if you want fresh Wikipedia results. Run both in prod.
 
 ---
 
 ## What I run after a knockout round
 
 ```bash
+python scripts/fetch_public.py
 python update.py
-git add data/predictions.json data/bracket.json data/teams.json
-git commit -m "chore: update predictions after quarter-finals"
+git add data/bracket.json data/fixtures_cache.json data/predictions.json data/teams.json
+git commit -m "data: post-round-N results"
 git push
 ```
 
-That's the whole ops story.
+Site rebuilds in ~30s. That's the whole ops story.

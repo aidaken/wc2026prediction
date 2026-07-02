@@ -2,18 +2,49 @@
 
 Where every signal comes from, what we pull, rate limits, and what happens when something breaks.
 
+**TL;DR:** I run `fetch_public.py` first (Wikipedia, no keys). APIs are optional enrichers. Free tiers mostly don't cover WC 2026 yet.
+
 ---
 
 ## Quick map
 
-| Source | For | Cost | Per update | Limit |
+| Source | For | Cost | Keys? | Reality check |
 |---|---|---|---|---|
-| API-Football | Results, xG, players, injuries | Free | ~20 calls | 500/day |
-| Transfermarkt | Squad € | Free scrape | 16 teams | throttle yourself |
-| The Odds API | Winner odds | Free | 1 call | 500/month |
-| FBref | Deep player xG (optional) | Free scrape | ~16 | slow down hard |
+| **Wikipedia** | Group + KO results, fixtures cache | Free | No | Primary. Updated by volunteers, usually fast post-match |
+| API-Football | xG, players, injuries, extra fixtures | Free tier | Yes | **2022–2024 seasons only on free.** WC 2026 league often 404/empty |
+| Transfermarkt | Squad € | Free scrape | No | Cached in `teams.json`. HTML changes = scrape dies |
+| The Odds API | Winner odds | Free tier | Yes | `soccer_fifa_world_cup` market often 422 pre-tournament |
+| **`manual_odds.json`** | Winner odds | You paste | No | Fills odds slot when API has no market |
+| ClubElo CSV | Base Elo | Free | No | Public download, FIFA rank fallback |
+| FBref | Deep player xG (optional) | Free scrape | No | Not wired in main path yet. Fragile |
 
 Keys in `.env` via `python-dotenv`. Never commit `.env`.
+
+---
+
+## Wikipedia (primary)
+
+**Module:** `src/public_fetch.py`  
+**CLI:** `python scripts/fetch_public.py`  
+**API:** MediaWiki action API on the 2026 World Cup article
+
+### What we pull
+
+- Group stage tables A–L (scores, winners)
+- Knockout sections (R32, R16, QF, SF, Final as published)
+- Match list → `data/fixtures_cache.json` for form/xG calculations
+
+### What we write
+
+- `data/bracket.json` — scores merged by team pairing against existing structure
+- `data/fixtures_cache.json` — all finished matches with goals (xG null unless from API)
+
+### Limits
+
+- No auth, reasonable rate (one page fetch + parse)
+- Depends on Wikipedia being up to date. If a result isn't there yet, update `bracket.json` by hand or re-run later
+
+This is the path that actually works during the tournament without paying anyone.
 
 ---
 
@@ -22,48 +53,20 @@ Keys in `.env` via `python-dotenv`. Never commit `.env`.
 **Base:** `https://v3.football.api-sports.io`  
 **Auth:** `X-RapidAPI-Key` header  
 **Sign up:** [api-football.com](https://www.api-football.com/)  
-**Free tier:** 500/day, 30/min  
-**WC league id:** `1` (double-check `/leagues` on first run)
+**Free tier:** 500/day, 30/min, **seasons 2022–2024 only** (dashboard says this explicitly)
 
-### GET /fixtures
+### WC 2026 gotcha
 
-```
-GET /fixtures?league=1&season=2026&round=Round of 32
-```
+League id `1`, season `2026` often returns nothing or errors on free tier. `update.py` falls back to `fixtures_cache.json` + `bracket.json` for results. You still might get injuries/player calls if they add 2026 to your plan later.
 
-We grab:
-- `fixture.id`, `fixture.date`, `fixture.status.short` (`FT`, `PEN`, `NS`)
-- `teams.home/away.id`, `teams.home/away.name`
-- `goals.home/away`
-- `score.penalty` if pens
+### Endpoints we use
 
-### GET /fixtures/statistics
+**GET /fixtures** — scores, status, penalty shootouts  
+**GET /fixtures/statistics** — `expected_goals` when available  
+**GET /players** — goals, assists per team  
+**GET /injuries** — out / doubtful flags
 
-Per finished match:
-
-```
-GET /fixtures/statistics?fixture=FIXTURE_ID
-```
-
-Look for `type: "expected_goals"`. Also shots on target, possession if we need them.
-
-### GET /players
-
-Per team per round:
-
-```
-GET /players?league=1&season=2026&team=TEAM_ID
-```
-
-Goals, assists, position. Player xG not always here; FBref backup.
-
-### GET /injuries
-
-```
-GET /injuries?league=1&season=2026&team=TEAM_ID
-```
-
-Missing / questionable flags, reason (injury, suspension).
+If the call fails: last cached data, stderr warning, pipeline continues.
 
 ---
 
@@ -71,13 +74,11 @@ Missing / questionable flags, reason (injury, suspension).
 
 **Page:** WC teams on transfermarkt.com  
 **Auth:** none  
-**Rate:** I sleep ~2s between requests, real User-Agent
+**Rate:** ~2s between requests, real User-Agent
 
-Scrape squad total € from `data-market-value` on the team row. Map names to our ids in config/`teams.py`.
+Scrape squad total €. Map names to our ids. Once per round → `squad_value_eur` in `teams.json`.
 
-Once per round → `squad_value_eur` in `teams.json`.
-
-If HTML changes and scrape dies: `value.py` keeps last known value and warns. Non-fatal.
+If HTML changes: `value.py` keeps last known value and warns. Non-fatal.
 
 ---
 
@@ -85,32 +86,36 @@ If HTML changes and scrape dies: `value.py` keeps last known value and warns. No
 
 **Base:** `https://api.the-odds-api.com/v4`  
 **Auth:** `apiKey` query param  
-**Sign up:** [the-odds-api.com](https://the-odds-api.com/)  
-**Free:** 500/month (~6 updates for a full knockout run)
+**Free:** 500/month
 
 ### GET /sports/soccer_fifa_world_cup/odds
 
-```
-GET /sports/soccer_fifa_world_cup/odds?
-    apiKey=YOUR_KEY&
-    regions=eu&
-    markets=outrights&
-    oddsFormat=decimal
+Often **422** or empty when books haven't posted outright markets yet. Not a bug in our code.
+
+### Fallback: manual odds
+
+Copy `data/manual_odds.json.example` → `data/manual_odds.json`:
+
+```json
+{
+  "Brazil": 5.0,
+  "France": 6.0
+}
 ```
 
-Average decimal prices across bookmakers, convert to implied prob, normalize. Math in `docs/MODEL.md`.
+Team names must match `teams.json`. `odds.py` normalizes across active teams same as API path.
 
 ---
 
-## FBref (optional)
+## ClubElo
 
-**URL:** World Cup stats on fbref.com  
-**Auth:** none  
-**Rate:** 5s+ between requests or they block you
+Public CSV from [eloratings.net](https://www.eloratings.net/). Loaded in `elo.py`. National teams without ClubElo entry get FIFA rank proxy. Tournament results still update Elo in `update.py`.
 
-Player table: xG, xAG, npxG, minutes. Only for key players when API-Football is thin.
+---
 
-Most fragile source. Fail → fall back to goals/assists from API-Football. Logged in `fetch.py`.
+## FBref (optional, future)
+
+Player xG/xAG when API-Football is thin. Not in the default v1.2 path. If we add it: 5s+ between requests or they block you.
 
 ---
 
@@ -118,25 +123,31 @@ Most fragile source. Fail → fall back to goals/assists from API-Football. Logg
 
 | Signal | When | How |
 |---|---|---|
-| Results + xG | After matches finish | Manual `update.py` |
-| Player stats | Once per round | Per-team fetch |
-| Injuries | Start of round update | Before next kickoff |
-| Squad € | Once per round | Scrape |
-| Odds | Once per round | One Odds API call |
+| Results | After matches finish | `fetch_public.py` then `update.py` |
+| Fixtures cache | Same | `fetch_public.py` |
+| xG per match | When API returns it | `update.py` / API-Football |
+| Form (no xG) | Same fixtures | Goals fallback in `xg.py` |
+| Player stats | Once per round | API-Football per team |
+| Injuries | Start of round | API-Football or static overrides |
+| Squad € | Once per round | Transfermarkt scrape |
+| Odds | Once per round | Odds API or `manual_odds.json` |
 
-Timestamp in `data/bracket.json` → `_meta.last_updated`.
+Timestamp in `predictions.json` → `_meta.last_updated` (and bracket meta where set).
 
 ---
 
-## When APIs fail
+## When sources fail
 
-Each `src/` module catches errors. Pipeline keeps going with last good JSON.
+Each module catches errors. Pipeline keeps going.
 
 ```
-API-Football down   → scores from bracket.json
+Wikipedia stale     → hand-edit bracket.json or wait and re-fetch
+API-Football 2026   → fixtures_cache + bracket.json for results/form
 Transfermarkt down  → last squad_value_eur
-Odds API down       → skip odds, optional FALLBACK_WEIGHTS in config
-FBref down          → API-Football player stats
+Odds API 422        → skip odds OR use manual_odds.json
+Partial xG          → goals fallback + xG coverage shrink in strength.py
 ```
 
-`update.py` shouldn't die because one source had a bad day. You get a degraded prediction and a stderr warning.
+`strength.py` redistributes missing signal weights **per team**. France doesn't get 33% just because she had xG and Colombia didn't.
+
+`update.py` shouldn't die because one source had a bad day. You get a degraded prediction, warnings on stderr, and `_meta.strength_meta` shows what each team actually used.

@@ -2,8 +2,9 @@
 """
 run this after each round to refresh predictions.
 
-  python update.py           # live (needs API_FOOTBALL_KEY)
-  python update.py --demo    # offline seed data
+  python scripts/fetch_public.py   # wikipedia results first (no keys)
+  python update.py                 # recalc strengths + sim
+  python update.py --demo          # offline seed data, skip most apis
   python update.py --round "Round of 16"
 """
 
@@ -31,6 +32,7 @@ from src.fetch import (
 )
 from src.injury import calculate_multipliers
 from src.odds import get_implied_probs
+from src.public_fetch import load_manual_odds
 from src.seed import DEMO_BRACKET, DEMO_FIXTURES, DEMO_INJURIES, DEMO_ODDS, DEMO_PLAYER_STATS, TEAMS
 from src.simulate import run as run_simulation
 from src.strength import compute_strength, shrink_xg_toward_neutral
@@ -183,6 +185,10 @@ def fetch_all_data(
     active = _active_teams(teams)
     betting_probs = get_implied_probs(active)
     odds_status = "ok" if betting_probs else "unavailable"
+    if not betting_probs:
+        betting_probs = load_manual_odds()
+        if betting_probs:
+            odds_status = "manual"
 
     return {
         "fixtures": fixtures,

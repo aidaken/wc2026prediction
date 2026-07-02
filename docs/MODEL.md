@@ -17,7 +17,7 @@ team_strength = (
 ) × injury_multiplier
 ```
 
-Default weights:
+Default weights (nominal, in `config.py`):
 
 | Signal | Weight | Why |
 |---|---|---|
@@ -26,6 +26,8 @@ Default weights:
 | Squad value | 0.15 | Depth/talent proxy from Transfermarkt |
 | Betting odds | 0.20 | Market already mashed a lot of models together |
 | Injury | multiplicative | Can shave up to ~20% off if key guys are out |
+
+**v1.2:** If a signal is missing for a team, `strength.py` redistributes that weight across whatever signals *are* present. No more two teams with xG eating 30% of everyone's brain while the rest get zero form credit. Effective weights per team land in `predictions.json` → `_meta.strength_meta`. The web UI uses those, not the nominal table above.
 
 Weights should sum to 1.0 (injury is separate). Tweak in `config.py` if you disagree with the blend.
 
@@ -83,6 +85,14 @@ Last `XG_FORM_GAMES` matches (default 5). WC group games count `XG_WC_MATCH_WEIG
 - \> 0.5 = creating more than conceding
 - \< 0.5 = getting out-chanced
 
+### Goals fallback (v1.2)
+
+Wikipedia + free API tier often give scores without match xG. When xG is missing for a fixture, `xg.py` builds a pseudo xG from goals (with the same rolling window). Not as good as real xG, way better than treating form as zero.
+
+### xG coverage shrink
+
+If only a handful of teams have real match xG, raw form scores would swing wild. `strength.py` shrinks form influence toward the field average based on coverage. Stops France/Brazil from jumping to 30%+ just because they're the only two with Understat-style data.
+
 ### Luck cap
 
 ```
@@ -117,6 +127,8 @@ implied_prob     = implied_prob_raw / sum(all_implied_prob_raw)
 ```
 
 Second step strips the book margin. We also renormalize across **active teams only** in `update.py`.
+
+**Sources:** The Odds API (`soccer_fifa_world_cup` outrights) or `data/manual_odds.json` when the API returns 422 / empty. If both missing, the 20% odds weight gets redistributed per team (see overview).
 
 ### Heads up: market bias
 
@@ -180,7 +192,8 @@ Brazil (0.78) vs France (0.64), gap 0.14:
 |---|---|---|
 | 400 (bug) | 50% | wrong |
 | 0.30 | 75% | too hot |
-| **0.50** | **66%** | starting point |
+| 0.50 | 66% | v1.1 default |
+| **0.68** | **~58%** | **v1.2 default (backtest sweep)** |
 | 0.80 | 60% | conservative |
 
 Tune it:
@@ -234,9 +247,12 @@ Uses completed matches in `data/bracket.json` and strengths in `data/teams.json`
 - Seven matches max per team. 70% still loses 30% of the time.
 - No pressing shape, no "this manager parks the bus" factor beyond xG.
 - xG form doesn't adjust for weak group opponents.
-- 20% betting signal = some brand-name overweighting.
+- Goals fallback when xG missing is a proxy, not shot quality.
+- 20% betting signal = some brand-name overweighting (when odds exist).
 - Injury floor and draw % are educated guesses, not gospel.
 - Transfermarkt lags. Monthly updates, not live.
+- Wikipedia parser can break if they reformat tables.
+- API-Football free tier won't give you 2026 xG; don't expect pro-grade form without paid data or manual work.
 
 ---
 
@@ -245,8 +261,14 @@ Uses completed matches in `data/bracket.json` and strengths in `data/teams.json`
 - [x] STRENGTH_SCALE separate from ELO_SCALE (v1.1)
 - [x] Dynamic key players (v1.1)
 - [x] Backtest + sweep (v1.1)
+- [x] Per-team weight redistribution when signals missing (v1.2)
+- [x] Goals-based form fallback (v1.2)
+- [x] xG coverage shrink (v1.2)
+- [x] Wikipedia public fetch pipeline (v1.2)
+- [x] `manual_odds.json` fallback (v1.2)
 - [ ] SOS adjustment on xG form
 - [ ] Pre-match Elo snapshots from `data/history/` for cleaner backtest
 - [ ] Learn weights from historical WCs
 - [ ] Poisson goals instead of binary W/L
 - [ ] Confederation strength calibration
+- [ ] FBref xG scrape for key players

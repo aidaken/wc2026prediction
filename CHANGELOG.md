@@ -1,44 +1,48 @@
 # Changelog
 
-What shipped and when. Patch = prediction refresh. Minor = model or features. Major = big structural change.
+All notable changes to this project. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ---
 
-## [Unreleased]
+## [1.2.0] - 2026-07-01
 
 ### Added
-- Per-match advance % on the bracket (`match_predictions`)
-- `bracket_topology.py` for the real WC feeder tree
-- `STRENGTH_SCALE` (v1.1), backtest script with Brier + sweep
-- Auto key-player detection in `injury.py`
-- Athletic-style bracket UI (flags, advance %)
-- `docs/VOICE.md`
-
-### Fixed
-- Sim paired R32 winners sequentially instead of following the real tree
-- Elo stacked on every `update.py` run (deduped via `elo_processed_matches` now)
-- Betting odds not normalized across active teams
-- Wrong teams/bracket (now combination 67 + real R32)
-- GitHub Pages 404 without `/web/` redirect
+- `scripts/fetch_public.py` + `src/public_fetch.py`: Wikipedia MediaWiki API scrape for group and knockout results (no API keys)
+- `data/fixtures_cache.json`: persisted fixtures for form/xG when APIs can't serve 2026
+- `data/manual_odds.json.example`: optional manual betting odds when Odds API has no WC market
+- `predictions.json` `_meta`: `weights`, `strength_scale`, `data_sources`, `strength_meta` (per-team effective weights)
+- Goals-based form fallback in `src/xg.py` when match xG missing
+- Per-team signal weight redistribution in `src/strength.py` when odds/form/value absent
+- xG coverage shrink so partial xG data doesn't dominate the field
 
 ### Changed
-- Model version 1.1.0
-- `DRAW_PROBABILITY` 0.25 → 0.27
-- Comments and docs voice pass
+- `STRENGTH_SCALE` default **0.68** (from `backtest.py --sweep`, was 0.50)
+- `merge_fixtures()` keeps seed group matches without `match_id`
+- `update.py` loads `manual_odds.json` when Odds API unavailable
+- Web UI: reads real weights from `_meta`, expandable team breakdown, tiered list, watermarks
+- Docs rewritten for Wikipedia-first workflow and API free-tier limits
+
+### Fixed
+- Safari crash: `const rows +=` → `let rows` in signal breakdown renderer
+- UI strength formula mismatch when odds missing (now uses `effective_weights` per team)
 
 ---
 
-## [1.0.0] — 2026-06-30
+## [1.1.0] - 2026-06
 
-First version. Ingestion, engine, dashboard, docs.
+### Added
+- `STRENGTH_SCALE` separate from `ELO_SCALE` (fixes ~50/50 knockout coin flips)
+- Dynamic key player detection for injury signal
+- `scripts/backtest.py`: Brier score, `--sweep`, `--sensitivity`
+- Bracket topology (`bracket_topology.py`) + per-match advancement % in UI
+- `docs/BRACKET_PREDICTIONS.md`
+
+### Changed
+- Monte Carlo uses feeder graph, not naive sequential pairing
+- Elo dedup + betting normalization in `update.py`
 
 ---
 
-## Round updates (manual log)
+## [1.0.0] - 2026-05
 
-| Round | Dates |
-|---|---|
-| Round of 16 | 2026-07-04 – 07-07 |
-| Quarter-finals | 2026-07-10 – 07-11 |
-| Semi-finals | 2026-07-14 – 07-15 |
-| Final | 2026-07-19 |
+Initial public release: five-signal strength model, Monte Carlo bracket, GitHub Pages UI.

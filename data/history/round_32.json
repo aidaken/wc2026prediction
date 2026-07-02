@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-02T04:09:05Z",
+    "generated_at": "2026-07-02T13:59:26Z",
     "round": "Round of 32",
     "simulations": 10000,
     "model_version": "1.2.0",
@@ -15,7 +15,7 @@
       "api_football": "unavailable",
       "odds_api": "unavailable",
       "transfermarkt": "ok",
-      "fixtures_count": 25,
+      "fixtures_count": 107,
       "injuries_teams": 0
     },
     "strength_meta": {
@@ -26,528 +26,536 @@
   },
   "predictions": [
     {
-      "team_id": "BRA",
-      "team_name": "Brazil",
-      "win_probability": 0.1902,
-      "reach_final_probability": 0.3001,
-      "reach_semis_probability": 0.4382,
-      "signals": {
-        "elo_normalized": 1.0,
-        "xg_form_ratio": 0.5363,
-        "squad_value_normalized": 0.8388278388278388,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg",
-        "matches_used": 2,
-        "effective_weights": {
-          "elo": 0.45,
-          "xg_form": 0.4,
-          "squad_value": 0.15
-        }
-      },
-      "team_strength": 0.7903,
-      "eliminated": false,
-      "rank": 1
-    },
-    {
       "team_id": "FRA",
       "team_name": "France",
-      "win_probability": 0.1836,
-      "reach_final_probability": 0.3211,
-      "reach_semis_probability": 0.5181,
+      "win_probability": 0.2052,
+      "reach_final_probability": 0.35,
+      "reach_semis_probability": 0.5507,
       "signals": {
-        "elo_normalized": 0.8870530209617752,
-        "xg_form_ratio": 0.5979,
+        "elo_normalized": 0.9570504527813715,
+        "xg_form_ratio": 0.6013,
         "squad_value_normalized": 0.7435897435897436,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
         "form_source": "xg",
-        "matches_used": 2,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.7499,
+      "team_strength": 0.7827,
+      "eliminated": false,
+      "rank": 1
+    },
+    {
+      "team_id": "BRA",
+      "team_name": "Brazil",
+      "win_probability": 0.1888,
+      "reach_final_probability": 0.2997,
+      "reach_semis_probability": 0.4454,
+      "signals": {
+        "elo_normalized": 1.0,
+        "xg_form_ratio": 0.5795,
+        "squad_value_normalized": 0.8388278388278388,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg",
+        "matches_used": 5,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.8076,
       "eliminated": false,
       "rank": 2
     },
     {
       "team_id": "ARG",
       "team_name": "Argentina",
-      "win_probability": 0.1545,
-      "reach_final_probability": 0.2826,
-      "reach_semis_probability": 0.561,
+      "win_probability": 0.1171,
+      "reach_final_probability": 0.2184,
+      "reach_semis_probability": 0.431,
       "signals": {
-        "elo_normalized": 0.7953144266337855,
-        "xg_form_ratio": 0.5868,
+        "elo_normalized": 0.8318240620957315,
+        "xg_form_ratio": 0.6093,
         "squad_value_normalized": 0.575091575091575,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
         "form_source": "xg",
-        "matches_used": 1,
+        "matches_used": 4,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.6789,
+      "team_strength": 0.7043,
       "eliminated": false,
       "rank": 3
     },
     {
-      "team_id": "ENG",
-      "team_name": "England",
-      "win_probability": 0.0832,
-      "reach_final_probability": 0.1581,
-      "reach_semis_probability": 0.2644,
-      "signals": {
-        "elo_normalized": 0.6826140567200986,
-        "xg_form_ratio": 0.5164,
-        "squad_value_normalized": 1.0,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg",
-        "matches_used": 2,
-        "effective_weights": {
-          "elo": 0.45,
-          "xg_form": 0.4,
-          "squad_value": 0.15
-        }
-      },
-      "team_strength": 0.6637,
-      "eliminated": false,
-      "rank": 4
-    },
-    {
       "team_id": "ESP",
       "team_name": "Spain",
-      "win_probability": 0.0814,
-      "reach_final_probability": 0.1563,
-      "reach_semis_probability": 0.2825,
+      "win_probability": 0.081,
+      "reach_final_probability": 0.1547,
+      "reach_semis_probability": 0.2835,
       "signals": {
-        "elo_normalized": 0.7997533908754623,
-        "xg_form_ratio": 0.5227,
+        "elo_normalized": 0.7811125485122898,
+        "xg_form_ratio": 0.5966,
         "squad_value_normalized": 0.6923076923076923,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
         "form_source": "xg",
-        "matches_used": 1,
+        "matches_used": 4,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.6728,
+      "team_strength": 0.694,
+      "eliminated": false,
+      "rank": 4
+    },
+    {
+      "team_id": "ENG",
+      "team_name": "England",
+      "win_probability": 0.0781,
+      "reach_final_probability": 0.1522,
+      "reach_semis_probability": 0.2574,
+      "signals": {
+        "elo_normalized": 0.6996119016817595,
+        "xg_form_ratio": 0.5497,
+        "squad_value_normalized": 1.0,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg",
+        "matches_used": 5,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.6847,
       "eliminated": false,
       "rank": 5
     },
     {
-      "team_id": "USA",
-      "team_name": "USA",
-      "win_probability": 0.0556,
-      "reach_final_probability": 0.1257,
-      "reach_semis_probability": 0.2601,
-      "signals": {
-        "elo_normalized": 0.3028360049321824,
-        "xg_form_ratio": 0.9302,
-        "squad_value_normalized": 0.28205128205128205,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "goals",
-        "matches_used": 1,
-        "effective_weights": {
-          "elo": 0.45,
-          "xg_form": 0.4,
-          "squad_value": 0.15
-        }
-      },
-      "team_strength": 0.5507,
-      "eliminated": false,
-      "rank": 6
-    },
-    {
-      "team_id": "BEL",
-      "team_name": "Belgium",
-      "win_probability": 0.0429,
-      "reach_final_probability": 0.1029,
-      "reach_semis_probability": 0.2322,
-      "signals": {
-        "elo_normalized": 0.5445129469790381,
-        "xg_form_ratio": 0.6,
-        "squad_value_normalized": 0.304029304029304,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "goals",
-        "matches_used": 1,
-        "effective_weights": {
-          "elo": 0.45,
-          "xg_form": 0.4,
-          "squad_value": 0.15
-        }
-      },
-      "team_strength": 0.5306,
-      "eliminated": false,
-      "rank": 7
-    },
-    {
       "team_id": "MEX",
       "team_name": "Mexico",
-      "win_probability": 0.0409,
-      "reach_final_probability": 0.0923,
-      "reach_semis_probability": 0.1702,
+      "win_probability": 0.0469,
+      "reach_final_probability": 0.1034,
+      "reach_semis_probability": 0.1891,
       "signals": {
-        "elo_normalized": 0.40000000000000013,
+        "elo_normalized": 0.5016817593790426,
         "xg_form_ratio": 0.9302,
         "squad_value_normalized": 0.1282051282051282,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
         "form_source": "goals",
-        "matches_used": 1,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.5713,
+      "team_strength": 0.6171,
       "eliminated": false,
-      "rank": 8
+      "rank": 6
+    },
+    {
+      "team_id": "POR",
+      "team_name": "Portugal",
+      "win_probability": 0.0465,
+      "reach_final_probability": 0.0985,
+      "reach_semis_probability": 0.1979,
+      "signals": {
+        "elo_normalized": 0.4817593790426912,
+        "xg_form_ratio": 0.8255,
+        "squad_value_normalized": 0.5311355311355311,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 3,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.6267,
+      "eliminated": false,
+      "rank": 7
     },
     {
       "team_id": "MAR",
       "team_name": "Morocco",
-      "win_probability": 0.0321,
-      "reach_final_probability": 0.0869,
-      "reach_semis_probability": 0.1924,
+      "win_probability": 0.0463,
+      "reach_final_probability": 0.116,
+      "reach_semis_probability": 0.2411,
       "signals": {
-        "elo_normalized": 0.5674475955610355,
-        "xg_form_ratio": 0.4815,
+        "elo_normalized": 0.6677878395860286,
+        "xg_form_ratio": 0.5278,
         "squad_value_normalized": 0.25274725274725274,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
         "form_source": "xg",
-        "matches_used": 2,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.4859,
+      "team_strength": 0.5495,
       "eliminated": false,
-      "rank": 9
+      "rank": 8
     },
     {
-      "team_id": "CAN",
-      "team_name": "Canada",
-      "win_probability": 0.0307,
-      "reach_final_probability": 0.0831,
-      "reach_semis_probability": 0.1888,
+      "team_id": "BEL",
+      "team_name": "Belgium",
+      "win_probability": 0.0421,
+      "reach_final_probability": 0.1028,
+      "reach_semis_probability": 0.2444,
       "signals": {
-        "elo_normalized": 0.2762022194821208,
-        "xg_form_ratio": 0.8696,
-        "squad_value_normalized": 0.10989010989010989,
+        "elo_normalized": 0.5120310478654592,
+        "xg_form_ratio": 0.6639,
+        "squad_value_normalized": 0.304029304029304,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
         "form_source": "goals",
-        "matches_used": 1,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.4886,
+      "team_strength": 0.5416,
+      "eliminated": false,
+      "rank": 9
+    },
+    {
+      "team_id": "COL",
+      "team_name": "Colombia",
+      "win_probability": 0.031,
+      "reach_final_probability": 0.0724,
+      "reach_semis_probability": 0.1938,
+      "signals": {
+        "elo_normalized": 0.4069857697283313,
+        "xg_form_ratio": 0.7615,
+        "squad_value_normalized": 0.23076923076923078,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 3,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.5224,
       "eliminated": false,
       "rank": 10
     },
     {
+      "team_id": "USA",
+      "team_name": "USA",
+      "win_probability": 0.0305,
+      "reach_final_probability": 0.0803,
+      "reach_semis_probability": 0.1924,
+      "signals": {
+        "elo_normalized": 0.33324708926261326,
+        "xg_form_ratio": 0.7295,
+        "squad_value_normalized": 0.28205128205128205,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 5,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.4841,
+      "eliminated": false,
+      "rank": 11
+    },
+    {
+      "team_id": "SUI",
+      "team_name": "Switzerland",
+      "win_probability": 0.0224,
+      "reach_final_probability": 0.0556,
+      "reach_semis_probability": 0.1627,
+      "signals": {
+        "elo_normalized": 0.3780077619663648,
+        "xg_form_ratio": 0.7,
+        "squad_value_normalized": 0.16483516483516483,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 3,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.4748,
+      "eliminated": false,
+      "rank": 12
+    },
+    {
       "team_id": "NOR",
       "team_name": "Norway",
-      "win_probability": 0.0283,
-      "reach_final_probability": 0.0635,
-      "reach_semis_probability": 0.1272,
+      "win_probability": 0.0204,
+      "reach_final_probability": 0.0497,
+      "reach_semis_probability": 0.1081,
       "signals": {
-        "elo_normalized": 0.457953144266338,
-        "xg_form_ratio": 0.6667,
+        "elo_normalized": 0.49366106080207,
+        "xg_form_ratio": 0.5714,
         "squad_value_normalized": 0.2454212454212454,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
         "form_source": "goals",
-        "matches_used": 1,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.5096,
-      "eliminated": false,
-      "rank": 11
-    },
-    {
-      "team_id": "POR",
-      "team_name": "Portugal",
-      "win_probability": 0.0283,
-      "reach_final_probability": 0.067,
-      "reach_semis_probability": 0.1466,
-      "signals": {
-        "elo_normalized": 0.5425400739827374,
-        "xg_form_ratio": 0.5,
-        "squad_value_normalized": 0.5311355311355311,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
-        "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
-        }
-      },
-      "team_strength": 0.5397,
-      "eliminated": false,
-      "rank": 12
-    },
-    {
-      "team_id": "COL",
-      "team_name": "Colombia",
-      "win_probability": 0.0141,
-      "reach_final_probability": 0.0414,
-      "reach_semis_probability": 0.1489,
-      "signals": {
-        "elo_normalized": 0.38224414303329224,
-        "xg_form_ratio": 0.5,
-        "squad_value_normalized": 0.23076923076923078,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
-        "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
-        }
-      },
-      "team_strength": 0.3444,
+      "team_strength": 0.4875,
       "eliminated": false,
       "rank": 13
     },
     {
+      "team_id": "CAN",
+      "team_name": "Canada",
+      "win_probability": 0.0166,
+      "reach_final_probability": 0.0504,
+      "reach_semis_probability": 0.1278,
+      "signals": {
+        "elo_normalized": 0.23518758085381608,
+        "xg_form_ratio": 0.7435,
+        "squad_value_normalized": 0.10989010989010989,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 5,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.4197,
+      "eliminated": false,
+      "rank": 14
+    },
+    {
       "team_id": "PAR",
       "team_name": "Paraguay",
-      "win_probability": 0.0109,
-      "reach_final_probability": 0.0342,
-      "reach_semis_probability": 0.1007,
+      "win_probability": 0.0068,
+      "reach_final_probability": 0.0237,
+      "reach_semis_probability": 0.0804,
       "signals": {
-        "elo_normalized": 0.353390875462392,
-        "xg_form_ratio": 0.5,
+        "elo_normalized": 0.3567917205692107,
+        "xg_form_ratio": 0.3971,
         "squad_value_normalized": 0.06227106227106227,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
         "form_source": "goals",
-        "matches_used": 1,
+        "matches_used": 5,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.3684,
-      "eliminated": false,
-      "rank": 14
-    },
-    {
-      "team_id": "SUI",
-      "team_name": "Switzerland",
-      "win_probability": 0.01,
-      "reach_final_probability": 0.033,
-      "reach_semis_probability": 0.1267,
-      "signals": {
-        "elo_normalized": 0.35758323057953145,
-        "xg_form_ratio": 0.5,
-        "squad_value_normalized": 0.16483516483516483,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
-        "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
-        }
-      },
-      "team_strength": 0.3094,
+      "team_strength": 0.3287,
       "eliminated": false,
       "rank": 15
     },
     {
       "team_id": "CRO",
       "team_name": "Croatia",
-      "win_probability": 0.0042,
-      "reach_final_probability": 0.0148,
-      "reach_semis_probability": 0.0471,
+      "win_probability": 0.0053,
+      "reach_final_probability": 0.0167,
+      "reach_semis_probability": 0.0535,
       "signals": {
-        "elo_normalized": 0.4315659679408138,
-        "xg_form_ratio": 0.5,
+        "elo_normalized": 0.4165588615782667,
+        "xg_form_ratio": 0.4926,
         "squad_value_normalized": 0.1794871794871795,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
-        "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
-        }
-      },
-      "team_strength": 0.3685,
-      "eliminated": false,
-      "rank": 16
-    },
-    {
-      "team_id": "AUT",
-      "team_name": "Austria",
-      "win_probability": 0.0024,
-      "reach_final_probability": 0.008,
-      "reach_semis_probability": 0.0315,
-      "signals": {
-        "elo_normalized": 0.2651048088779285,
-        "xg_form_ratio": 0.4132,
-        "squad_value_normalized": 0.15018315018315018,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg",
-        "matches_used": 1,
+        "form_source": "goals",
+        "matches_used": 3,
         "effective_weights": {
           "elo": 0.45,
           "xg_form": 0.4,
           "squad_value": 0.15
         }
       },
-      "team_strength": 0.3071,
+      "team_strength": 0.4114,
+      "eliminated": false,
+      "rank": 16
+    },
+    {
+      "team_id": "EGY",
+      "team_name": "Egypt",
+      "win_probability": 0.0051,
+      "reach_final_probability": 0.0181,
+      "reach_semis_probability": 0.0694,
+      "signals": {
+        "elo_normalized": 0.11513583441138428,
+        "xg_form_ratio": 0.625,
+        "squad_value_normalized": 0.054945054945054944,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 3,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.3101,
       "eliminated": false,
       "rank": 17
     },
     {
       "team_id": "AUS",
       "team_name": "Australia",
-      "win_probability": 0.002,
-      "reach_final_probability": 0.0071,
-      "reach_semis_probability": 0.0391,
+      "win_probability": 0.0028,
+      "reach_final_probability": 0.0107,
+      "reach_semis_probability": 0.0436,
       "signals": {
-        "elo_normalized": 0.09864364981504316,
+        "elo_normalized": 0.07736093143596347,
         "xg_form_ratio": 0.5,
         "squad_value_normalized": 0.04395604395604396,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
+        "form_source": "goals",
+        "matches_used": 3,
         "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
         }
       },
-      "team_strength": 0.085,
+      "team_strength": 0.2414,
       "eliminated": false,
       "rank": 18
     },
     {
-      "team_id": "EGY",
-      "team_name": "Egypt",
-      "win_probability": 0.0019,
-      "reach_final_probability": 0.0082,
-      "reach_semis_probability": 0.0399,
+      "team_id": "AUT",
+      "team_name": "Austria",
+      "win_probability": 0.0023,
+      "reach_final_probability": 0.0069,
+      "reach_semis_probability": 0.0283,
       "signals": {
-        "elo_normalized": 0.11097410604192355,
-        "xg_form_ratio": 0.5,
-        "squad_value_normalized": 0.054945054945054944,
+        "elo_normalized": 0.2108667529107375,
+        "xg_form_ratio": 0.4884,
+        "squad_value_normalized": 0.15018315018315018,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
+        "has_xg_data": true,
+        "form_source": "xg",
+        "matches_used": 4,
         "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
         }
       },
-      "team_strength": 0.097,
+      "team_strength": 0.3128,
       "eliminated": false,
       "rank": 19
     },
     {
-      "team_id": "ALG",
-      "team_name": "Algeria",
-      "win_probability": 0.0013,
-      "reach_final_probability": 0.007,
-      "reach_semis_probability": 0.0362,
-      "signals": {
-        "elo_normalized": 0.13563501849568435,
-        "xg_form_ratio": 0.5,
-        "squad_value_normalized": 0.03663003663003663,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
-        "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
-        }
-      },
-      "team_strength": 0.1109,
-      "eliminated": false,
-      "rank": 20
-    },
-    {
       "team_id": "GHA",
       "team_name": "Ghana",
-      "win_probability": 0.0012,
-      "reach_final_probability": 0.0046,
-      "reach_semis_probability": 0.0313,
+      "win_probability": 0.0019,
+      "reach_final_probability": 0.0065,
+      "reach_semis_probability": 0.0369,
       "signals": {
-        "elo_normalized": 0.06165228113440197,
-        "xg_form_ratio": 0.5,
+        "elo_normalized": 0.048641655886157736,
+        "xg_form_ratio": 0.4831,
         "squad_value_normalized": 0.1282051282051282,
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
+        "form_source": "goals",
+        "matches_used": 3,
         "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
         }
       },
-      "team_strength": 0.0783,
+      "team_strength": 0.2344,
+      "eliminated": false,
+      "rank": 20
+    },
+    {
+      "team_id": "ALG",
+      "team_name": "Algeria",
+      "win_probability": 0.0016,
+      "reach_final_probability": 0.0074,
+      "reach_semis_probability": 0.0348,
+      "signals": {
+        "elo_normalized": 0.1071151358344111,
+        "xg_form_ratio": 0.4239,
+        "squad_value_normalized": 0.03663003663003663,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": false,
+        "form_source": "goals",
+        "matches_used": 3,
+        "effective_weights": {
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
+        }
+      },
+      "team_strength": 0.2233,
       "eliminated": false,
       "rank": 21
     },
     {
       "team_id": "CPV",
       "team_name": "Cape Verde",
-      "win_probability": 0.0003,
-      "reach_final_probability": 0.0021,
-      "reach_semis_probability": 0.0169,
+      "win_probability": 0.0013,
+      "reach_final_probability": 0.0059,
+      "reach_semis_probability": 0.0278,
       "signals": {
         "elo_normalized": 0.0,
         "xg_form_ratio": 0.5,
@@ -555,14 +563,15 @@
         "betting_implied_prob": 0.0,
         "injury_multiplier": 1.0,
         "has_xg_data": false,
-        "form_source": "default",
-        "matches_used": 0,
+        "form_source": "goals",
+        "matches_used": 3,
         "effective_weights": {
-          "elo": 0.75,
-          "squad_value": 0.25
+          "elo": 0.45,
+          "xg_form": 0.4,
+          "squad_value": 0.15
         }
       },
-      "team_strength": 0.0,
+      "team_strength": 0.2,
       "eliminated": false,
       "rank": 22
     },
@@ -969,8 +978,8 @@
         "match_id": "r32_m83",
         "team_home": "POR",
         "team_away": "CRO",
-        "advance_probability_home": 0.6351,
-        "advance_probability_away": 0.3649,
+        "advance_probability_home": 0.6659,
+        "advance_probability_away": 0.3341,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -980,8 +989,8 @@
         "match_id": "r32_m84",
         "team_home": "ESP",
         "team_away": "AUT",
-        "advance_probability_home": 0.7436,
-        "advance_probability_away": 0.2564,
+        "advance_probability_home": 0.751,
+        "advance_probability_away": 0.249,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -991,8 +1000,8 @@
         "match_id": "r32_m85",
         "team_home": "SUI",
         "team_away": "ALG",
-        "advance_probability_home": 0.6451,
-        "advance_probability_away": 0.3549,
+        "advance_probability_home": 0.6793,
+        "advance_probability_away": 0.3207,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1002,8 +1011,8 @@
         "match_id": "r32_m86",
         "team_home": "ARG",
         "team_away": "CPV",
-        "advance_probability_home": 0.8709,
-        "advance_probability_away": 0.1291,
+        "advance_probability_home": 0.8153,
+        "advance_probability_away": 0.1847,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1013,8 +1022,8 @@
         "match_id": "r32_m87",
         "team_home": "COL",
         "team_away": "GHA",
-        "advance_probability_home": 0.6857,
-        "advance_probability_away": 0.3143,
+        "advance_probability_home": 0.6978,
+        "advance_probability_away": 0.3022,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1024,8 +1033,8 @@
         "match_id": "r32_m88",
         "team_home": "AUS",
         "team_away": "EGY",
-        "advance_probability_home": 0.4822,
-        "advance_probability_away": 0.5178,
+        "advance_probability_home": 0.437,
+        "advance_probability_away": 0.563,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1037,8 +1046,8 @@
         "match_id": "r16_m89",
         "team_home": "PAR",
         "team_away": "FRA",
-        "advance_probability_home": 0.2372,
-        "advance_probability_away": 0.7628,
+        "advance_probability_home": 0.2042,
+        "advance_probability_away": 0.7958,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1048,8 +1057,8 @@
         "match_id": "r16_m90",
         "team_home": "CAN",
         "team_away": "MAR",
-        "advance_probability_home": 0.496,
-        "advance_probability_away": 0.504,
+        "advance_probability_home": 0.3961,
+        "advance_probability_away": 0.6039,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1059,8 +1068,8 @@
         "match_id": "r16_m91",
         "team_home": "BRA",
         "team_away": "NOR",
-        "advance_probability_home": 0.6934,
-        "advance_probability_away": 0.3066,
+        "advance_probability_home": 0.7165,
+        "advance_probability_away": 0.2835,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1070,8 +1079,8 @@
         "match_id": "r16_m92",
         "team_home": "MEX",
         "team_away": "ENG",
-        "advance_probability_home": 0.4258,
-        "advance_probability_away": 0.5742,
+        "advance_probability_home": 0.4453,
+        "advance_probability_away": 0.5547,
         "winner": null,
         "status": "NS",
         "score_home": null,
@@ -1081,8 +1090,8 @@
         "match_id": "r16_m94",
         "team_home": "USA",
         "team_away": "BEL",
-        "advance_probability_home": 0.5151,
-        "advance_probability_away": 0.4849,
+        "advance_probability_home": 0.4574,
+        "advance_probability_away": 0.5426,
         "winner": null,
         "status": "NS",
         "score_home": null,

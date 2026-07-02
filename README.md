@@ -1,83 +1,129 @@
-# wc2026prediction
+# WC 2026 Prediction Engine
 
-I built this to guess who's winning the 2026 World Cup after each knockout round. Pull match data, score the teams, run 10k sims, dump win % to JSON. GitHub Pages reads that file and draws the bracket
+I built this to predict who wins the 2026 World Cup. Not vibes, not "Brazil always good." Five signals, Monte Carlo bracket sim, numbers you can argue with.
 
-No database, no server, no bill. Python plus three JSON files
-
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-**Live:** [aidaken.github.io/wc2026prediction/web/](https://aidaken.github.io/wc2026prediction/web/)
+**Live site:** [aidaken.github.io/wc2026prediction/web](https://aidaken.github.io/wc2026prediction/web/)
 
 ---
 
-## What `update.py` does
+## How it works (30 seconds)
 
-1. Grab results, xG, injuries, player stats from API-Football
-2. Mash Elo, xG form, squad value, betting odds, and injuries into one **team strength** number
-3. Sim the rest of the bracket 10,000 times
-4. Write `data/predictions.json` (win %, per-match advance %, signal breakdown)
-5. Dashboard fetches it and paints the tree
+1. **Strength score** per team from five signals (Elo, xG form, squad value, betting odds, injuries)
+2. **Monte Carlo** simulates the full knockout bracket 10,000 times
+3. **Output:** win probability per team + per-match advancement % on the bracket
+
+Details: [`docs/MODEL.md`](docs/MODEL.md). Bracket math: [`docs/BRACKET_PREDICTIONS.md`](docs/BRACKET_PREDICTIONS.md).
 
 ---
 
-## After each round
+## Quick start
+
+**No API keys needed** for the main loop. Wikipedia + cached files get you most of the way.
 
 ```bash
+git clone https://github.com/aidaken/wc2026prediction.git
+cd wc2026prediction
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Pull latest results from Wikipedia → bracket + fixtures cache
+python scripts/fetch_public.py
+
+# Recalculate strengths + run Monte Carlo
 python update.py
-git add data/predictions.json data/bracket.json data/teams.json
-git commit -m "chore: update predictions after Round of 16"
+```
+
+Open `web/index.html` locally or hit the GitHub Pages link above.
+
+Optional keys in `.env` (see `.env.example`): API-Football, Odds API, Transfermarkt. Free tiers are limited for WC 2026. The engine degrades gracefully when they're missing or broken.
+
+Full setup: [`docs/SETUP.md`](docs/SETUP.md).
+
+---
+
+## After each round (the workflow I actually use)
+
+```bash
+python scripts/fetch_public.py   # Wikipedia → data/bracket.json + data/fixtures_cache.json
+python update.py                 # strengths + predictions.json
+git add data/
+git commit -m "data: post-round-N results"
 git push
 ```
 
-Site picks up the new JSON in ~30 seconds.
+GitHub Pages redeploys from `main`. Site updates in ~1 min.
 
-No API keys? Demo mode still runs:
-
-```bash
-python update.py --demo
-```
+If you have betting odds from somewhere (sportsbook, aggregator), drop them in `data/manual_odds.json` (copy from `data/manual_odds.json.example`). That fills the 20% odds slot when The Odds API doesn't have a WC 2026 market.
 
 ---
 
-## Where stuff lives
+## Project layout
 
 ```
 wc2026prediction/
-├── update.py              # run after every round
-├── config.py              # weights, scales, api keys path
+├── config.py              # weights, STRENGTH_SCALE, sim count
+├── update.py              # main orchestrator
+├── scripts/
+│   ├── fetch_public.py    # Wikipedia scrape (no keys)
+│   └── backtest.py        # Brier score + STRENGTH_SCALE sweep
 ├── src/
-│   ├── fetch.py           # API-Football
-│   ├── elo.py, xg.py, injury.py, value.py, odds.py
-│   ├── simulate.py        # monte carlo
-│   ├── bracket_topology.py  # fixed wc tree, who feeds where
-│   └── teams.py           # name/id mappings
+│   ├── public_fetch.py    # MediaWiki parser for WC 2026 results
+│   ├── strength.py        # combine signals (per-team weight fallback)
+│   ├── simulate.py        # Monte Carlo + bracket topology
+│   ├── fetch.py           # API-Football fixtures (optional)
+│   └── ...
 ├── data/
-│   ├── teams.json
-│   ├── bracket.json
-│   ├── predictions.json   # web reads this
-│   └── history/           # snapshot per round
-└── web/index.html         # dashboard
+│   ├── teams.json         # team list + FIFA ranks
+│   ├── bracket.json       # full bracket + results
+│   ├── fixtures_cache.json
+│   ├── predictions.json   # output (committed for GitHub Pages)
+│   └── manual_odds.json.example
+├── web/
+│   └── index.html         # bracket UI
+└── docs/
 ```
 
 ---
 
-## More docs
+## Model version
 
-| File | What's in it |
-|---|---|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | How the pieces connect |
-| [docs/MODEL.md](docs/MODEL.md) | Formulas, STRENGTH_SCALE, the sim |
-| [docs/BRACKET_PREDICTIONS.md](docs/BRACKET_PREDICTIONS.md) | Per-match advance % on the UI |
-| [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) | APIs, scraping, rate limits |
-| [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md) | `update.py` step by step |
-| [docs/SETUP.md](docs/SETUP.md) | Install, keys, GitHub Pages |
-| [docs/DECISIONS.md](docs/DECISIONS.md) | Why JSON not Postgres, etc. |
-| [docs/VOICE.md](docs/VOICE.md) | How I want commits and docs to sound |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | If you're hacking on this |
+**v1.2.0** (current)
+
+| Signal | Weight | Source |
+|--------|--------|--------|
+| Elo | 35% | ClubElo / FIFA fallback |
+| xG form | 30% | Match xG from fixtures, or goals fallback |
+| Squad value | 15% | Transfermarkt (cached) |
+| Betting odds | 20% | Odds API or `manual_odds.json` |
+| Injuries | multiplier | API-Football or static overrides |
+
+`STRENGTH_SCALE = 0.68` (tuned via `backtest.py --sweep`). When a signal is missing for a team, its weight gets redistributed across what's left. No more France 33% / Brazil 27% because two teams had xG and everyone else didn't.
+
+Weights and per-team breakdowns land in `predictions.json` under `_meta`.
 
 ---
 
-## Stack
+## Docs
 
-Python 3.10+, `requests`, `beautifulsoup4`, plain HTML/JS, GitHub Pages. MIT.
+| Doc | What |
+|-----|------|
+| [`docs/MODEL.md`](docs/MODEL.md) | Signal math, Monte Carlo, backtest |
+| [`docs/BRACKET_PREDICTIONS.md`](docs/BRACKET_PREDICTIONS.md) | Per-match advancement % |
+| [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) | Where each number comes from |
+| [`docs/DATA_PIPELINE.md`](docs/DATA_PIPELINE.md) | fetch_public → update flow |
+| [`docs/SETUP.md`](docs/SETUP.md) | Keys, venv, troubleshooting |
+| [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADRs (why Wikipedia-first, etc.) |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
+
+---
+
+## Contributing
+
+PRs welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) first. If you change model weights or `STRENGTH_SCALE`, run `backtest.py` and note Brier in the PR.
+
+---
+
+## License
+
+MIT. Data sources have their own terms. See [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md).
