@@ -1,71 +1,66 @@
-# Bracket & Round Predictions
+# Bracket and match predictions
 
-This document describes how per-round matchup predictions work, the bracket topology engine, and how advancement probabilities are surfaced on the dashboard.
+How per-match advance % works, the fixed WC tree, and what the dashboard shows.
 
 ---
 
-## Overview
+## Two outputs
 
-The prediction engine produces two complementary outputs:
-
-| Output | File key | Purpose |
+| What | JSON key | Use |
 |---|---|---|
-| **Tournament predictions** | `predictions[]` | Per-team win %, reach-final %, reach-semis % |
-| **Match predictions** | `match_predictions{}` | Per-matchup advancement % for each knockout round |
+| Tournament | `predictions[]` | Win %, reach final, reach semis |
+| Per match | `match_predictions{}` | Advance % for each knockout game |
 
-The bracket view on the dashboard shows both **results** (for completed matches) and **estimated advancement chances** (for upcoming matches), similar to a live tournament bracket with win probabilities on each team.
+Bracket UI shows results for finished games and estimated advance % for what's left. Athletic-style tree with flags and little % bars.
 
-Example display for an upcoming Round of 32 match:
+Example upcoming R32:
 
 ```
 POR   62.3%  →
 CRO   37.7%  →
 ```
 
-For a completed match, the winner shows 100% and the loser 0% (or the actual score).
+Done game: winner at 100%, loser 0%, score in the middle.
 
 ---
 
-## Advancement probability definition
+## What advance % means
 
-For a knockout match between team A (home) and team B (away):
+For home A vs away B:
 
 ```
-advance_probability_home = P(home wins this match)
-advance_probability_away = P(away wins this match)
+advance_probability_home = P(A wins this match)
+advance_probability_away = P(B wins this match)
 ```
 
-These are computed via **Monte Carlo simulation** over the full remaining bracket:
+From the same 10k sim run that produces tournament win %:
 
-1. Run `N_SIMULATIONS` (default 10,000) tournament play-throughs.
-2. For each unresolved match, simulate a winner using team strengths and the Elo win formula (with draw adjustment).
-3. Count how often each team wins their specific matchup.
-4. Divide by total simulations → advancement probability.
+1. Run `N_SIMULATIONS` (10,000) full bracket play-throughs
+2. Each open match: pick winner from strengths + draw logic
+3. Count how often each team wins **that specific** fixture
+4. Divide by N
 
-For **already completed** matches, probabilities are fixed: winner = 1.0, loser = 0.0.
+Finished matches: winner 1.0, loser 0.0. No sim needed.
 
 ### Why Monte Carlo for matchups?
 
-A team's chance of winning a specific match depends on:
+You need direct 1v1 strength **and** the ~27% draw/ET compression (`DRAW_PROBABILITY`). MC handles both in one pass.
 
-- Direct strength comparison vs their opponent
-- The ~25% draw/extra-time compression (`DRAW_PROBABILITY` in `config.py`)
-
-Analytical 1v1 probability is also available via `match_win_probability()` in `simulate.py` as a fallback, but the published numbers come from the same simulation run that produces tournament win %.
+`simulate.py` also has `match_win_probability()` for analytical 1v1, but published numbers come from the sim.
 
 ---
 
 ## Bracket topology
 
-WC 2026 uses a **fixed knockout tree** (combination 67). After the group stage, every team's path to the final is predetermined. Winners do not get re-paired sequentially — they advance into specific next-round slots.
+WC 2026 = fixed tree, combination 67. After groups, your path to the final is set. Winners don't get re-drawn into random slots.
 
-The topology is defined in `src/bracket_topology.py` as `MATCH_FEEDERS`:
+Defined in `src/bracket_topology.py` as `MATCH_FEEDERS`:
 
 ```
 source_match_id → (target_match_id, "home" | "away")
 ```
 
-### Example: left side of the bracket
+### Left side example
 
 ```
 GER/PAR ──┐
@@ -76,18 +71,18 @@ RSA/CAN ──┐                                │
 NED/MAR ──┘
 ```
 
-### Full feeder chain
+### Feeder chain
 
 | From | To |
 |---|---|
-| 16 × Round of 32 matches | 8 × Round of 16 slots |
-| 8 × Round of 16 matches | 4 × Quarter-final slots |
-| 4 × Quarter-final matches | 2 × Semi-final slots |
-| 2 × Semi-final matches | 1 × Final |
+| 16 R32 | 8 R16 |
+| 8 R16 | 4 QF |
+| 4 QF | 2 SF |
+| 2 SF | 1 Final |
 
-See `MATCH_FEEDERS` in `src/bracket_topology.py` for the complete mapping of all 31 feeder links.
+Full map: `MATCH_FEEDERS` in `bracket_topology.py` (31 links).
 
-### Simulation algorithm
+### Sim loop
 
 ```python
 for each simulation:
@@ -96,17 +91,17 @@ for each simulation:
         for match in round.matches:
             if both teams set:
                 winner = existing_winner or simulate_match(home, away)
-                propagate_winner(working, match_id, winner)  # via MATCH_FEEDERS
+                propagate_winner(working, match_id, winner)  # MATCH_FEEDERS
     record champion, finalists, per-match win counts
 ```
 
-**Important:** The engine never uses sequential winner pairing (match 1 winner vs match 2 winner). That was a prior bug; all advancement now follows `MATCH_FEEDERS`.
+Old bug: paired R32 winner 1 vs winner 2 sequentially. Wrong. Brazil and France are on opposite sides; they should only meet in the final if at all.
 
 ---
 
-## Output schema
+## JSON shape
 
-`data/predictions.json` includes a `match_predictions` object keyed by round:
+`data/predictions.json`:
 
 ```json
 {
@@ -132,66 +127,55 @@ for each simulation:
 }
 ```
 
-Round keys match `bracket.json`: `round_of_32`, `round_of_16`, `quarter_finals`, `semi_finals`, `final`.
+Round keys match `bracket.json`.
 
 ---
 
-## Dashboard integration
+## Dashboard
 
-`web/index.html` reads `match_predictions` from `predictions.json` and renders them inside the bracket card below each matchup:
+`web/index.html` pulls `match_predictions` and paints them on the tree:
 
-- **Upcoming match:** both teams show their advancement % with a small probability bar.
-- **Completed match:** winner highlighted in gold; score shown in the center.
-- **TBD slots:** hidden until both teams are known.
+- **Upcoming:** both teams get % + thin bar
+- **Done:** gold highlight on winner, score center
+- **TBD:** hidden until both teams known
 
-The bracket card appears below the tournament win-probability table and top-pick sidebar.
+Bracket sits below the win-probability table, full width.
 
 ---
 
-## Relationship to tournament-level predictions
+## Tournament vs match metrics
 
-| Metric | Scope |
+| Metric | Means |
 |---|---|
-| `advance_probability_*` | Win this specific match → advance one round |
-| `reach_semis_probability` | Win all matches on path to semi-finals |
-| `reach_final_probability` | Win all matches on path to the final |
-| `win_probability` | Win the entire tournament |
+| `advance_probability_*` | Win this game, go one round further |
+| `reach_semis_probability` | Win everything on path to semis |
+| `reach_final_probability` | Win everything on path to final |
+| `win_probability` | Win the whole thing |
 
-A team can have high advancement % in Round of 32 (easy opponent) but lower tournament win % (harder path ahead). The bracket view makes this visible.
-
----
-
-## Engine fixes (v1.1)
-
-This round-prediction work also addresses structural bugs and model calibration:
-
-### 1. Bracket topology
-Replaced sequential winner pairing with `MATCH_FEEDERS` topology map.
-
-### 2. Elo deduplication
-`teams.json` `_meta.elo_processed_matches` tracks which fixture IDs have already updated Elo.
-
-### 3. Betting odds normalization
-`normalize_betting_probs()` renormalizes implied probabilities across all active teams.
-
-### 4. STRENGTH_SCALE (critical)
-`simulate.py` uses `STRENGTH_SCALE` (default 0.50) on normalized `[0, 1]` team strengths — not `ELO_SCALE=400`. See `docs/MODEL.md` and `python scripts/backtest.py --sweep`.
+Easy R32 opponent can mean high advance % but lower trophy % if the other side of the bracket is brutal. Bracket view makes that obvious.
 
 ---
 
-## Extending
+## v1.1 fixes bundled with this
 
-To add a new knockout round or change the bracket structure:
-
-1. Update `data/bracket.json` match slots.
-2. Update `MATCH_FEEDERS` in `src/bracket_topology.py`.
-3. Update `DEMO_BRACKET` in `src/seed.py` if using demo mode.
-4. No changes needed to the dashboard if round keys stay the same.
+1. **Topology** — `MATCH_FEEDERS` instead of sequential pairing
+2. **Elo dedup** — `_meta.elo_processed_matches` in `teams.json`
+3. **Odds norm** — `normalize_betting_probs()` over active teams
+4. **STRENGTH_SCALE** — sim uses 0.50 on [0,1] strengths, not Elo 400 scale. See `docs/MODEL.md`, `backtest.py --sweep`
 
 ---
 
-## Limitations
+## If you change the bracket
 
-- Match predictions for future rounds (e.g. a QF matchup) only appear once both teams are known in the bracket.
-- Probabilities assume current squad strength and injuries; they do not update mid-match.
-- The draw/extra-time model is a simplified probability compression, not a full extra-time + penalties simulation.
+1. Edit `data/bracket.json`
+2. Update `MATCH_FEEDERS` in `bracket_topology.py`
+3. Update `DEMO_BRACKET` in `src/seed.py` for demo mode
+4. Dashboard fine if round key names stay the same
+
+---
+
+## Limits
+
+- QF/SF slots only get predictions when both teams are locked in
+- Strengths are pre-match snapshot, no live in-game update
+- Draw model compresses to a prob, not full ET + pen shootout sim

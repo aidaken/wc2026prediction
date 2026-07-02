@@ -2,8 +2,6 @@
 
 How I want git messages, code comments, and markdown to sound. Chill, young, human. Not corporate, not AI filler. Still respectful.
 
-For Cursor/Claude when touching this repo.
-
 ---
 
 ## Core rules

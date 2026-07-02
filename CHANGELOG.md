@@ -1,41 +1,44 @@
 # Changelog
 
-All notable changes to this project are documented here.
-
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).  
-Versioning follows `MAJOR.MINOR.PATCH` — patch for prediction updates, minor for new signals or model changes, major for architecture changes.
+What shipped and when. Patch = prediction refresh. Minor = model or features. Major = big structural change.
 
 ---
 
 ## [Unreleased]
 
 ### Added
-- Team registry (`src/teams.py`) for API name/ID → internal code mapping
-- Bracket sync module — merges API results, marks eliminations, auto-detects round
-- Unit tests (`tests/test_engine.py`) and CI workflow with GitHub Pages deploy
-- Backtest script (`scripts/backtest.py`) with Brier score support
-- Dashboard history panel and full team names in bracket view
+- Per-match advance % on the bracket (`match_predictions`)
+- `bracket_topology.py` for the real WC feeder tree
+- `STRENGTH_SCALE` (v1.1), backtest script with Brier + sweep
+- Auto key-player detection in `injury.py`
+- Athletic-style bracket UI (flags, advance %)
+- `docs/VOICE.md`
 
 ### Fixed
-- Centralize team name mappings in `src/teams.py`; remove stale Odds/Transfermarkt maps
-- Delete outdated `data/history/round_16.json` snapshot from pre-2026 seed data
-- Round of 32 bracket matches FIFA combination 67 with real results through July 1
-- Predictions sorted with active teams first, group-stage eliminated at bottom
-- Live mode now merges bracket fixture history for Elo/xG calculations
-- Penalty shootout winner detection
-- Player stats proxy for injury model in live mode
+- Sim paired R32 winners sequentially instead of following the real tree
+- Elo stacked on every `update.py` run (deduped via `elo_processed_matches` now)
+- Betting odds not normalized across active teams
+- Wrong teams/bracket (now combination 67 + real R32)
+- GitHub Pages 404 without `/web/` redirect
+
+### Changed
+- Model version 1.1.0
+- `DRAW_PROBABILITY` 0.25 → 0.27
+- Comments and docs voice pass
 
 ---
 
 ## [1.0.0] — 2026-06-30
 
-Initial project scaffold and documentation.
+First version. Ingestion, engine, dashboard, docs.
 
 ---
 
-## Upcoming round updates
+## Round updates (manual log)
 
-### Round of 16 — expected 2026-07-04 to 2026-07-07
-### Quarter-finals — expected 2026-07-10 to 2026-07-11
-### Semi-finals — expected 2026-07-14 to 2026-07-15
-### Final — 2026-07-19
+| Round | Dates |
+|---|---|
+| Round of 16 | 2026-07-04 – 07-07 |
+| Quarter-finals | 2026-07-10 – 07-11 |
+| Semi-finals | 2026-07-14 – 07-15 |
+| Final | 2026-07-19 |

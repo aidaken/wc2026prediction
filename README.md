@@ -1,40 +1,27 @@
-# 🏆 wc2026prediction
+# wc2026prediction
 
-Real-time FIFA World Cup 2026 winner predictor. Pulls live match data after each round, calculates team strength across five signals, and runs 10,000 Monte Carlo simulations to surface win probabilities for every remaining team.
+I built this to guess who's winning the 2026 World Cup after each knockout round. Pull match data, score the teams, run 10k sims, dump win % to JSON. GitHub Pages reads that file and draws the bracket
 
-No database. No server. No monthly bills. Just Python, three JSON files, and a static site on GitHub Pages.
+No database, no server, no bill. Python plus three JSON files
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![GitHub Pages](https://img.shields.io/badge/hosted-GitHub%20Pages-orange.svg)](https://pages.github.com/)
+
+**Live:** [aidaken.github.io/wc2026prediction/web/](https://aidaken.github.io/wc2026prediction/web/)
 
 ---
 
-## What it does
+## What `update.py` does
 
-1. Fetches live results, xG, player stats, and injury reports from **API-Football**
-2. Calculates a **Team Strength Score** combining Elo rating, xG form, squad market value, injury adjustments, and betting market data
-3. Simulates the remaining bracket **10,000 times** via Monte Carlo
-4. Writes win probabilities per team to `data/predictions.json`
-5. A static dashboard at GitHub Pages reads that file and renders the live bracket
-
----
-
-## Features
-
-- **Real data** — match results, xG, injuries, and player stats from API-Football (free tier)
-- **Multi-signal model** — five independent signals combined with tunable weights
-- **Injury-aware** — key player absences reduce team strength automatically
-- **Market signals** — betting implied probabilities as expert consensus input
-- **Monte Carlo simulation** — 10,000 full tournament simulations per round update
-- **Zero infrastructure** — JSON files only, no database, no server, no cost
-- **One command update** — `python update.py` handles everything after each round
+1. Grab results, xG, injuries, player stats from API-Football
+2. Mash Elo, xG form, squad value, betting odds, and injuries into one **team strength** number
+3. Sim the rest of the bracket 10,000 times
+4. Write `data/predictions.json` (win %, per-match advance %, signal breakdown)
+5. Dashboard fetches it and paints the tree
 
 ---
 
-## Updating after each round
-
-Once a round ends and all results are confirmed:
+## After each round
 
 ```bash
 python update.py
@@ -43,80 +30,54 @@ git commit -m "chore: update predictions after Round of 16"
 git push
 ```
 
-GitHub Pages picks up `predictions.json` and the live dashboard updates within ~30 seconds.
+Site picks up the new JSON in ~30 seconds.
+
+No API keys? Demo mode still runs:
+
+```bash
+python update.py --demo
+```
 
 ---
 
-## Project structure
+## Where stuff lives
 
 ```
 wc2026prediction/
-│
-├── update.py               # Orchestrator — run this after every round
-├── config.py               # Weights, K-factors, API config, tournament IDs
-├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variable template (copy to .env)
-│
+├── update.py              # run after every round
+├── config.py              # weights, scales, api keys path
 ├── src/
-│   ├── fetch.py            # API-Football client
-│   ├── elo.py              # Elo rating system
-│   ├── xg.py               # xG form ratio calculator
-│   ├── injury.py           # Injury/suspension strength multiplier
-│   ├── value.py            # Transfermarkt squad value scraper
-│   ├── odds.py             # Betting market probability converter
-│   └── simulate.py         # Monte Carlo tournament simulation engine
-│
+│   ├── fetch.py           # API-Football
+│   ├── elo.py, xg.py, injury.py, value.py, odds.py
+│   ├── simulate.py        # monte carlo
+│   ├── bracket_topology.py  # fixed wc tree, who feeds where
+│   └── teams.py           # name/id mappings
 ├── data/
-│   ├── teams.json          # Team registry: Elo, squad value, metadata
-│   ├── bracket.json        # Live bracket: matches, results, current round
-│   ├── predictions.json    # Output: win % per remaining team (read by web/)
-│   └── history/            # Archived predictions snapshot per round
-│       ├── round_32.json
-│       ├── round_16.json
-│       └── ...
-│
-├── web/
-│   └── index.html          # Static dashboard (reads predictions.json via fetch)
-│
-└── docs/
-    ├── SETUP.md            # Full installation and configuration guide
-    ├── MODEL.md            # Prediction model — formulas, logic, weights
-    ├── DATA_SOURCES.md     # APIs, scraping, rate limits, data contracts
-    ├── DATA_PIPELINE.md    # Pipeline steps, JSON schemas, error handling
-    └── DECISIONS.md        # Architecture decision records
+│   ├── teams.json
+│   ├── bracket.json
+│   ├── predictions.json   # web reads this
+│   └── history/           # snapshot per round
+└── web/index.html         # dashboard
 ```
 
 ---
 
-## Documentation
+## More docs
 
-| Document | What it covers |
+| File | What's in it |
 |---|---|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | System design, layers, data flow, tech choices |
-| [`docs/MODEL.md`](docs/MODEL.md) | Full model logic — Elo, xG, Monte Carlo, formulas |
-| [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) | Every data source, endpoints, rate limits |
-| [`docs/DATA_PIPELINE.md`](docs/DATA_PIPELINE.md) | Pipeline steps, JSON schemas, error handling |
-| [`docs/SETUP.md`](docs/SETUP.md) | Installation, API keys, GitHub Pages |
-| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Why we made each architectural choice |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute or extend the model |
-| [`CHANGELOG.md`](CHANGELOG.md) | Version history and round-by-round updates |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | How the pieces connect |
+| [docs/MODEL.md](docs/MODEL.md) | Formulas, STRENGTH_SCALE, the sim |
+| [docs/BRACKET_PREDICTIONS.md](docs/BRACKET_PREDICTIONS.md) | Per-match advance % on the UI |
+| [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) | APIs, scraping, rate limits |
+| [docs/DATA_PIPELINE.md](docs/DATA_PIPELINE.md) | `update.py` step by step |
+| [docs/SETUP.md](docs/SETUP.md) | Install, keys, GitHub Pages |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Why JSON not Postgres, etc. |
+| [docs/VOICE.md](docs/VOICE.md) | How I want commits and docs to sound |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | If you're hacking on this |
 
 ---
 
-## Tech stack
+## Stack
 
-| Layer | Tool | Reason |
-|---|---|---|
-| Language | Python 3.10+ | Excellent data libraries, readable |
-| HTTP | `requests` | Simple, no overhead |
-| Scraping | `beautifulsoup4` | Lightweight Transfermarkt scraper |
-| Numerics | stdlib `random` | Monte Carlo simulation |
-| Data storage | JSON files | Zero infrastructure, Git-versionable |
-| Frontend | Vanilla HTML + JS | No build step, works on GitHub Pages |
-| Hosting | GitHub Pages | Free, auto-updates on push |
-
----
-
-## License
-
-MIT — see [`LICENSE`](LICENSE).
+Python 3.10+, `requests`, `beautifulsoup4`, plain HTML/JS, GitHub Pages. MIT.

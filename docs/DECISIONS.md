@@ -1,195 +1,164 @@
 # Decisions
 
-Architecture Decision Records (ADRs) for `wc2026prediction`. Each record explains a key technical choice, the context around it, the alternatives we considered, and the reasons for the decision.
-
-ADRs are written once and not updated — they capture thinking at a point in time. If a decision is reversed, a new ADR is added rather than editing the old one.
+Why I built it this way. ADR style: context, choice, what I didn't pick, consequences. I don't edit old entries; if I flip a decision, I add a new ADR.
 
 ---
 
-## ADR-001 — JSON files instead of a database
+## ADR-001: JSON files, not a database
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-The system needs to store team ratings, match results, and win probabilities between pipeline runs. A storage layer is required.
+Need to store team ratings, bracket, predictions between runs.
 
 ### Decision
 
-Use plain JSON files (`data/teams.json`, `data/bracket.json`, `data/predictions.json`) as the storage layer.
+Three JSON files in `data/`. That's the database.
 
-### Alternatives considered
+### Didn't use
 
-| Option | Rejected reason |
+| Option | Why not |
 |---|---|
-| SQLite | Requires schema management, migrations, and a DB client. Overkill for three flat objects. |
-| Supabase / Firebase | Requires an account, project setup, API keys, network dependency, and monthly cost past free limits. Adds operational complexity with no benefit for a project this size. |
-| PostgreSQL | Massively over-engineered. |
+| SQLite | Schema, migrations, client. Overkill for three blobs. |
+| Supabase / Firebase | Account, keys, network, cost creep. |
+| Postgres | lol |
 
-### Reasoning
+### Why JSON works here
 
-- The data is small (three files, under 100 KB total)
-- The write pattern is simple: once per round, the whole file is overwritten
-- JSON files are human-readable — you can inspect `predictions.json` directly
-- JSON files are Git-versionable — every round's state is in version history automatically
-- No setup required — works on any machine with Python installed
+- Tiny data (<100 KB total)
+- Write pattern: overwrite whole file once per round
+- Human readable, `cat predictions.json` and you're done
+- Git history = automatic round-by-round archive
+- Zero setup
 
-### Consequences
+### Tradeoffs
 
-- No concurrent writes (fine — there is only one writer: `update.py`)
-- No query language (fine — we load the full file into memory; it's tiny)
-- Must be careful not to corrupt JSON mid-write (mitigated by writing to a temp file and atomically renaming)
+- One writer only (`update.py`). Fine for me.
+- No SQL. Also fine, load all into memory.
+- Write to temp file then rename so you don't corrupt mid-save.
 
 ---
 
-## ADR-002 — Elo as the base team rating
+## ADR-002: Elo as base rating
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-We need a baseline strength measure for each team that can be updated after each match and used to calculate win probabilities.
+Need baseline strength that updates after each match and maps to win probability.
 
 ### Decision
 
-Use the Elo rating system, seeded from [World Football Elo Ratings](https://www.eloratings.net/), updated in-place as the tournament progresses.
+Elo, seeded from [World Football Elo](https://www.eloratings.net/), updated in place during the tournament.
 
-### Alternatives considered
+### Didn't use
 
-| Option | Rejected reason |
+| Option | Why not |
 |---|---|
-| FIFA ranking points | Not designed for win probability calculation. Rankings reflect cumulative points, not head-to-head probability. |
-| FiveThirtyEight SPI (Soccer Power Index) | SPI is not publicly available for calculation — only the output scores are published. We cannot update it ourselves. |
-| Pure betting odds | Strong signal but can be biased toward big-name teams. Better as a supplementary signal than a base. |
-| Custom trained ML model | Requires large historical dataset, training pipeline, and ongoing maintenance. Elo achieves similar accuracy with no infrastructure. |
+| FIFA ranking points | Not built for head-to-head win % |
+| 538 SPI | Can't recompute it ourselves |
+| Odds only | Good signal but brand-biased alone |
+| Custom ML | Needs data pipeline and maintenance for marginal gain on 7 games |
 
-### Reasoning
+### Why Elo
 
-- Elo is mathematically sound and well-understood
-- The win probability formula is simple and interpretable
-- Can be updated with a single formula after each match
-- The [World Football Elo](https://www.eloratings.net/) dataset gives reliable starting values
-- Well-documented and widely used in sports prediction
+Simple math, one update per result, interpretable, proven in football prediction land.
 
 ---
 
-## ADR-003 — Manual update trigger instead of automation
+## ADR-003: Manual updates
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-The pipeline needs to run after each round completes. We could automate this with a cron job (GitHub Actions) or keep it manual.
+Pipeline should run after each knockout round. Could automate with cron or Actions.
 
 ### Decision
 
-Manual trigger only: `python update.py` run by the developer after confirming all round results are in.
+I run `python update.py` by hand when the round is actually done.
 
-### Alternatives considered
+### Didn't use
 
-| Option | Rejected reason |
+| Option | Why not |
 |---|---|
-| GitHub Actions cron (e.g., run every 6 hours) | Wastes API calls on rounds not yet complete. Runs when all results may not be in. Requires extra logic to detect round completion. |
-| Webhook from API-Football (when match ends) | API-Football webhooks require a paid plan. |
-| Fully automated nightly run | Same problem as cron — round boundaries don't align neatly with midnight. |
+| GitHub Actions cron | Burns API calls while games still playing |
+| API-Football webhooks | Paid |
+| Nightly auto-run | Round boundaries aren't at midnight |
 
-### Reasoning
+### Why manual
 
-- The WC 2026 knockout stage has one round every 3–4 days. Manual trigger is not burdensome.
-- Manual trigger guarantees we only update when data is complete and verified.
-- Simpler codebase — no CI secrets to manage, no scheduled workflow to debug.
-- Easy to upgrade later: the entire pipeline is one function call in `update.py`, so wrapping it in a GitHub Actions workflow is trivial if desired.
+Knockouts are every few days. I want complete verified results before publishing. One function in `update.py` if I ever wrap it in CI later.
 
 ---
 
-## ADR-004 — GitHub Pages for hosting
+## ADR-004: GitHub Pages
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-The prediction dashboard needs to be publicly accessible. A hosting solution is required.
+Dashboard needs a public URL.
 
 ### Decision
 
-Host the static dashboard on GitHub Pages, served from the `/web` folder of the `main` branch.
+Static `web/index.html` on GitHub Pages from `main`.
 
-### Alternatives considered
+### Didn't use
 
-| Option | Rejected reason |
-|---|---|
-| Vercel | Free tier is generous but requires account setup, project linking, and Vercel-specific config. More steps than necessary. |
-| Netlify | Similar to Vercel. Overkill for a single HTML file. |
-| Render / Railway | Require a running process. We have no backend. |
-| Self-hosted VPS | Operational cost and maintenance. Unnecessary for a static file. |
+Vercel, Netlify, VPS. All fine products, all extra steps for a single HTML file that fetches JSON.
 
-### Reasoning
+### Why Pages
 
-- GitHub Pages is built into GitHub — zero additional accounts or config
-- Automatically rebuilds on every push to `main`
-- Free, permanently, with no usage caps for a static site
-- The site is a single HTML file — GitHub Pages is perfectly suited
-- The URL is predictable: `yourusername.github.io/wc2026prediction/web/`
+Already on GitHub, free forever, rebuilds on push, URL is predictable.
 
 ---
 
-## ADR-005 — Monte Carlo simulation over analytical probability
+## ADR-005: Monte Carlo, not closed-form math
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-Given team strength scores, we need to convert them into tournament win probabilities. Two approaches exist: analytical calculation (multiply path probabilities) and Monte Carlo simulation (random sampling).
+Turn strengths into tournament win %.
 
 ### Decision
 
-Use Monte Carlo simulation with N = 10,000 iterations.
+10,000 sims.
 
-### Alternatives considered
+### Alternative
 
-| Option | Notes |
-|---|---|
-| Analytical probability | Exact, but becomes complex when accounting for the bracket structure (different paths to the final, variable opponents). The math works out to 6+ nested loops and is harder to read and extend. |
-| Monte Carlo | Slightly less precise (sampling error ~0.4pp at N=10,000) but far simpler code, easy to extend (add penalty shootout randomness, extra time, etc.), and finishes in <1 second. |
+Multiply path probabilities analytically. Exact but painful with real bracket topology, variable opponents, draw compression. Nested loops nobody wants to maintain.
 
-### Reasoning
+### Why MC
 
-- At N=10,000, the error is ~0.4 percentage points — negligible for our use case
-- The simulation code is easy to read and reason about
-- Adding new match outcome complexity (penalties, extra time luck) requires only local changes to `simulate_match()`, not a rearchitected formula
-- Runs in under 1 second on any modern laptop
+~0.4pp error at N=10k, runs in under a second, easy to add pen logic later, readable code.
 
 ---
 
-## ADR-006 — Five signals combined with fixed weights
+## ADR-006: Fixed weights for five signals
 
 **Date:** 2026-06-01  
 **Status:** Accepted
 
 ### Context
 
-Multiple data signals are available (Elo, xG, squad value, odds, injuries). We need a way to combine them.
+Elo, xG, value, odds, injuries all exist. Need one number per team.
 
 ### Decision
 
-Weighted linear combination with fixed weights defined in `config.py`. Weights: Elo 0.35, xG 0.30, squad value 0.15, betting odds 0.20. Injury as a multiplicative modifier.
+Linear blend: Elo 0.35, xG 0.30, value 0.15, odds 0.20. Injury multiplies after.
 
-### Alternatives considered
+### Alternatives
 
-| Option | Notes |
-|---|---|
-| ML regression to learn weights | Requires historical labeled data and a training pipeline. The gain in accuracy for a 7-round tournament is marginal. |
-| Equal weights | Simpler but ignores known differences in signal quality. Elo is a stronger long-term signal than squad value. |
-| Single signal (Elo only) | Much faster to build but significantly less accurate, especially mid-tournament when recent form diverges from historical ratings. |
+Learned weights need labeled history and infra. Equal weights ignore that Elo and xG are stronger signals. Elo-only is simpler but worse mid-tournament.
 
-### Reasoning
+### Why fixed
 
-- Fixed weights are transparent — you can reason about why the model gives a team a certain probability
-- Weights are empirically informed by research on football prediction models
-- Easy to tune in `config.py` without touching any model logic
-- Starting simple with the option to move to a learned weighting later is lower risk
+Transparent, tunable in `config.py` without touching sim code, good enough for a 7-round sprint. Can optimize later if I care enough.

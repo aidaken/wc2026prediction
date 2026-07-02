@@ -35,3 +35,4 @@ htmlcov/
 
 #Files
 downloaded stuff/
+.cursor/

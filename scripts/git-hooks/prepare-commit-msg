@@ -1,0 +1,11 @@
+#!/bin/bash
+# strip unwanted co-author trailers before commit is finalized
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' '/cursoragent@cursor\.com/d' "$1"
+  sed -i '' '/^Made-with: Cursor/d' "$1"
+  sed -i '' '/^Co-authored-by: Cursor/d' "$1"
+else
+  sed -i '/cursoragent@cursor\.com/d' "$1"
+  sed -i '/^Made-with: Cursor/d' "$1"
+  sed -i '/^Co-authored-by: Cursor/d' "$1"
+fi

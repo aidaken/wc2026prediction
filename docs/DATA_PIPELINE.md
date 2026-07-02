@@ -1,265 +1,139 @@
 # Data pipeline
 
-Step-by-step breakdown of what `update.py` does, JSON schemas for every data file, validation rules, and error handling.
+What `update.py` actually does, step by step. Read this when something in the output looks off.
 
 ---
 
-## Pipeline overview
+## Overview
 
 ```
-python update.py
-       │
-       ├── [FETCH]     fetch_all_data()           → raw dict (in memory)
-       │     ├── fetch.get_fixtures(round)
-       │     ├── fetch.get_player_stats(team_ids)
-       │     ├── fetch.get_injuries(team_ids)
-       │     ├── value.get_squad_values(team_ids)
-       │     └── odds.get_implied_probs()
-       │
-       ├── [VALIDATE]  validate_raw_data(raw)     → raises on critical failure
-       │
-       ├── [CALCULATE] calculate_strengths(raw)   → dict[team_id, TeamStrength]
-       │     ├── elo.update_ratings(fixtures)
-       │     ├── xg.calculate_form_ratios(fixtures)
-       │     ├── injury.calculate_multipliers(injuries, player_stats)
-       │     └── combine() → team_strength scores
-       │
-       ├── [SIMULATE]  simulate.run(teams, bracket, n=10_000) → dict[team_id, float]
-       │
-       ├── [WRITE]     write_outputs(strengths, win_probs)
-       │     ├── write data/teams.json
-       │     ├── write data/bracket.json
-       │     └── write data/predictions.json
-       │
-       └── [ARCHIVE]   archive_round(round_name)
-             └── copy predictions.json → data/history/{round}.json
+fetch everything → validate → score teams → sim bracket → write JSON → archive
 ```
 
-Total wall-clock time: ~15–30 seconds (dominated by network calls).
+One script. No queue, no worker. Takes a few minutes if APIs are happy.
 
 ---
 
-## JSON schemas
+## Step 1: Load config and data
 
-### `data/teams.json`
-
-Registry of all 48 qualified teams with current ratings and metadata. Updated in-place after each round.
-
-```json
-{
-  "_meta": {
-    "last_updated": "2026-06-30T20:15:00Z",
-    "round": "Round of 32",
-    "teams_remaining": 32
-  },
-  "teams": {
-    "BRA": {
-      "id": "BRA",
-      "name": "Brazil",
-      "api_football_id": 6,
-      "transfermarkt_id": "brasilien",
-      "elo": 2050.4,
-      "elo_change_this_round": +12.3,
-      "squad_value_eur": 1180000000,
-      "eliminated": false,
-      "group": "C",
-      "group_position": 1
-    },
-    "FRA": {
-      "id": "FRA",
-      "name": "France",
-      "api_football_id": 2,
-      "transfermarkt_id": "frankreich",
-      "elo": 1938.7,
-      "elo_change_this_round": -8.1,
-      "squad_value_eur": 1050000000,
-      "eliminated": false,
-      "group": "I",
-      "group_position": 1
-    }
-  }
-}
-```
-
-**Required fields per team:** `id`, `name`, `api_football_id`, `elo`, `eliminated`  
-**Optional fields:** `transfermarkt_id`, `squad_value_eur`, `elo_change_this_round`
+- Read `config.py` weights, `STRENGTH_SCALE`, API settings
+- Load existing `data/teams.json`, `data/bracket.json` if present
+- Read `_meta.elo_processed_matches` so we don't double-count Elo
 
 ---
 
-### `data/bracket.json`
+## Step 2: Fetch
 
-Full bracket state — all matches past and future. The simulation reads this to know which matches are still to be played.
-
-```json
-{
-  "_meta": {
-    "last_updated": "2026-06-30T20:15:00Z",
-    "current_round": "Round of 16",
-    "wc_year": 2026
-  },
-  "rounds": {
-    "round_of_32": {
-      "status": "completed",
-      "matches": [
-        {
-          "match_id": "r32_m01",
-          "api_fixture_id": 867241,
-          "date": "2026-06-28T19:00:00Z",
-          "team_home": "CAN",
-          "team_away": "RSA",
-          "score_home": 1,
-          "score_away": 0,
-          "penalties_home": null,
-          "penalties_away": null,
-          "winner": "CAN",
-          "xg_home": 1.42,
-          "xg_away": 0.67,
-          "status": "FT"
-        }
-      ]
-    },
-    "round_of_16": {
-      "status": "in_progress",
-      "matches": [
-        {
-          "match_id": "r16_m01",
-          "api_fixture_id": null,
-          "date": "2026-07-04T18:00:00Z",
-          "team_home": "CAN",
-          "team_away": "MAR",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "xg_home": null,
-          "xg_away": null,
-          "status": "NS"
-        }
-      ]
-    },
-    "quarter_finals": { "status": "pending", "matches": [] },
-    "semi_finals":    { "status": "pending", "matches": [] },
-    "final":          { "status": "pending", "matches": [] }
-  }
-}
-```
-
-**Match status values:** `NS` (not started), `FT` (full time), `PEN` (after penalties), `AET` (after extra time)
-
----
-
-### `data/predictions.json`
-
-Output file. Read by `web/index.html` at page load. Contains win probabilities for all remaining teams plus intermediate signal values for transparency.
-
-```json
-{
-  "_meta": {
-    "generated_at": "2026-06-30T20:15:44Z",
-    "round": "Round of 16",
-    "simulations": 10000,
-    "model_version": "1.0.0"
-  },
-  "predictions": [
-    {
-      "team_id": "BRA",
-      "team_name": "Brazil",
-      "win_probability": 0.184,
-      "reach_final_probability": 0.341,
-      "reach_semis_probability": 0.512,
-      "signals": {
-        "elo_normalized": 0.91,
-        "xg_form_ratio": 0.67,
-        "squad_value_normalized": 0.88,
-        "betting_implied_prob": 0.21,
-        "injury_multiplier": 1.00
-      },
-      "team_strength": 0.763,
-      "eliminated": false
-    },
-    {
-      "team_id": "GER",
-      "team_name": "Germany",
-      "win_probability": 0.0,
-      "reach_final_probability": 0.0,
-      "reach_semis_probability": 0.0,
-      "signals": null,
-      "team_strength": null,
-      "eliminated": true
-    }
-  ]
-}
-```
-
-`predictions` array is sorted by `win_probability` descending. Eliminated teams are included with `eliminated: true` and zeroed probabilities (so the dashboard can show the full bracket history).
-
----
-
-### `data/history/{round}.json`
-
-Snapshot of `predictions.json` taken immediately after each round update. Identical schema to `predictions.json`. Used to show how probabilities evolved across the tournament.
-
-Naming convention:
-- `data/history/round_32.json`
-- `data/history/round_16.json`
-- `data/history/quarter_finals.json`
-- `data/history/semi_finals.json`
-
----
-
-## Validation rules
-
-`validate_raw_data()` runs before any calculation. It raises a `DataValidationError` (custom exception in `src/fetch.py`) if any of these fail:
-
-| Rule | Critical? | Behavior on failure |
+| Call | Module | Output |
 |---|---|---|
-| All matches from last round have `status: FT` or `PEN` | Yes | Raise — do not update until round is fully complete |
-| At least 16 teams not eliminated | Yes | Raise — something is wrong with the bracket |
-| `xg_home` and `xg_away` present for completed matches | No | Warn, use 0.0 as fallback |
-| Squad value available for at least 12 teams | No | Warn, skip normalization, drop W_VALUE weight |
-| Odds available for at least 8 teams | No | Warn, skip betting signal, use FALLBACK_WEIGHTS |
+| Fixtures + results | `fetch.py` | Match list, scores |
+| xG per match | `fetch.py` | xG for/against |
+| Player stats | `fetch.py` | Goals, assists |
+| Injuries | `fetch.py` | Who's out |
+| Squad values | `value.py` | € per team |
+| Winner odds | `odds.py` | Implied probs |
+
+All in memory. Nothing persisted until the end except what we already had on disk.
 
 ---
 
-## Error handling
+## Step 3: Validate
 
-All network calls use a retry wrapper with exponential backoff:
+- Enough teams still in the tournament
+- Bracket matches line up with known structure
+- Fail loud if critical fetch failed (unless `--demo`)
 
-```python
-@retry(max_attempts=3, backoff_factor=2.0)
-def get_fixtures(round_name: str) -> list[dict]:
-    ...
+---
+
+## Step 4: Elo
+
+`elo.py`:
+
+- Only process fixtures whose IDs aren't in `elo_processed_matches`
+- Update ratings for both teams per result
+- Append new IDs to `_meta`
+
+This was a real bug before: every run re-applied all matches and ratings blew up.
+
+---
+
+## Step 5: Signals per team
+
+For each **active** team (still in bracket):
+
+| Signal | Module | Notes |
+|---|---|---|
+| Elo | `elo.py` | Normalized to ~[0,1] band |
+| xG form | `xg.py` | Last 5 games |
+| Squad value | `value.py` | Log-scaled € |
+| Betting | `odds.py` | Normalized across active teams only |
+| Injury | `injury.py` | Multiplier on key players out |
+
+---
+
+## Step 6: Combine strength
+
+Weighted sum from `config.py` (must sum to 1.0):
+
+```
+team_strength = w_elo * elo_norm + w_xg * xg_norm + ... 
+team_strength *= injury_multiplier
 ```
 
-If all retries fail:
-- API-Football: raise `FetchError` — this is critical, update aborts
-- Transfermarkt: log warning, return last known values from `teams.json`
-- OddsAPI: log warning, return `None`, redistribute weight to `W_ELO`
-- FBref: log warning, return `None`, fall back to API-Football player stats
+Stored on each team in `teams.json`.
 
 ---
 
-## Logging
+## Step 7: Monte Carlo
 
-`update.py` logs to stdout with timestamps. Redirect to file if you want to keep a log:
+`simulate.py`:
+
+- Uses `bracket_topology.MATCH_FEEDERS` so winners land in the right next match
+- `STRENGTH_SCALE` on [0,1] strengths (not raw Elo 400 scale)
+- `DRAW_PROBABILITY` for group-stage style ties if applicable; knockouts go to pens logic as coded
+- 10,000 iterations (configurable)
+
+Outputs:
+
+- `win_probability` per team
+- `match_predictions` — P(team advances) per knockout match
+
+---
+
+## Step 8: Write files
+
+| File | Contents |
+|---|---|
+| `teams.json` | All teams, strengths, signals, `_meta` |
+| `bracket.json` | Remaining fixtures, winners filled where known |
+| `predictions.json` | Win %, match_predictions, model version, timestamp |
+
+---
+
+## Step 9: History
+
+Copy snapshot to `data/history/predictions_YYYYMMDD_HHMMSS.json` (or similar). Lets you diff how predictions moved round to round.
+
+---
+
+## Demo mode
+
+`python update.py --demo`:
+
+- Skips live API calls where possible
+- Uses bundled/cached data so you can test the pipeline without burning quota
+
+Good for CI and local UI work.
+
+---
+
+## What I run after a knockout round
 
 ```bash
-python update.py 2>&1 | tee logs/update_$(date +%Y%m%d).log
+python update.py
+git add data/predictions.json data/bracket.json data/teams.json
+git commit -m "chore: update predictions after quarter-finals"
+git push
 ```
 
-Log levels:
-- `INFO` — normal progress (e.g., "Fetching Round of 16 fixtures...")
-- `WARNING` — non-critical failures (e.g., "OddsAPI unavailable, skipping betting signal")
-- `ERROR` — critical failures that abort the pipeline
-- `DEBUG` — per-match calculations (disabled by default, enable in `config.py`)
-
----
-
-## Adding a new round
-
-After each round completes, `update.py` auto-detects the current round from `bracket.json`. No manual round configuration is needed. The pipeline reads the last round where all matches have `status: FT/PEN/AET` and updates forward.
-
-If you want to force a specific round (e.g., for testing):
-
-```bash
-python update.py --round "Round of 16"
-```
+That's the whole ops story.
