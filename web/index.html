@@ -47,7 +47,87 @@
       line-height: 1.5;
       min-height: 100vh;
     }
-    .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ── Champion hero (top center) ── */
+    .champion-hero {
+      max-width: 540px;
+      margin: 0 auto 1.25rem;
+    }
+    .champion-hero .top-pick {
+      border-bottom: none;
+      padding-bottom: 0.75rem;
+    }
+    .champ-signals {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0 1.25rem 1.15rem;
+    }
+    .champ-chip {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.3rem 0.55rem;
+      border-radius: 8px;
+      background: var(--blue-soft);
+      color: var(--text-soft);
+    }
+    .champ-chip b { color: var(--blue); font-variant-numeric: tabular-nums; }
+
+    /* ── Full-width prob table ── */
+    .prob-card { margin-bottom: 1.25rem; }
+    .prob-card .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .tier-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.75rem 1.25rem;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .tier-toggle {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .tier-toggle:hover { border-color: var(--blue); color: var(--blue); }
+    .tier-toggle.active {
+      background: var(--blue-soft);
+      border-color: #93c5fd;
+      color: var(--blue);
+    }
+    .tier-toggle.tier-static {
+      cursor: default;
+      background: var(--accent-soft);
+      border-color: #86efac;
+      color: #15803d;
+    }
+    tbody.tier-section.collapsed { display: none; }
+    .tier-divider td {
+      padding: 0.5rem 1.25rem;
+      background: #f1f5f9;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Layout (legacy grid removed) ── */
 
     /* ── Header ── */
     header {
@@ -98,16 +178,7 @@
       font-weight: 500;
     }
 
-    /* ── Layout ── */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 320px;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-    .grid-sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
-
+    /* ── Cards ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -128,7 +199,9 @@
 
     /* ── Table ── */
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.8rem 1.1rem; text-align: left; }
+    th, td { padding: 0.75rem 0.85rem; text-align: left; }
+    th.num, td.num { text-align: right; white-space: nowrap; }
+    th.team-col { min-width: 10rem; }
     th {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -202,14 +275,23 @@
       font-weight: 700;
       letter-spacing: 0.04em;
     }
+    .stat-val {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+    }
+    .stat-val.good { color: var(--accent); }
+    .stat-val.warn { color: var(--gold); }
+    .stat-val.muted { color: var(--muted); }
+    .prob-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .badge.out {
       background: var(--danger-soft);
       color: var(--danger);
     }
 
-    /* ── Champion card ── */
     .top-pick {
-      padding: 1.75rem 1.5rem 1.25rem;
+      padding: 1.75rem 1.5rem 0.5rem;
       text-align: center;
       background: linear-gradient(180deg, #ecfdf5 0%, #ffffff 55%);
       border-bottom: 1px solid var(--border-soft);
@@ -269,7 +351,7 @@
       font-size: 0.8rem;
     }
 
-    /* ── History ── */
+    .history-card { margin-bottom: 1.25rem; }
     .history { padding: 1rem 1.25rem; }
     .history-row {
       display: grid;
@@ -619,7 +701,6 @@
 
     /* ── Mobile ── */
     @media (max-width: 900px) {
-      .grid-sidebar { order: -1; }
       .how-it-works { padding: 1.5rem 1rem; }
       .hiw-grid { grid-template-columns: 1fr; }
       .hiw-card.wide { grid-column: auto; }
@@ -649,7 +730,10 @@
         border-bottom: 1px solid var(--border-soft);
       }
       .prob-table tr:last-child { border-bottom: none; }
-      .prob-table tr.eliminated { display: none; }
+      .prob-table tr.tier-divider { display: block; padding: 0.5rem 1rem; }
+      .prob-table tr.tier-divider td { display: block; padding: 0; }
+      .prob-table tr.tier-divider td::before { display: none; }
+      tbody.tier-section.collapsed { display: none !important; }
       .prob-table td {
         padding: 0.15rem 0;
         border: none;
@@ -676,6 +760,14 @@
       .prob-table td.team-cell-wrap::before { display: none; }
       .prob-table td.team-cell-wrap .team-cell { width: 100%; }
       .prob-table .prob-bar-wrap { width: 100%; max-width: 120px; }
+
+      .prob-table td[data-label="Strength"]::before,
+      .prob-table td[data-label="Form"]::before,
+      .prob-table td[data-label="Elo"]::before,
+      .prob-table td[data-label="Injury"]::before { display: inline; }
+
+      .tier-toggles { padding: 0.6rem 0.85rem; }
+      .tier-toggle { font-size: 0.68rem; padding: 0.3rem 0.6rem; }
 
       .bracket-scroll-hint { display: block; }
       .bracket-title h2 { font-size: 1.35rem; }
@@ -819,6 +911,137 @@
         `<span>${(meta.simulations || 0).toLocaleString()} simulations</span>`,
         `<span>Updated ${new Date(meta.generated_at).toLocaleString()}</span>`,
       ].join('');
+    }
+
+    function renderChampionChips(signals) {
+      if (!signals) return '';
+      const chips = [
+        ['Elo', Math.round(signals.elo_normalized * 100)],
+        ['Form', Math.round(signals.xg_form_ratio * 100)],
+        ['Squad', Math.round(signals.squad_value_normalized * 100)],
+        ['Injury', signals.injury_multiplier.toFixed(2)],
+      ];
+      return chips.map(([label, val]) =>
+        `<span class="champ-chip">${label} <b>${val}</b></span>`
+      ).join('');
+    }
+
+    function renderChampionHero(top) {
+      if (!top) return '';
+      return `<div class="champion-hero card">
+        <div class="top-pick">
+          <div class="label">Most likely champion</div>
+          <div class="champ-row">
+            ${top.team_id ? `<img class="champ-flag" src="${flagUrl(top.team_id)}" alt="">` : ''}
+            <div class="name">${top.team_name}</div>
+          </div>
+          <div class="pct">${pct(top.win_probability)}</div>
+        </div>
+        <div class="champ-signals">${renderChampionChips(top.signals)}</div>
+      </div>`;
+    }
+
+    const TIERS = [
+      { id: '1-10', label: 'Top 10', start: 1, end: 10, open: true },
+      { id: '11-20', label: '11–20', start: 11, end: 20 },
+      { id: '21-30', label: '21–30', start: 21, end: 30 },
+      { id: '31-40', label: '31–40', start: 31, end: 40 },
+      { id: '41-48', label: '41–48', start: 41, end: 48 },
+    ];
+
+    function renderStatCells(p) {
+      if (p.eliminated || p.signals == null || p.team_strength == null) {
+        return `
+          <td class="num" data-label="Strength"><span class="stat-val muted">—</span></td>
+          <td class="num" data-label="Form"><span class="stat-val muted">—</span></td>
+          <td class="num" data-label="Elo"><span class="stat-val muted">—</span></td>
+          <td class="num" data-label="Injury"><span class="stat-val muted">—</span></td>`;
+      }
+      const s = p.signals;
+      const injCls = s.injury_multiplier >= 0.99 ? 'good' : 'warn';
+      return `
+        <td class="num" data-label="Strength"><span class="stat-val">${(p.team_strength * 100).toFixed(0)}</span></td>
+        <td class="num" data-label="Form"><span class="stat-val ${s.xg_form_ratio >= 0.55 ? 'good' : ''}">${Math.round(s.xg_form_ratio * 100)}</span></td>
+        <td class="num" data-label="Elo"><span class="stat-val">${Math.round(s.elo_normalized * 100)}</span></td>
+        <td class="num" data-label="Injury"><span class="stat-val ${injCls}">${(s.injury_multiplier * 100).toFixed(0)}%</span></td>`;
+    }
+
+    function renderTeamRow(p, displayIndex) {
+      const rankCls = !p.eliminated && p.rank <= 3 ? `rank-${p.rank}` : '';
+      return `<tr class="${p.eliminated ? 'eliminated' : ''} ${rankCls}">
+        <td class="rank rank-cell">${displayIndex}</td>
+        <td class="team-cell-wrap">
+          <div class="team-cell">
+            ${!p.eliminated ? `<img class="table-flag" src="${flagUrl(p.team_id)}" alt="" loading="lazy">` : ''}
+            <span class="team-name">${p.team_name}</span>
+            ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}
+          </div>
+        </td>
+        <td class="num" data-label="Win">
+          <div class="prob">${pct(p.win_probability)}</div>
+          ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
+        </td>
+        <td class="prob num" data-label="Final">${pct(p.reach_final_probability)}</td>
+        <td class="prob num" data-label="Semis">${pct(p.reach_semis_probability)}</td>
+        ${renderStatCells(p)}
+      </tr>`;
+    }
+
+    function renderProbTable(preds) {
+      const indexed = preds.map((p, i) => ({ ...p, displayIndex: i + 1 }));
+      const toggles = TIERS.map(t =>
+        t.open
+          ? `<span class="tier-toggle tier-static">Top 10</span>`
+          : `<button type="button" class="tier-toggle" data-tier="${t.id}" data-label="${t.label}">Show ${t.label}</button>`
+      ).join('');
+
+      let body = '';
+      for (const tier of TIERS) {
+        const teams = indexed.filter(p => p.displayIndex >= tier.start && p.displayIndex <= tier.end);
+        if (!teams.length) continue;
+        const collapsed = tier.open ? '' : ' collapsed';
+        body += `<tbody class="tier-section${collapsed}" data-tier="${tier.id}">`;
+        if (!tier.open) {
+          body += `<tr class="tier-divider"><td colspan="9">Ranks ${tier.label}</td></tr>`;
+        }
+        body += teams.map(p => renderTeamRow(p, p.displayIndex)).join('');
+        body += '</tbody>';
+      }
+
+      return `<div class="card prob-card">
+        <div class="card-header"><span>Win probabilities</span><span style="font-weight:500;text-transform:none;letter-spacing:0">${indexed.filter(p => !p.eliminated).length} teams left</span></div>
+        <div class="tier-toggles">${toggles}</div>
+        <div class="prob-table-wrap">
+          <table class="prob-table">
+            <thead><tr>
+              <th>#</th>
+              <th class="team-col">Team</th>
+              <th class="num">Win</th>
+              <th class="num">Final</th>
+              <th class="num">Semis</th>
+              <th class="num">Strength</th>
+              <th class="num">Form</th>
+              <th class="num">Elo</th>
+              <th class="num">Injury</th>
+            </tr></thead>
+            ${body}
+          </table>
+        </div>
+      </div>`;
+    }
+
+    function wireTierToggles() {
+      document.querySelectorAll('.tier-toggle[data-tier]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.tier;
+          const label = btn.dataset.label;
+          const section = document.querySelector(`tbody.tier-section[data-tier="${id}"]`);
+          if (!section) return;
+          const isCollapsed = section.classList.toggle('collapsed');
+          btn.classList.toggle('active', !isCollapsed);
+          btn.textContent = isCollapsed ? `Show ${label}` : `Hide ${label}`;
+        });
+      });
     }
 
     function renderSignals(signals) {
@@ -1000,7 +1223,7 @@
           <div class="prob">${currentTop ? pct(currentTop.win_probability) : '—'}</div>
         </div>`;
 
-        return `<div class="card" style="margin-top:1.5rem"><div class="card-header">Prediction history</div><div class="history">${rows}</div></div>`;
+        return `<div class="card history-card"><div class="card-header">Prediction history</div><div class="history">${rows}</div></div>`;
       } catch {
         return '';
       }
@@ -1023,49 +1246,11 @@
         const historyHtml = await renderHistory(preds);
 
         app.innerHTML = `
-          <div class="grid">
-            <div class="card">
-              <div class="card-header">Win probabilities</div>
-              <table class="prob-table">
-                <thead><tr><th>#</th><th>Team</th><th>Win</th><th>Final</th><th>Semis</th></tr></thead>
-                <tbody>
-                  ${preds.map(p => `
-                    <tr class="${p.eliminated ? 'eliminated' : ''} ${!p.eliminated && p.rank <= 3 ? 'rank-' + p.rank : ''}">
-                      <td class="rank rank-cell">${p.eliminated ? '—' : (p.rank || '—')}</td>
-                      <td class="team-cell-wrap">
-                        <div class="team-cell">
-                          ${!p.eliminated ? `<img class="table-flag" src="${flagUrl(p.team_id)}" alt="" loading="lazy">` : ''}
-                          <span class="team-name">${p.team_name}</span>
-                          ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}
-                        </div>
-                      </td>
-                      <td data-label="Win">
-                        <div class="prob">${pct(p.win_probability)}</div>
-                        ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
-                      </td>
-                      <td class="prob" data-label="Final">${pct(p.reach_final_probability)}</td>
-                      <td class="prob" data-label="Semis">${pct(p.reach_semis_probability)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-            <div class="grid-sidebar">
-              <div class="card">
-                <div class="top-pick">
-                  <div class="label">Most likely champion</div>
-                  <div class="champ-row">
-                    ${top?.team_id ? `<img class="champ-flag" src="${flagUrl(top.team_id)}" alt="">` : ''}
-                    <div class="name">${top?.team_name || '—'}</div>
-                  </div>
-                  <div class="pct">${top ? pct(top.win_probability) : '—'}</div>
-                </div>
-                ${renderSignals(top?.signals)}
-              </div>
-              ${historyHtml}
-            </div>
-          </div>
+          ${renderChampionHero(top)}
+          ${renderProbTable(preds)}
+          ${historyHtml}
           ${bracket ? renderBracketTree(bracket, data.match_predictions, data._meta || {}) : ''}`;
+        wireTierToggles();
       } catch (err) {
         app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}</div>`;
       }
