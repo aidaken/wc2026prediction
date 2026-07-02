@@ -46,8 +46,61 @@
       color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
+      position: relative;
     }
-    .container { max-width: 1400px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ── Background watermarks ── */
+    .page-watermarks {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      user-select: none;
+    }
+    .page-watermarks::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, rgba(248, 250, 252, 0.55) 100%);
+    }
+    .wm {
+      position: absolute;
+      opacity: 0.055;
+      color: #64748b;
+    }
+    .wm-flag {
+      width: clamp(52px, 8vw, 96px);
+      height: auto;
+      border-radius: 6px;
+      filter: saturate(0.85);
+      transform: rotate(var(--rot, 0deg));
+    }
+    .wm-city {
+      font-size: clamp(1.4rem, 3.2vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      opacity: 0.07;
+      white-space: nowrap;
+      transform: rotate(var(--rot, -8deg));
+    }
+    .wm-stadium {
+      width: clamp(64px, 9vw, 110px);
+      height: auto;
+      opacity: 0.065;
+      transform: rotate(var(--rot, 0deg));
+    }
+    .wm-ball {
+      width: clamp(36px, 5vw, 56px);
+      height: auto;
+      opacity: 0.06;
+      transform: rotate(var(--rot, 0deg));
+    }
+    .wm-host { opacity: 0.08; width: clamp(64px, 10vw, 112px); }
+
+    .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
 
     /* ── Champion hero (top center) ── */
     .champion-hero {
@@ -701,12 +754,20 @@
 
     /* ── Mobile ── */
     @media (max-width: 900px) {
+      .wm-hide-md { display: none; }
       .how-it-works { padding: 1.5rem 1rem; }
       .hiw-grid { grid-template-columns: 1fr; }
       .hiw-card.wide { grid-column: auto; }
     }
 
     @media (max-width: 640px) {
+      .wm-flag, .wm-host { width: clamp(40px, 11vw, 64px); opacity: 0.045; }
+      .wm-city { font-size: clamp(1rem, 5vw, 1.5rem); opacity: 0.055; }
+      .wm-stadium { width: clamp(48px, 12vw, 72px); opacity: 0.05; }
+      .wm-ball { width: clamp(28px, 7vw, 40px); opacity: 0.045; }
+      .wm-hide-sm { display: none; }
+      .wm-hide-xs { display: none; }
+
       .container { padding: 1.25rem 0.85rem 2.5rem; }
       h1 { font-size: 1.55rem; }
       .subtitle { font-size: 0.88rem; padding: 0 0.25rem; }
@@ -781,10 +842,106 @@
     @media (max-width: 380px) {
       .bracket-tree { min-width: 820px; }
       .bk-match { width: 108px; }
+      .wm-city { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page-watermarks .wm { transform: none !important; }
     }
   </style>
 </head>
 <body>
+  <div class="page-watermarks" aria-hidden="true">
+    <!-- Host nation flags -->
+    <img class="wm wm-flag wm-host" src="https://flagcdn.com/w160/us.png" alt="" style="top:4%;left:3%;--rot:-12deg">
+    <img class="wm wm-flag wm-host" src="https://flagcdn.com/w160/mx.png" alt="" style="top:8%;right:4%;--rot:10deg">
+    <img class="wm wm-flag wm-host" src="https://flagcdn.com/w160/ca.png" alt="" style="bottom:6%;left:5%;--rot:8deg">
+
+    <!-- Tournament flags -->
+    <img class="wm wm-flag wm-hide-xs" src="https://flagcdn.com/w160/br.png" alt="" style="top:22%;left:1%;--rot:-18deg">
+    <img class="wm wm-flag wm-hide-sm" src="https://flagcdn.com/w160/ar.png" alt="" style="top:38%;right:2%;--rot:14deg">
+    <img class="wm wm-flag wm-hide-md" src="https://flagcdn.com/w160/fr.png" alt="" style="bottom:28%;right:6%;--rot:-10deg">
+    <img class="wm wm-flag wm-hide-md" src="https://flagcdn.com/w160/de.png" alt="" style="bottom:18%;left:2%;--rot:16deg">
+    <img class="wm wm-flag wm-hide-sm" src="https://flagcdn.com/w160/es.png" alt="" style="top:55%;left:4%;--rot:-6deg">
+    <img class="wm wm-flag wm-hide-md" src="https://flagcdn.com/w160/gb.png" alt="" style="top:68%;right:3%;--rot:12deg">
+
+    <!-- Host cities -->
+    <span class="wm wm-city" style="top:14%;left:18%;--rot:-14deg">Mexico City</span>
+    <span class="wm wm-city wm-hide-sm" style="top:32%;right:12%;--rot:8deg">Los Angeles</span>
+    <span class="wm wm-city wm-hide-md" style="bottom:32%;left:14%;--rot:-6deg">New York</span>
+    <span class="wm wm-city wm-hide-sm" style="bottom:22%;right:18%;--rot:10deg">Miami</span>
+    <span class="wm wm-city wm-hide-md" style="top:48%;left:8%;--rot:-12deg">Dallas</span>
+    <span class="wm wm-city wm-hide-md" style="top:62%;right:14%;--rot:6deg">Seattle</span>
+    <span class="wm wm-city wm-hide-sm" style="bottom:38%;left:22%;--rot:-8deg">Vancouver</span>
+    <span class="wm wm-city wm-hide-md" style="top:78%;left:28%;--rot:12deg">Atlanta</span>
+
+    <!-- Soccer balls -->
+    <svg class="wm wm-ball" style="top:18%;right:22%;--rot:20deg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2"/>
+      <path d="M32 6 L38 18 L32 24 L26 18 Z" fill="currentColor" opacity="0.5"/>
+      <path d="M32 40 L44 34 L50 42 L42 50 Z" fill="currentColor" opacity="0.35"/>
+      <path d="M18 42 L24 30 L32 34 L28 46 Z" fill="currentColor" opacity="0.35"/>
+      <path d="M14 28 L26 22 L30 30 L20 36 Z" fill="currentColor" opacity="0.35"/>
+      <path d="M46 22 L54 30 L48 38 L40 32 Z" fill="currentColor" opacity="0.35"/>
+    </svg>
+    <svg class="wm wm-ball wm-hide-sm" style="bottom:42%;left:12%;--rot:-15deg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2"/>
+      <path d="M32 6 L38 18 L32 24 L26 18 Z" fill="currentColor" opacity="0.5"/>
+      <path d="M32 40 L44 34 L50 42 L42 50 Z" fill="currentColor" opacity="0.35"/>
+      <path d="M18 42 L24 30 L32 34 L28 46 Z" fill="currentColor" opacity="0.35"/>
+    </svg>
+    <svg class="wm wm-ball wm-hide-md" style="top:72%;right:28%;--rot:8deg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2"/>
+      <path d="M32 6 L38 18 L32 24 L26 18 Z" fill="currentColor" opacity="0.5"/>
+      <path d="M46 22 L54 30 L48 38 L40 32 Z" fill="currentColor" opacity="0.35"/>
+    </svg>
+
+    <!-- Host stadium silhouettes (WC 2026 venues) -->
+    <svg class="wm wm-stadium" style="top:26%;left:42%;--rot:-4deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <title>Estadio Azteca</title>
+      <ellipse cx="60" cy="52" rx="54" ry="16" opacity="0.35"/>
+      <path d="M8 52 Q60 18 112 52" fill="none" stroke="currentColor" stroke-width="3" opacity="0.6"/>
+      <path d="M20 48 L20 32 M40 46 L40 26 M60 44 L60 22 M80 46 L80 26 M100 48 L100 32" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-sm" style="top:44%;right:32%;--rot:6deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>SoFi Stadium</title>
+      <ellipse cx="60" cy="54" rx="52" ry="14" opacity="0.3"/>
+      <path d="M12 54 Q60 22 108 54" fill="none" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+      <ellipse cx="60" cy="38" rx="28" ry="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-md" style="bottom:30%;left:38%;--rot:-8deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>MetLife Stadium</title>
+      <rect x="14" y="36" width="92" height="22" rx="4" opacity="0.25"/>
+      <path d="M10 58 Q60 28 110 58" fill="none" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+      <path d="M30 40 L30 28 M60 38 L60 24 M90 40 L90 28" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-md" style="bottom:14%;right:10%;--rot:5deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>BC Place</title>
+      <path d="M6 50 Q60 12 114 50 L114 58 Q60 68 6 58 Z" opacity="0.3"/>
+      <ellipse cx="60" cy="48" rx="48" ry="10" fill="none" stroke="currentColor" stroke-width="2" opacity="0.45"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-sm" style="top:58%;left:55%;--rot:3deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>AT&amp;T Stadium</title>
+      <rect x="8" y="42" width="104" height="4" rx="2" opacity="0.5"/>
+      <path d="M6 46 Q60 20 114 46" fill="none" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+      <path d="M6 46 L6 56 Q60 66 114 56 L114 46" fill="currentColor" opacity="0.2"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-md" style="top:12%;left:55%;--rot:-6deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>Hard Rock Stadium</title>
+      <ellipse cx="60" cy="50" rx="50" ry="18" opacity="0.28"/>
+      <path d="M14 50 Q60 26 106 50" fill="none" stroke="currentColor" stroke-width="2.5" opacity="0.5"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-md" style="bottom:48%;right:42%;--rot:-10deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>Lumen Field</title>
+      <path d="M12 54 L12 34 Q60 16 108 34 L108 54" fill="none" stroke="currentColor" stroke-width="3" opacity="0.5"/>
+      <line x1="60" y1="20" x2="60" y2="54" stroke="currentColor" stroke-width="1.5" opacity="0.35"/>
+    </svg>
+    <svg class="wm wm-stadium wm-hide-md" style="top:85%;right:38%;--rot:7deg" viewBox="0 0 120 72" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <title>Arrowhead Stadium</title>
+      <path d="M10 56 Q60 24 110 56" fill="none" stroke="currentColor" stroke-width="3" opacity="0.55"/>
+      <path d="M22 52 L22 38 M44 50 L44 32 M76 50 L76 32 M98 52 L98 38" stroke="currentColor" stroke-width="2" opacity="0.35"/>
+    </svg>
+  </div>
   <div class="container">
     <header>
       <div class="hero-badge">WORLD CUP 2026</div>
