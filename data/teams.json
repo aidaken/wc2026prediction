@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-07-02T13:59:26Z",
+    "last_updated": "2026-07-02T14:09:03Z",
     "round": "Round of 32",
     "teams_remaining": 22,
     "elo_processed_matches": [
@@ -113,7 +113,7 @@
       "eliminated": false,
       "group": "A",
       "group_position": 1,
-      "elo_change_this_round": 57.0,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.6171
     },
     "CZE": {
@@ -126,7 +126,7 @@
       "eliminated": true,
       "group": "A",
       "group_position": 4,
-      "elo_change_this_round": -40.5
+      "elo_change_this_round": 0.0
     },
     "RSA": {
       "id": "RSA",
@@ -138,7 +138,7 @@
       "eliminated": true,
       "group": "A",
       "group_position": 2,
-      "elo_change_this_round": 7.6
+      "elo_change_this_round": 0.0
     },
     "KOR": {
       "id": "KOR",
@@ -150,7 +150,7 @@
       "eliminated": true,
       "group": "A",
       "group_position": 3,
-      "elo_change_this_round": -28.0
+      "elo_change_this_round": 0.0
     },
     "CAN": {
       "id": "CAN",
@@ -162,7 +162,7 @@
       "eliminated": false,
       "group": "B",
       "group_position": 2,
-      "elo_change_this_round": 4.0,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.4197
     },
     "BIH": {
@@ -175,7 +175,7 @@
       "eliminated": true,
       "group": "B",
       "group_position": 3,
-      "elo_change_this_round": -4.5,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.226
     },
     "QAT": {
@@ -188,7 +188,7 @@
       "eliminated": true,
       "group": "B",
       "group_position": 4,
-      "elo_change_this_round": -25.9
+      "elo_change_this_round": 0.0
     },
     "SUI": {
       "id": "SUI",
@@ -200,7 +200,7 @@
       "eliminated": false,
       "group": "B",
       "group_position": 1,
-      "elo_change_this_round": 26.4,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.4748
     },
     "BRA": {
@@ -213,7 +213,7 @@
       "eliminated": false,
       "group": "C",
       "group_position": 1,
-      "elo_change_this_round": 6.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.8076
     },
     "HTI": {
@@ -226,7 +226,7 @@
       "eliminated": true,
       "group": "C",
       "group_position": 4,
-      "elo_change_this_round": -22.3
+      "elo_change_this_round": 0.0
     },
     "MAR": {
       "id": "MAR",
@@ -238,7 +238,7 @@
       "eliminated": false,
       "group": "C",
       "group_position": 2,
-      "elo_change_this_round": 53.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.5495
     },
     "SCO": {
@@ -251,7 +251,7 @@
       "eliminated": true,
       "group": "C",
       "group_position": 3,
-      "elo_change_this_round": -2.6
+      "elo_change_this_round": 0.0
     },
     "USA": {
       "id": "USA",
@@ -263,7 +263,7 @@
       "eliminated": false,
       "group": "D",
       "group_position": 1,
-      "elo_change_this_round": 31.1,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.4841
     },
     "AUS": {
@@ -276,7 +276,7 @@
       "eliminated": false,
       "group": "D",
       "group_position": 2,
-      "elo_change_this_round": 15.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.2414
     },
     "PAR": {
@@ -289,7 +289,7 @@
       "eliminated": false,
       "group": "D",
       "group_position": 3,
-      "elo_change_this_round": 19.8,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.3287
     },
     "TUR": {
@@ -302,7 +302,7 @@
       "eliminated": true,
       "group": "D",
       "group_position": 4,
-      "elo_change_this_round": -14.8
+      "elo_change_this_round": 0.0
     },
     "CUW": {
       "id": "CUW",
@@ -314,7 +314,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 1,
-      "elo_change_this_round": -10.1
+      "elo_change_this_round": 0.0
     },
     "ECU": {
       "id": "ECU",
@@ -326,7 +326,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 3,
-      "elo_change_this_round": -11.1
+      "elo_change_this_round": 0.0
     },
     "GER": {
       "id": "GER",
@@ -338,7 +338,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 1,
-      "elo_change_this_round": -46.1
+      "elo_change_this_round": 0.0
     },
     "CIV": {
       "id": "CIV",
@@ -350,7 +350,7 @@
       "eliminated": true,
       "group": "E",
       "group_position": 2,
-      "elo_change_this_round": 1.5
+      "elo_change_this_round": 0.0
     },
     "NED": {
       "id": "NED",
@@ -362,7 +362,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 1,
-      "elo_change_this_round": 3.3
+      "elo_change_this_round": 0.0
     },
     "JPN": {
       "id": "JPN",
@@ -374,7 +374,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 2,
-      "elo_change_this_round": 8.2
+      "elo_change_this_round": 0.0
     },
     "SWE": {
       "id": "SWE",
@@ -386,7 +386,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 3,
-      "elo_change_this_round": -7.8
+      "elo_change_this_round": 0.0
     },
     "TUN": {
       "id": "TUN",
@@ -398,7 +398,7 @@
       "eliminated": true,
       "group": "F",
       "group_position": 4,
-      "elo_change_this_round": -47.2
+      "elo_change_this_round": 0.0
     },
     "BEL": {
       "id": "BEL",
@@ -410,7 +410,7 @@
       "eliminated": false,
       "group": "G",
       "group_position": 1,
-      "elo_change_this_round": 2.3,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.5416
     },
     "EGY": {
@@ -423,7 +423,7 @@
       "eliminated": false,
       "group": "G",
       "group_position": 2,
-      "elo_change_this_round": 24.7,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.3101
     },
     "IRN": {
@@ -436,7 +436,7 @@
       "eliminated": true,
       "group": "G",
       "group_position": 3,
-      "elo_change_this_round": 9.5
+      "elo_change_this_round": 0.0
     },
     "NZL": {
       "id": "NZL",
@@ -448,7 +448,7 @@
       "eliminated": true,
       "group": "G",
       "group_position": 4,
-      "elo_change_this_round": -18.0
+      "elo_change_this_round": 0.0
     },
     "CPV": {
       "id": "CPV",
@@ -460,7 +460,7 @@
       "eliminated": false,
       "group": "H",
       "group_position": 2,
-      "elo_change_this_round": 25.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.2
     },
     "KSA": {
@@ -473,7 +473,7 @@
       "eliminated": true,
       "group": "H",
       "group_position": 3,
-      "elo_change_this_round": 6.6
+      "elo_change_this_round": 0.0
     },
     "ESP": {
       "id": "ESP",
@@ -485,7 +485,7 @@
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 2.8,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.694
     },
     "URU": {
@@ -498,7 +498,7 @@
       "eliminated": true,
       "group": "H",
       "group_position": 4,
-      "elo_change_this_round": -34.6
+      "elo_change_this_round": 0.0
     },
     "FRA": {
       "id": "FRA",
@@ -510,7 +510,7 @@
       "eliminated": false,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": 35.4,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.7827
     },
     "NOR": {
@@ -523,7 +523,7 @@
       "eliminated": false,
       "group": "I",
       "group_position": 2,
-      "elo_change_this_round": 30.4,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.4875
     },
     "SEN": {
@@ -536,7 +536,7 @@
       "eliminated": true,
       "group": "I",
       "group_position": 3,
-      "elo_change_this_round": -24.1,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.3279
     },
     "IRQ": {
@@ -549,7 +549,7 @@
       "eliminated": true,
       "group": "I",
       "group_position": 4,
-      "elo_change_this_round": -32.8
+      "elo_change_this_round": 0.0
     },
     "ALG": {
       "id": "ALG",
@@ -561,7 +561,7 @@
       "eliminated": false,
       "group": "J",
       "group_position": 3,
-      "elo_change_this_round": 11.5,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.2233
     },
     "ARG": {
@@ -574,7 +574,7 @@
       "eliminated": false,
       "group": "J",
       "group_position": 1,
-      "elo_change_this_round": 24.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.7043
     },
     "AUT": {
@@ -587,7 +587,7 @@
       "eliminated": false,
       "group": "J",
       "group_position": 2,
-      "elo_change_this_round": -0.8,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.3128
     },
     "JOR": {
@@ -600,7 +600,7 @@
       "eliminated": true,
       "group": "J",
       "group_position": 4,
-      "elo_change_this_round": -35.0
+      "elo_change_this_round": 0.0
     },
     "COL": {
       "id": "COL",
@@ -612,7 +612,7 @@
       "eliminated": false,
       "group": "K",
       "group_position": 1,
-      "elo_change_this_round": 27.5,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.5224
     },
     "COD": {
@@ -625,7 +625,7 @@
       "eliminated": true,
       "group": "K",
       "group_position": 3,
-      "elo_change_this_round": 10.1
+      "elo_change_this_round": 0.0
     },
     "POR": {
       "id": "POR",
@@ -637,7 +637,7 @@
       "eliminated": false,
       "group": "K",
       "group_position": 2,
-      "elo_change_this_round": -8.7,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.6267
     },
     "UZB": {
@@ -650,7 +650,7 @@
       "eliminated": true,
       "group": "K",
       "group_position": 4,
-      "elo_change_this_round": -39.0
+      "elo_change_this_round": 0.0
     },
     "ENG": {
       "id": "ENG",
@@ -662,7 +662,7 @@
       "eliminated": false,
       "group": "L",
       "group_position": 1,
-      "elo_change_this_round": 18.8,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.6847
     },
     "CRO": {
@@ -675,7 +675,7 @@
       "eliminated": false,
       "group": "L",
       "group_position": 2,
-      "elo_change_this_round": 11.2,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.4114
     },
     "GHA": {
@@ -688,7 +688,7 @@
       "eliminated": false,
       "group": "L",
       "group_position": 3,
-      "elo_change_this_round": 18.9,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.2344
     },
     "PAN": {
@@ -701,7 +701,7 @@
       "eliminated": true,
       "group": "L",
       "group_position": 4,
-      "elo_change_this_round": -38.8
+      "elo_change_this_round": 0.0
     }
   }
 }

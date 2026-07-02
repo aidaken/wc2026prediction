@@ -1229,14 +1229,16 @@
 
     function renderMeta(meta) {
       const ds = meta.data_sources || {};
-      const src = ds.api_football && ds.api_football !== 'unavailable'
-        ? `API ${ds.api_football}` : 'cached/bracket data';
-      const odds = ds.odds_api === 'ok' ? ' · odds live' : '';
+      const sm = meta.strength_meta || {};
+      const fixtures = ds.fixtures_count != null ? `${ds.fixtures_count} fixtures` : 'cached/bracket data';
+      const xgNote = sm.teams_with_xg != null ? ` · xG for ${sm.teams_with_xg} teams` : '';
+      const oddsNote = ds.odds_api === 'ok' ? ' · odds on' : (meta.weights?.betting_odds > 0 ? '' : ' · odds off');
+      const scaleNote = meta.strength_scale ? ` · scale ${meta.strength_scale}` : '';
       document.getElementById('meta').innerHTML = [
         `<span>${meta.round || '—'}</span>`,
-        `<span>${(meta.simulations || 0).toLocaleString()} simulations</span>`,
+        `<span>${(meta.simulations || 0).toLocaleString()} sims</span>`,
         `<span>Model v${meta.model_version || '1.0'}</span>`,
-        `<span>${src}${odds}</span>`,
+        `<span>${fixtures}${xgNote}${oddsNote}${scaleNote}</span>`,
         `<span>Updated ${new Date(meta.generated_at).toLocaleString()}</span>`,
       ].join('');
     }
@@ -1762,9 +1764,10 @@
 
     async function load() {
       const app = document.getElementById('app');
+      const bust = `?v=${encodeURIComponent(new Date().toISOString().slice(0, 16))}`;
       try {
         const [predRes, bracketRes, teamsRes] = await Promise.all([
-          fetch(DATA_URL), fetch(BRACKET_URL), fetch(TEAMS_URL),
+          fetch(DATA_URL + bust), fetch(BRACKET_URL + bust), fetch(TEAMS_URL + bust),
         ]);
         if (!predRes.ok) throw new Error(`Failed to load predictions (${predRes.status})`);
         const data = await predRes.json();
