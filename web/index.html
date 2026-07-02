@@ -343,6 +343,145 @@
       color: var(--danger);
     }
 
+    /* ── Expandable team details ── */
+    .prob-table-hint {
+      padding: 0.5rem 1.25rem 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    tr.team-row {
+      cursor: pointer;
+    }
+    tr.team-row .team-chevron {
+      margin-left: auto;
+      font-size: 0.65rem;
+      color: var(--muted);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    tr.team-row.expanded .team-chevron { transform: rotate(180deg); }
+    tr.team-row.expanded { background: #f1f5f9 !important; }
+    tr.team-detail-row { display: none; }
+    tr.team-detail-row.open { display: table-row; }
+    tr.team-detail-row td {
+      padding: 0;
+      border-top: none;
+      background: #f8fafc;
+    }
+    .team-detail-panel {
+      padding: 1rem 1.25rem 1.15rem;
+      border-top: 1px dashed var(--border);
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem 1.25rem;
+    }
+    .detail-block h4 {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+    .detail-formula {
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      line-height: 1.55;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.75rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .detail-formula .result {
+      margin-top: 0.35rem;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .signal-breakdown { display: flex; flex-direction: column; gap: 0.45rem; }
+    .signal-item {
+      display: grid;
+      grid-template-columns: 4.5rem 1fr 2.5rem 2.75rem;
+      gap: 0.45rem;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+    .signal-item .sig-label { font-weight: 700; color: var(--text-soft); }
+    .signal-item .sig-bar-wrap {
+      height: 7px;
+      background: var(--border-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .signal-item .sig-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #93c5fd, #2563eb);
+      border-radius: 999px;
+    }
+    .signal-item .sig-val,
+    .signal-item .sig-pts {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+    .signal-item .sig-pts { color: var(--blue); font-weight: 700; }
+    .signal-item.injury .sig-bar { background: linear-gradient(90deg, #fcd34d, #d97706); }
+    .detail-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.45rem;
+    }
+    .detail-stat {
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 0.45rem 0.55rem;
+    }
+    .detail-stat .ds-label {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .detail-stat .ds-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .detail-stat .ds-val.up { color: var(--accent); }
+    .detail-stat .ds-val.down { color: var(--danger); }
+    .detail-matches { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .detail-matches li {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+      padding: 0.4rem 0.55rem;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .detail-matches .dm-score { font-weight: 800; color: var(--text); }
+    .detail-matches .dm-xg { font-size: 0.72rem; color: var(--muted); margin-left: 0.35rem; }
+    .detail-matches .dm-win { border-color: #86efac; background: #f0fdf4; }
+    .detail-matches .dm-loss { opacity: 0.85; }
+    .detail-note {
+      grid-column: 1 / -1;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+      padding: 0.55rem 0.65rem;
+      background: #eff6ff;
+      border-radius: 8px;
+      border: 1px solid #dbeafe;
+    }
+    .detail-block.wide { grid-column: 1 / -1; }
+
     .top-pick {
       padding: 1.75rem 1.5rem 0.5rem;
       text-align: center;
@@ -829,6 +968,18 @@
 
       .tier-toggles { padding: 0.6rem 0.85rem; }
       .tier-toggle { font-size: 0.68rem; padding: 0.3rem 0.6rem; }
+      .prob-table-hint { padding: 0.45rem 0.85rem 0; font-size: 0.72rem; }
+
+      tr.team-detail-row.open { display: block; }
+      tr.team-detail-row td { display: block; padding: 0; }
+      .team-detail-panel { padding: 0.85rem 1rem; }
+      .detail-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+      .detail-block.wide { grid-column: auto; }
+      .signal-item {
+        grid-template-columns: 4rem 1fr 2.25rem 2.5rem;
+        font-size: 0.74rem;
+      }
+      .detail-stats { grid-template-columns: 1fr 1fr; }
 
       .bracket-scroll-hint { display: block; }
       .bracket-title h2 { font-size: 1.35rem; }
@@ -994,7 +1145,21 @@
   <script>
     const DATA_URL = '../data/predictions.json';
     const BRACKET_URL = '../data/bracket.json';
+    const TEAMS_URL = '../data/teams.json';
     const HISTORY_INDEX_URL = '../data/history/index.json';
+
+    const MODEL_WEIGHTS = {
+      elo: 0.35,
+      xg_form: 0.30,
+      squad_value: 0.15,
+      betting_odds: 0.20,
+    };
+    const SIGNAL_LABELS = {
+      elo_normalized: 'Elo',
+      xg_form_ratio: 'Form',
+      squad_value_normalized: 'Squad',
+      betting_implied_prob: 'Odds',
+    };
 
     const ISO3_TO_ISO2 = {
       MEX:'mx',CZE:'cz',RSA:'za',KOR:'kr',CAN:'ca',BIH:'ba',QAT:'qa',SUI:'ch',
@@ -1123,15 +1288,167 @@
         <td class="num" data-label="Injury"><span class="stat-val ${injCls}">${(s.injury_multiplier * 100).toFixed(0)}%</span></td>`;
     }
 
-    function renderTeamRow(p, displayIndex) {
+    function fmtEur(n) {
+      if (n == null || !n) return '—';
+      if (n >= 1e9) return '€' + (n / 1e9).toFixed(2).replace(/\.00$/, '') + 'B';
+      if (n >= 1e6) return '€' + Math.round(n / 1e6) + 'M';
+      return '€' + n.toLocaleString();
+    }
+
+    function getTeamMatches(teamId, bracket) {
+      if (!bracket?.rounds) return [];
+      const out = [];
+      for (const [roundKey, round] of Object.entries(bracket.rounds)) {
+        for (const m of (round.matches || [])) {
+          if (m.team_home !== teamId && m.team_away !== teamId) continue;
+          if (!m.status || m.status === 'NS') continue;
+          out.push({ ...m, roundKey });
+        }
+      }
+      return out.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function matchScoreLine(m, teamId, teamsById) {
+      const home = teamsById[m.team_home]?.name || m.team_home;
+      const away = teamsById[m.team_away]?.name || m.team_away;
+      const sh = m.score_home ?? 0;
+      const sa = m.score_away ?? 0;
+      let score = `${sh}–${sa}`;
+      if (m.status === 'PEN' && m.penalties_home != null) {
+        score += ` (${m.penalties_home}–${m.penalties_away} pens)`;
+      }
+      const won = m.winner === teamId;
+      const xg = (m.xg_home != null && m.xg_away != null)
+        ? `<span class="dm-xg">xG ${m.xg_home.toFixed(1)}–${m.xg_away.toFixed(1)}</span>` : '';
+      const round = m.roundKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      return `<li class="${won ? 'dm-win' : 'dm-loss'}">
+        <span class="dm-round">${round}</span> ·
+        <span class="dm-score">${home} ${score} ${away}</span>${xg}
+      </li>`;
+    }
+
+    function renderSignalBreakdown(signals) {
+      const rows = Object.entries(SIGNAL_LABELS).map(([key, label]) => {
+        const val = signals[key] ?? 0;
+        const weightKey = key === 'elo_normalized' ? 'elo'
+          : key === 'xg_form_ratio' ? 'xg_form'
+          : key === 'squad_value_normalized' ? 'squad_value'
+          : 'betting_odds';
+        const w = MODEL_WEIGHTS[weightKey];
+        const pts = val * w;
+        return `<div class="signal-item">
+          <span class="sig-label">${label}</span>
+          <div class="sig-bar-wrap"><div class="sig-bar" style="width:${Math.round(val * 100)}%"></div></div>
+          <span class="sig-val">${Math.round(val * 100)}</span>
+          <span class="sig-pts">+${pts.toFixed(3)}</span>
+        </div>`;
+      }).join('');
+      const inj = signals.injury_multiplier ?? 1;
+      const injPct = Math.round(inj * 100);
+      rows += `<div class="signal-item injury">
+        <span class="sig-label">Injury</span>
+        <div class="sig-bar-wrap"><div class="sig-bar" style="width:${injPct}%"></div></div>
+        <span class="sig-val">${injPct}%</span>
+        <span class="sig-pts">×${inj.toFixed(2)}</span>
+      </div>`;
+      return `<div class="signal-breakdown">${rows}</div>`;
+    }
+
+    function renderTeamDetailPanel(p, ctx) {
+      const { teamsById, bracket, nSims } = ctx;
+      const meta = teamsById[p.team_id] || {};
+      const matches = getTeamMatches(p.team_id, bracket).slice(0, 5);
+      const matchesHtml = matches.length
+        ? `<ul class="detail-matches">${matches.map(m => matchScoreLine(m, p.team_id, teamsById)).join('')}</ul>`
+        : '<p class="detail-note" style="margin:0">No completed WC matches on file yet.</p>';
+
+      if (p.eliminated || !p.signals) {
+        const eloChg = meta.elo_change_this_round;
+        const chgCls = eloChg > 0 ? 'up' : eloChg < 0 ? 'down' : '';
+        const chgTxt = eloChg ? `${eloChg > 0 ? '+' : ''}${eloChg.toFixed(1)}` : '—';
+        return `<div class="team-detail-panel">
+          <div class="detail-grid">
+            <div class="detail-note">Eliminated — dropped from the sim. Stats below are what was on file when they went out.</div>
+            <div class="detail-block">
+              <h4>Last known stats</h4>
+              <div class="detail-stats">
+                <div class="detail-stat"><span class="ds-label">Elo</span><span class="ds-val">${meta.elo ? Math.round(meta.elo) : '—'}</span></div>
+                <div class="detail-stat"><span class="ds-label">Elo Δ round</span><span class="ds-val ${chgCls}">${chgTxt}</span></div>
+                <div class="detail-stat"><span class="ds-label">Squad value</span><span class="ds-val">${fmtEur(meta.squad_value_eur)}</span></div>
+                <div class="detail-stat"><span class="ds-label">Group</span><span class="ds-val">${meta.group ? `${meta.group} · ${meta.group_position}${['st','nd','rd'][meta.group_position - 1] || 'th'}` : '—'}</span></div>
+              </div>
+            </div>
+            <div class="detail-block">
+              <h4>WC results</h4>
+              ${matchesHtml}
+            </div>
+          </div>
+        </div>`;
+      }
+
+      const s = p.signals;
+      const base = (
+        s.elo_normalized * MODEL_WEIGHTS.elo +
+        s.xg_form_ratio * MODEL_WEIGHTS.xg_form +
+        s.squad_value_normalized * MODEL_WEIGHTS.squad_value +
+        s.betting_implied_prob * MODEL_WEIGHTS.betting_odds
+      );
+      const inj = s.injury_multiplier ?? 1;
+      const eloChg = meta.elo_change_this_round;
+      const chgCls = eloChg > 0 ? 'up' : eloChg < 0 ? 'down' : '';
+      const chgTxt = eloChg ? `${eloChg > 0 ? '+' : ''}${eloChg.toFixed(1)}` : '—';
+
+      return `<div class="team-detail-panel">
+        <div class="detail-grid">
+          <div class="detail-block">
+            <h4>Strength score</h4>
+            <div class="detail-formula">
+              (Elo×35% + Form×30% + Squad×15% + Odds×20%) × Injury<br>
+              = (${s.elo_normalized.toFixed(2)}×0.35 + ${s.xg_form_ratio.toFixed(2)}×0.30 + ${s.squad_value_normalized.toFixed(2)}×0.15 + ${s.betting_implied_prob.toFixed(3)}×0.20) × ${inj.toFixed(2)}<br>
+              <span class="result">= ${p.team_strength.toFixed(3)} strength → ${pct(p.win_probability)} to win WC</span>
+            </div>
+          </div>
+          <div class="detail-block">
+            <h4>Signal breakdown</h4>
+            ${renderSignalBreakdown(s)}
+          </div>
+          <div class="detail-block">
+            <h4>Raw numbers</h4>
+            <div class="detail-stats">
+              <div class="detail-stat"><span class="ds-label">Elo rating</span><span class="ds-val">${meta.elo ? Math.round(meta.elo) : '—'}</span></div>
+              <div class="detail-stat"><span class="ds-label">Elo Δ round</span><span class="ds-val ${chgCls}">${chgTxt}</span></div>
+              <div class="detail-stat"><span class="ds-label">Squad value</span><span class="ds-val">${fmtEur(meta.squad_value_eur)}</span></div>
+              <div class="detail-stat"><span class="ds-label">Group finish</span><span class="ds-val">${meta.group ? `Group ${meta.group} · ${meta.group_position}${['st','nd','rd'][meta.group_position - 1] || 'th'}` : '—'}</span></div>
+            </div>
+          </div>
+          <div class="detail-block">
+            <h4>Sim outcomes</h4>
+            <div class="detail-stats">
+              <div class="detail-stat"><span class="ds-label">Win WC</span><span class="ds-val">${pct(p.win_probability)}</span></div>
+              <div class="detail-stat"><span class="ds-label">Reach final</span><span class="ds-val">${pct(p.reach_final_probability)}</span></div>
+              <div class="detail-stat"><span class="ds-label">Reach semis</span><span class="ds-val">${pct(p.reach_semis_probability)}</span></div>
+              <div class="detail-stat"><span class="ds-label">Simulations</span><span class="ds-val">${(nSims || 10000).toLocaleString()}</span></div>
+            </div>
+          </div>
+          <div class="detail-block wide">
+            <h4>Recent WC matches</h4>
+            ${matchesHtml}
+          </div>
+          <div class="detail-note">Win % = how often this team lifted the trophy in ${(nSims || 10000).toLocaleString()} random bracket runs from the current round. Strength picks match favorites; upsets still happen.</div>
+        </div>
+      </div>`;
+    }
+
+    function renderTeamRow(p, displayIndex, ctx) {
       const rankCls = !p.eliminated && p.rank <= 3 ? `rank-${p.rank}` : '';
-      return `<tr class="${p.eliminated ? 'eliminated' : ''} ${rankCls}">
+      const mainRow = `<tr class="team-row ${p.eliminated ? 'eliminated' : ''} ${rankCls}" data-team-id="${p.team_id}" tabindex="0" role="button" aria-expanded="false">
         <td class="rank rank-cell">${displayIndex}</td>
         <td class="team-cell-wrap">
           <div class="team-cell">
             ${!p.eliminated ? `<img class="table-flag" src="${flagUrl(p.team_id)}" alt="" loading="lazy">` : ''}
             <span class="team-name">${p.team_name}</span>
             ${p.eliminated ? '<span class="badge out">OUT</span>' : ''}
+            <span class="team-chevron" aria-hidden="true">▼</span>
           </div>
         </td>
         <td class="num" data-label="Win">
@@ -1142,9 +1459,13 @@
         <td class="prob num" data-label="Semis">${pct(p.reach_semis_probability)}</td>
         ${renderStatCells(p)}
       </tr>`;
+      const detailRow = `<tr class="team-detail-row" data-detail-for="${p.team_id}" hidden>
+        <td colspan="9">${renderTeamDetailPanel(p, ctx)}</td>
+      </tr>`;
+      return mainRow + detailRow;
     }
 
-    function renderProbTable(preds) {
+    function renderProbTable(preds, ctx) {
       const indexed = preds.map((p, i) => ({ ...p, displayIndex: i + 1 }));
       const toggles = TIERS.map(t =>
         t.open
@@ -1161,13 +1482,14 @@
         if (!tier.open) {
           body += `<tr class="tier-divider"><td colspan="9">Ranks ${tier.label}</td></tr>`;
         }
-        body += teams.map(p => renderTeamRow(p, p.displayIndex)).join('');
+        body += teams.map(p => renderTeamRow(p, p.displayIndex, ctx)).join('');
         body += '</tbody>';
       }
 
       return `<div class="card prob-card">
         <div class="card-header"><span>Win probabilities</span><span style="font-weight:500;text-transform:none;letter-spacing:0">${indexed.filter(p => !p.eliminated).length} teams left</span></div>
         <div class="tier-toggles">${toggles}</div>
+        <p class="prob-table-hint">Tap any team for strength breakdown, formula, and recent results</p>
         <div class="prob-table-wrap">
           <table class="prob-table">
             <thead><tr>
@@ -1185,6 +1507,31 @@
           </table>
         </div>
       </div>`;
+    }
+
+    function wireTeamRowToggles() {
+      const table = document.querySelector('.prob-table');
+      if (!table) return;
+
+      function toggleRow(row) {
+        const teamId = row.dataset.teamId;
+        const detail = table.querySelector(`tr.team-detail-row[data-detail-for="${teamId}"]`);
+        if (!detail) return;
+        const isOpen = row.classList.toggle('expanded');
+        detail.classList.toggle('open', isOpen);
+        detail.hidden = !isOpen;
+        row.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+
+      table.querySelectorAll('tr.team-row').forEach(row => {
+        row.addEventListener('click', () => toggleRow(row));
+        row.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleRow(row);
+          }
+        });
+      });
     }
 
     function wireTierToggles() {
@@ -1389,25 +1736,33 @@
     async function load() {
       const app = document.getElementById('app');
       try {
-        const [predRes, bracketRes] = await Promise.all([
-          fetch(DATA_URL), fetch(BRACKET_URL),
+        const [predRes, bracketRes, teamsRes] = await Promise.all([
+          fetch(DATA_URL), fetch(BRACKET_URL), fetch(TEAMS_URL),
         ]);
         if (!predRes.ok) throw new Error(`Failed to load predictions (${predRes.status})`);
         const data = await predRes.json();
         const bracket = bracketRes.ok ? await bracketRes.json() : null;
+        const teamsDoc = teamsRes.ok ? await teamsRes.json() : null;
+        const teamsById = teamsDoc?.teams || {};
         const preds = data.predictions || [];
         const active = preds.filter(p => !p.eliminated);
         const top = active[0];
+        const detailCtx = {
+          teamsById,
+          bracket,
+          nSims: data._meta?.simulations || 10000,
+        };
 
         renderMeta(data._meta || {});
         const historyHtml = await renderHistory(preds);
 
         app.innerHTML = `
           ${renderChampionHero(top)}
-          ${renderProbTable(preds)}
+          ${renderProbTable(preds, detailCtx)}
           ${historyHtml}
           ${bracket ? renderBracketTree(bracket, data.match_predictions, data._meta || {}) : ''}`;
         wireTierToggles();
+        wireTeamRowToggles();
       } catch (err) {
         app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}</div>`;
       }
