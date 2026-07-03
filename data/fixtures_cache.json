@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 82
+    "count": 84
   },
   "fixtures": [
     {
@@ -912,6 +912,30 @@
       "penalties_home": null,
       "penalties_away": null,
       "winner": "USA",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_32"
+    },
+    {
+      "team_home": "ESP",
+      "team_away": "AUT",
+      "score_home": 3,
+      "score_away": 0,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ESP",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_32"
+    },
+    {
+      "team_home": "POR",
+      "team_away": "CRO",
+      "score_home": 2,
+      "score_away": 1,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "POR",
       "status": "FT",
       "stage": "knockout",
       "round_key": "round_of_32"

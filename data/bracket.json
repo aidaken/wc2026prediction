@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Round of 32",
     "wc_year": 2026,
-    "last_updated": "2026-07-02T14:09:03Z"
+    "last_updated": "2026-07-03T01:06:48Z"
   },
   "rounds": {
     "round_of_32": {
@@ -147,22 +147,26 @@
           "date": "2026-07-02T23:00:00Z",
           "team_home": "POR",
           "team_away": "CRO",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 2,
+          "score_away": 1,
+          "winner": "POR",
+          "status": "FT",
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m84",
           "date": "2026-07-02T20:00:00Z",
           "team_home": "ESP",
           "team_away": "AUT",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 3,
+          "score_away": 0,
+          "winner": "ESP",
+          "status": "FT",
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m85",
@@ -243,8 +247,8 @@
         },
         {
           "match_id": "r16_m93",
-          "team_home": null,
-          "team_away": null,
+          "team_home": "POR",
+          "team_away": "ESP",
           "winner": null,
           "status": "NS"
         },
