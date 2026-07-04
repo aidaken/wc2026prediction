@@ -332,16 +332,16 @@
       opacity: 0;
       visibility: hidden;
       transition:
-        top 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity 0.22s ease,
-        visibility 0s linear 0.55s;
+        top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.35s ease,
+        visibility 0s linear 1.2s;
     }
     #reveal-popup.reveal-show {
       opacity: 1;
       visibility: visible;
       transition:
-        top 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
-        opacity 0.18s ease,
+        top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.3s ease,
         visibility 0s;
     }
     #reveal-popup .reveal-spotlight-glow {
@@ -360,7 +360,7 @@
       z-index: 0;
       opacity: 0;
       transform: scale(0.8);
-      transition: opacity 0.3s ease, transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.35s ease, transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     #reveal-popup.reveal-show .reveal-spotlight-glow {
       opacity: 1;
@@ -380,7 +380,7 @@
         0 10px 36px rgba(0, 0, 0, 0.38),
         0 0 48px rgba(255, 255, 255, 0.45);
       transform: scale(0.9);
-      transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     #reveal-popup.reveal-show .reveal-popup-img {
       transform: scale(1);
@@ -1721,8 +1721,8 @@
         popup.classList.remove('reveal-show');
         popup.style.top = `${hideTop}px`;
         backdrop.classList.remove('on');
-        setTimeout(() => wrap.classList.remove('reveal-busy'), 580);
-      }, 3580);
+        setTimeout(() => wrap.classList.remove('reveal-busy'), 1250);
+      }, 4200);
     }
 
     function wireFlagEasters() {
