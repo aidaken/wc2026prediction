@@ -891,12 +891,85 @@
       color: var(--text-soft);
     }
 
+    /* ── Glossary (toggle dictionary) ── */
+    .glossary {
+      margin-top: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+    .glossary h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+      text-align: center;
+    }
+    .glossary .gl-lead {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .gl-item {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+      margin-bottom: 0.6rem;
+      overflow: hidden;
+    }
+    .gl-item summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.85rem 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: background 0.15s ease;
+    }
+    .gl-item summary::-webkit-details-marker { display: none; }
+    .gl-item summary:hover { background: #eef2f7; }
+    .gl-item .gl-tag { margin-left: auto; }
+    .gl-item summary::after {
+      content: '+';
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--muted);
+      width: 1rem;
+      text-align: center;
+    }
+    .gl-item[open] summary::after { content: '\2013'; }
+    .gl-item[open] summary { background: #eef2f7; }
+    .gl-term { font-size: 0.95rem; }
+    .gl-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-soft);
+      white-space: nowrap;
+    }
+    .gl-item p {
+      padding: 0 1.1rem 1rem;
+      font-size: 0.88rem;
+      color: var(--text-soft);
+      line-height: 1.55;
+      margin: 0;
+    }
+
     /* ── Mobile ── */
     @media (max-width: 900px) {
       .wm-hide-md { display: none; }
       .how-it-works { padding: 1.5rem 1rem; }
       .hiw-grid { grid-template-columns: 1fr; }
       .hiw-card.wide { grid-column: auto; }
+      .glossary { padding: 1.5rem 1rem; }
     }
 
     @media (max-width: 640px) {
@@ -1108,7 +1181,7 @@
       <div class="hiw-grid">
         <div class="hiw-card wide">
           <h3>What is this?</h3>
-          <p>I built a small predictor for the 2026 World Cup knockouts. After each round I grab results, score every team still in, then sim the rest of the bracket 10,000 times. The numbers you see are how often each team wins the whole thing, or wins a specific match, in those sims.</p>
+          <p>I built a small predictor for the 2026 World Cup knockouts. After each round I grab results, score every team still in, then sim the rest of the bracket 100,000 times. The numbers you see are how often each team wins the whole thing, or wins a specific match, in those sims.</p>
         </div>
         <div class="hiw-card">
           <h3>How I score a team</h3>
@@ -1122,12 +1195,16 @@
           </div>
         </div>
         <div class="hiw-card">
+          <h3>Who they played matters</h3>
+          <p>xG form is adjusted for schedule strength. Putting up big numbers against Qatar counts for less than the same numbers against Brazil, so teams from soft groups don't get overrated. Each team's detail panel shows the raw xG, the adjusted xG, and how tough their run was.</p>
+        </div>
+        <div class="hiw-card">
           <h3>Win % vs bracket %</h3>
           <p>The table is tournament win chance. The bracket shows advance % for each knockout game (blue = favorite in that matchup, green check = already won). A team can be likely to beat their R32 opponent but still have a lower trophy % if the path ahead is brutal.</p>
         </div>
         <div class="hiw-card">
           <h3>The sim</h3>
-          <p>I don't pick one fixed path. I play out the bracket 10,000 times with randomness baked in (including some draw/pen vibes). Stronger teams win more often, but upsets still happen. That's why Brazil can top the table without being a lock.</p>
+          <p>I don't pick one fixed path. I play out the bracket 100,000 times with randomness baked in (including some draw/pen vibes). Stronger teams win more often, but upsets still happen. That's why Brazil can top the table without being a lock.</p>
         </div>
         <div class="hiw-card">
           <h3>When it updates</h3>
@@ -1140,7 +1217,77 @@
       </div>
     </section>
 
-    <footer>Model v1.2 · updated after each knockout round</footer>
+    <section class="glossary" id="glossary">
+      <h2>The dictionary</h2>
+      <p class="gl-lead">Every term the model uses, in plain English. Tap one to open it.</p>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Elo</span><span class="gl-tag">35% of strength</span></summary>
+        <p>A long-term strength rating, same idea as chess. Beat a strong team, your number goes up; lose to a weak one, it drops. I replay every result from a fixed pre-tournament starting point each run, so ratings are reproducible and can't double-count.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">xG (expected goals)</span><span class="gl-tag">chance quality</span></summary>
+        <p>How good the chances were, not what the scoreboard says. A tap-in and a 35-yard screamer both count as one goal but very different xG. It cuts through lucky bounces and hot finishing.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">xG form</span><span class="gl-tag">30% of strength</span></summary>
+        <p>Recent chance creation vs chances allowed, as a ratio: xG for ÷ (xG for + xG against). Above 0.5 means you're out-chancing opponents, below means you're getting out-chanced.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Schedule strength (SoS)</span><span class="gl-tag">adjusts xG form</span></summary>
+        <p>Who you actually played. xG gets rescaled by the opponents' own xG profiles, so numbers put up against weak teams count for less. A multiplier above 1 means a tough run, below 1 means a soft one. Clamped so a 3-game sample can't swing it wildly.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Squad value</span><span class="gl-tag">15% of strength</span></summary>
+        <p>Total market value of the squad (Transfermarkt), a rough proxy for talent and depth. Pricey squad usually means more quality on the bench when it's needed.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Betting odds</span><span class="gl-tag">20% of strength</span></summary>
+        <p>What the market thinks, converted from odds into an implied win probability. The market bakes in stuff a model misses, but it also over-loves big names, so it's only one slice.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Injuries</span><span class="gl-tag">multiplier</span></summary>
+        <p>Key players out hurt. Instead of a weighted signal, this nudges the final strength up or down a bit. A full-strength squad sits at 1.0×.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Strength score</span><span class="gl-tag">the blended number</span></summary>
+        <p>The five signals mixed into one number per team. If a signal is missing for someone (no odds, say), its weight gets shared across what's left instead of counting as zero.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Monte Carlo sim</span><span class="gl-tag">100,000 runs</span></summary>
+        <p>I don't pick one bracket. I play the whole thing out 100,000 times with randomness baked in, then count how often each team wins. More runs means steadier numbers (about ±0.13 points of noise).</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Win %</span><span class="gl-tag">table</span></summary>
+        <p>How often a team wins the entire tournament across all the sims. This is the headline number in the standings table.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Advance %</span><span class="gl-tag">bracket</span></summary>
+        <p>Chance to win one specific match and move on. Shown on each bracket tie. Winning your next game is not the same as winning the trophy, the path ahead still matters.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">STRENGTH_SCALE</span><span class="gl-tag">tuning knob</span></summary>
+        <p>Controls how much a strength gap turns into a win-probability gap. Higher means favorites win more, lower means more coin-flips. Set to 0.68, tuned by backtesting past results.</p>
+      </details>
+
+      <details class="gl-item">
+        <summary><span class="gl-term">Draw / pens</span><span class="gl-tag">knockout chaos</span></summary>
+        <p>A chunk of knockout games go to extra time or penalties, which is basically a coin flip. The sim pulls those matchups toward 50/50 so upsets happen at a realistic rate.</p>
+      </details>
+    </section>
+
+    <footer>Model v1.2.2 · updated after each knockout round</footer>
   </div>
   <script>
     const DATA_URL = '../data/predictions.json';
