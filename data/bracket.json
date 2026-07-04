@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Round of 32",
     "wc_year": 2026,
-    "last_updated": "2026-07-03T01:06:48Z"
+    "last_updated": "2026-07-04T00:51:45Z"
   },
   "rounds": {
     "round_of_32": {
@@ -173,22 +173,26 @@
           "date": "2026-07-03T08:00:00Z",
           "team_home": "SUI",
           "team_away": "ALG",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 2,
+          "score_away": 0,
+          "winner": "SUI",
+          "status": "FT",
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m86",
           "date": "2026-07-04T03:00:00Z",
           "team_home": "ARG",
           "team_away": "CPV",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 3,
+          "score_away": 2,
+          "winner": "ARG",
+          "status": "AET",
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m87",
@@ -206,11 +210,13 @@
           "date": "2026-07-03T19:00:00Z",
           "team_home": "AUS",
           "team_away": "EGY",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 1,
+          "score_away": 1,
+          "winner": "EGY",
+          "status": "PEN",
+          "stage": "knockout",
+          "penalties_home": 1,
+          "penalties_away": 1
         }
       ]
     },
@@ -261,14 +267,14 @@
         },
         {
           "match_id": "r16_m95",
-          "team_home": null,
-          "team_away": null,
+          "team_home": "ARG",
+          "team_away": "EGY",
           "winner": null,
           "status": "NS"
         },
         {
           "match_id": "r16_m96",
-          "team_home": null,
+          "team_home": "SUI",
           "team_away": null,
           "winner": null,
           "status": "NS"
