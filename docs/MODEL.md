@@ -91,6 +91,15 @@ Last `XG_FORM_GAMES` matches (default 5). WC group games count `XG_WC_MATCH_WEIG
 
 Wikipedia + free API tier often give scores without match xG. When xG is missing for a fixture, `xg.py` builds a pseudo xG from goals (with the same rolling window). Not as good as real xG, way better than treating form as zero.
 
+### Opponent adjustment (v1.2.2)
+
+Raw xG doesn't care who you played. 8 xG against Qatar looked the same as 8 against Brazil, which flattered teams with soft groups (Argentina, Canada). Now `xg.py` rescales xG by schedule strength using the opponents' own xG profiles:
+
+- xG-for × (league avg xGA / opponents' avg xGA). Faced stingy defenses → boosted.
+- xG-against × (league avg xG / opponents' avg xG). Faced strong attacks → forgiven.
+
+Clamped 0.70–1.35 so a 3-game sample can't swing form. Toggle with `XG_OPPONENT_ADJUST`. `sos_multiplier > 1` means a tougher run. See ADR-008.
+
 ### xG coverage shrink
 
 If only a handful of teams have real match xG, raw form scores would swing wild. `strength.py` shrinks form influence toward the field average based on coverage. Stops France/Brazil from jumping to 30%+ just because they're the only two with Understat-style data.
@@ -250,7 +259,7 @@ Uses completed matches in `data/bracket.json` and strengths in `data/teams.json`
 
 - Seven matches max per team. 70% still loses 30% of the time.
 - No pressing shape, no "this manager parks the bus" factor beyond xG.
-- xG form doesn't adjust for weak group opponents.
+- xG opponent adjustment is one-pass, not iterated, and clamped, so it softens schedule bias rather than fully removing it.
 - Goals fallback when xG missing is a proxy, not shot quality.
 - 20% betting signal = some brand-name overweighting (when odds exist).
 - Injury floor and draw % are educated guesses, not gospel.
@@ -270,7 +279,7 @@ Uses completed matches in `data/bracket.json` and strengths in `data/teams.json`
 - [x] xG coverage shrink (v1.2)
 - [x] Wikipedia public fetch pipeline (v1.2)
 - [x] `manual_odds.json` fallback (v1.2)
-- [ ] SOS adjustment on xG form
+- [x] SOS adjustment on xG form (v1.2.2)
 - [ ] Pre-match Elo snapshots from `data/history/` for cleaner backtest
 - [ ] Learn weights from historical WCs
 - [ ] Poisson goals instead of binary W/L

@@ -57,6 +57,12 @@ XG_FORM_GAMES           = 5
 XG_WC_MATCH_WEIGHT      = 2.0
 XG_LUCK_THRESHOLD       = 1.3
 
+# strength-of-schedule: rescale a team's xG by opponent quality (their own xG profile).
+# faced stingy defenses -> xG-for boosted; faced strong attacks -> xG-against forgiven.
+XG_OPPONENT_ADJUST      = True
+XG_ADJ_CLAMP_LO         = 0.70   # safety rails so a tiny sample can't swing form wildly
+XG_ADJ_CLAMP_HI         = 1.35
+
 N_SIMULATIONS           = 100_000   # ~±0.13pp sampling noise vs ~±0.4pp at 10k
 DRAW_PROBABILITY        = 0.27   # rough share of knockouts that go to pens (1994-2022)
 

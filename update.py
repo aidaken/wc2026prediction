@@ -40,7 +40,7 @@ from src.strength import compute_strength, shrink_xg_toward_neutral
 from src.teams import TeamRegistry
 from src.utils import DATA_DIR, get_env_int, load_json, normalize_betting_probs, normalize_minmax, setup_logging, write_json
 from src.value import get_squad_values
-from src.xg import apply_manual_xg, calculate_form_ratios
+from src.xg import apply_manual_xg, build_opponent_map, calculate_form_ratios
 
 MODEL_VERSION = "1.2.0"
 FIXTURES_CACHE_PATH = DATA_DIR / "fixtures_cache.json"
@@ -212,6 +212,7 @@ def combine_strengths(
     teams: dict[str, dict[str, Any]],
     raw: dict[str, Any],
     weights: dict[str, float],
+    bracket: dict[str, Any] | None = None,
 ) -> tuple[dict[str, float], dict[str, dict[str, float]], dict[str, Any]]:
     active = _active_teams(teams)
     fixtures = raw["fixtures"]
@@ -219,7 +220,8 @@ def combine_strengths(
     # Elo is already set on `teams` by the deterministic replay in run_update.
     elo_norm = normalize_elo(teams)
     xg_form, xg_meta = calculate_form_ratios(fixtures, active)
-    manual_xg_applied = apply_manual_xg(xg_form, xg_meta, active)
+    opponents = build_opponent_map(fixtures, bracket)
+    manual_xg_applied = apply_manual_xg(xg_form, xg_meta, active, opponents)
     if manual_xg_applied:
         logging.getLogger("wc2026").info("xG: %d teams from manual xG table", manual_xg_applied)
     injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
@@ -280,6 +282,9 @@ def combine_strengths(
                 "matches_used": meta.get("matches_used", 0),
                 "avg_xg_for": meta.get("avg_xg_for"),
                 "avg_xg_against": meta.get("avg_xg_against"),
+                "adj_xg_for": meta.get("adj_xg_for"),
+                "adj_xg_against": meta.get("adj_xg_against"),
+                "sos_multiplier": meta.get("sos_multiplier"),
                 "effective_weights": eff_weights,
             }
 
@@ -459,7 +464,7 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
 
     weights = _select_weights(raw)
     logger.info("Calculating team strengths (weights: %s)...", weights)
-    strengths, signals, strength_meta = combine_strengths(teams, raw, weights)
+    strengths, signals, strength_meta = combine_strengths(teams, raw, weights, bracket)
 
     for tid, value in raw.get("squad_values", {}).items():
         if tid in teams and value:

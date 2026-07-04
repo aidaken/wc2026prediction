@@ -197,3 +197,41 @@ Free, no keys, humans update it fast during the tournament, structured enough to
 - Parser breaks if Wikipedia reformats tables (fix and re-run)
 - No match xG from Wikipedia (goals fallback + optional API-Football)
 - Trust but verify weird scores against another source if something looks off
+
+---
+
+## ADR-008: Opponent-adjusted xG form
+
+**Date:** 2026-07-03  
+**Status:** Accepted
+
+### Context
+
+xG form was raw. A team that put up big xG numbers against a weak group looked the same as one that did it against real teams. Argentina (Algeria, Austria, Jordan, Cape Verde) and Canada (Bosnia, Qatar) were flattered, teams with tough draws were underrated. Elo already rewards beating strong sides, but the xG signal (0.30 weight) was schedule-blind.
+
+### Decision
+
+Rescale each team's xG by the quality of the opponents it actually played, using the opponents' own xG profiles:
+
+- xG-for × (league avg xGA / opponents' avg xGA). Faced stingy defenses → boosted.
+- xG-against × (league avg xG / opponents' avg xG). Faced strong attacks → forgiven.
+
+Multipliers clamped 0.70–1.35 (`XG_ADJ_CLAMP_LO/HI`) so a small sample can't swing form. Toggle with `XG_OPPONENT_ADJUST`. Opponent list comes from completed group + knockout matches (`build_opponent_map`).
+
+### Didn't use
+
+| Option | Why not |
+|---|---|
+| Iterated ratings (solve for attack/defense strength) | More correct, but circular and heavy for 3–4 games per team |
+| Just trust Elo for opponent quality | Leaves the xG signal naive, which was the whole complaint |
+| Nothing (raw xG) | Rewards padding stats against weak teams |
+
+### Why this
+
+One pass, self-contained (uses the xG we already have), easy to read and clamp. Direction is right without pretending we have season-long data. Good enough for a 7-round run.
+
+### Tradeoffs
+
+- One-pass, not iterated, so opponent quality is measured from raw xG including the game against this team (minor circularity, fine at this scale)
+- Clamps hide extreme schedules a bit on purpose
+- Reads best with full xG coverage; sparse coverage makes the league average noisy

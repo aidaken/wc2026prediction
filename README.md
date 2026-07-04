@@ -9,7 +9,7 @@ I built this to predict who wins the 2026 World Cup. Not vibes, not "Brazil alwa
 ## How it works (30 seconds)
 
 1. **Strength score** per team from five signals (Elo, xG form, squad value, betting odds, injuries)
-2. **Monte Carlo** simulates the full knockout bracket 10,000 times
+2. **Monte Carlo** simulates the full knockout bracket 100,000 times
 3. **Output:** win probability per team + per-match advancement % on the bracket
 
 Details: [`docs/MODEL.md`](docs/MODEL.md). Bracket math: [`docs/BRACKET_PREDICTIONS.md`](docs/BRACKET_PREDICTIONS.md).
@@ -93,13 +93,13 @@ wc2026prediction/
 
 ## Model version
 
-**v1.2.0** (current)
+**v1.2.2** (current)
 
 | Signal | Weight | Source |
 |--------|--------|--------|
-| Elo | 35% | ClubElo / FIFA fallback |
-| xG form | 30% | Match xG from fixtures, or goals fallback |
-| Squad value | 15% | Transfermarkt (cached) |
+| Elo | 35% | ClubElo / FIFA fallback, deterministic replay from seed |
+| xG form | 30% | `manual_xg.json` / match xG, opponent-adjusted for schedule |
+| Squad value | 15% | Transfermarkt pin / cached |
 | Betting odds | 20% | Odds API or `manual_odds.json` |
 | Injuries | multiplier | API-Football or static overrides |
 
@@ -119,6 +119,7 @@ Weights and per-team breakdowns land in `predictions.json` under `_meta`.
 | [`docs/DATA_PIPELINE.md`](docs/DATA_PIPELINE.md) | fetch_public → update flow |
 | [`docs/SETUP.md`](docs/SETUP.md) | Keys, venv, troubleshooting |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | ADRs (why Wikipedia-first, etc.) |
+| [`ISSUES.md`](ISSUES.md) | Known issues, source failures, per-round reminders |
 | [`CHANGELOG.md`](CHANGELOG.md) | Version history |
 
 ---

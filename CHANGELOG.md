@@ -4,6 +4,21 @@ All notable changes to this project. Format loosely follows [Keep a Changelog](h
 
 ---
 
+## [1.2.2] - 2026-07-03
+
+### Added
+- `ISSUES.md`: running log of known issues, source failures, and per-round reminders so they don't recur
+- Opponent-adjusted xG form (`XG_OPPONENT_ADJUST`): rescales xG by schedule strength using opponents' own xG profiles, clamped 0.70–1.35. New `build_opponent_map` in `src/xg.py`
+- `data/manual_xg.json`: per-team xG for all 17 active teams (FotMob group totals + xgscore R32), so coverage is 17/17
+- `sos_multiplier`, `adj_xg_for`, `adj_xg_against` in signals; UI shows schedule strength + adjusted xG per team
+- ADR-008 for the opponent adjustment
+
+### Changed
+- xG form is no longer schedule-blind. Argentina 15.5% → 14.4% and France 25.3% → 24.3% (soft draws), England 9.9% → 10.7% (tough run)
+- Fixed the wrong `manual_odds` example in README and setup docs (3-letter ids + implied probs, not decimal odds)
+
+---
+
 ## [1.2.1] - 2026-07-03
 
 ### Added
