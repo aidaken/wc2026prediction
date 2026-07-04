@@ -317,41 +317,104 @@
       flex-shrink: 0;
       vertical-align: middle;
       overflow: hidden;
+      --reveal-mul: 7;
     }
     .reveal-flag-wrap.reveal-active,
     .reveal-flag-wrap.reveal-busy {
-      z-index: 40;
+      z-index: 200;
       overflow: visible;
     }
-    .reveal-secret-img {
+    .reveal-spotlight {
       position: absolute;
-      left: 0;
+      left: 50%;
       bottom: 0;
+      width: calc(100% * var(--reveal-mul));
+      height: calc(100% * var(--reveal-mul));
+      transform: translate(-50%, 100%);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 0;
+      pointer-events: none;
+      transition:
+        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.22s ease,
+        visibility 0s linear 0.55s;
+    }
+    .reveal-flag-wrap.reveal-active .reveal-spotlight {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      visibility: visible;
+      transition:
+        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.18s ease,
+        visibility 0s;
+    }
+    .reveal-spotlight-glow {
+      position: absolute;
+      inset: -18%;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(255, 255, 255, 0.72) 28%,
+        rgba(210, 225, 255, 0.35) 48%,
+        rgba(160, 180, 220, 0.12) 62%,
+        transparent 74%
+      );
+      filter: blur(10px);
+      z-index: 0;
+      opacity: 0;
+      transform: scale(0.75);
+      transition: opacity 0.3s ease, transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .reveal-flag-wrap.reveal-active .reveal-spotlight-glow {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .reveal-secret-img {
+      position: relative;
+      z-index: 1;
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center top;
-      z-index: 0;
-      border-radius: 2px;
-      transform: translateY(100%);
-      opacity: 0;
-      visibility: hidden;
-      transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.2s ease;
+      border-radius: 10px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.55),
+        0 10px 36px rgba(0, 0, 0, 0.38),
+        0 0 48px rgba(255, 255, 255, 0.45);
+      transform: scale(0.88);
+      transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
       pointer-events: none;
     }
+    .reveal-flag-wrap.reveal-active .reveal-secret-img {
+      transform: scale(1);
+    }
+    .reveal-secret-img.bra-nor-secret { object-position: 72% center; }
     .reveal-flag-wrap .reveal-flag-easter {
       position: relative;
       z-index: 2;
       display: block;
       cursor: pointer;
     }
-    .reveal-flag-wrap.reveal-active .reveal-secret-img {
-      transform: translateY(-100%);
-      opacity: 1;
-      visibility: visible;
-    }
-    .reveal-secret-img.bra-nor-secret { object-position: 72% center; }
     .reveal-flag-easter:hover { filter: brightness(1.06); }
+
+    /* iMessage-style dim behind spotlight reveal */
+    .reveal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 420px 320px at var(--spot-x, 50%) var(--spot-y, 50%),
+        transparent 0%,
+        rgba(15, 23, 42, 0.08) 42%,
+        rgba(15, 23, 42, 0.28) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .reveal-backdrop.on { opacity: 1; }
 
     /* Portugal flag easter egg — SIUUU burst */
     .siuuu-layer {
@@ -1502,6 +1565,10 @@
     const BRA_NOR_EASTER_IMG = 'assets/bra-nor-easter.png';
     const BRA_NOR_EASTER_MATCH = 'r16_m91';
 
+    function revealSpotlightHtml(src, extraClass = '') {
+      return `<span class="reveal-spotlight" aria-hidden="true"><span class="reveal-spotlight-glow"></span><img class="reveal-secret-img${extraClass ? ' ' + extraClass : ''}" src="${src}" alt="" loading="lazy"></span>`;
+    }
+
     function renderFlag(teamId, className, opts = {}) {
       if (!teamId) return '';
       const matchId = opts.matchId;
@@ -1511,10 +1578,10 @@
       const braNor = matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA' ? ' reveal-flag-easter bra-nor-flag-easter' : '';
       const img = `<img class="${className}${por}${nor}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
       if (teamId === 'FRA') {
-        return `<span class="reveal-flag-wrap">${img}<img class="reveal-secret-img" src="${FRA_EASTER_IMG}" alt="" aria-hidden="true" loading="lazy"></span>`;
+        return `<span class="reveal-flag-wrap">${revealSpotlightHtml(FRA_EASTER_IMG)}${img}</span>`;
       }
       if (matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA') {
-        return `<span class="reveal-flag-wrap">${img}<img class="reveal-secret-img bra-nor-secret" src="${BRA_NOR_EASTER_IMG}" alt="" aria-hidden="true" loading="lazy"></span>`;
+        return `<span class="reveal-flag-wrap">${revealSpotlightHtml(BRA_NOR_EASTER_IMG, 'bra-nor-secret')}${img}</span>`;
       }
       return img;
     }
@@ -1605,10 +1672,24 @@
       const wrap = flagEl.closest('.reveal-flag-wrap');
       if (!wrap || wrap.classList.contains('reveal-busy')) return;
       wrap.classList.add('reveal-busy', 'reveal-active');
+
+      let backdrop = document.getElementById('reveal-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.id = 'reveal-backdrop';
+        backdrop.className = 'reveal-backdrop';
+        document.body.appendChild(backdrop);
+      }
+      const rect = flagEl.getBoundingClientRect();
+      backdrop.style.setProperty('--spot-x', `${rect.left + rect.width / 2}px`);
+      backdrop.style.setProperty('--spot-y', `${rect.top + rect.height / 2}px`);
+      backdrop.classList.add('on');
+
       setTimeout(() => {
         wrap.classList.remove('reveal-active');
-        setTimeout(() => wrap.classList.remove('reveal-busy'), 480);
-      }, 3450);
+        backdrop.classList.remove('on');
+        setTimeout(() => wrap.classList.remove('reveal-busy'), 580);
+      }, 3580);
     }
 
     function wireFlagEasters() {
