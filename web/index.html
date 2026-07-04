@@ -306,6 +306,42 @@
     .por-flag-easter:hover { filter: brightness(1.08) saturate(1.2); }
     .por-flag-easter:active { transform: scale(1.2) rotate(-4deg); }
 
+    /* France flag easter egg — meme rolls up behind flag */
+    .fra-flag-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    .fra-flag-wrap.fra-revealed,
+    .fra-flag-wrap.fra-busy {
+      z-index: 40;
+    }
+    .fra-secret-img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      z-index: 0;
+      border-radius: inherit;
+      transform: translateY(100%);
+      transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+      pointer-events: none;
+    }
+    .fra-flag-wrap .fra-flag-easter {
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+    }
+    .fra-flag-wrap.fra-revealed .fra-secret-img {
+      transform: translateY(-100%);
+    }
+    .fra-flag-easter:hover { filter: brightness(1.06); }
+
     /* Portugal flag easter egg — SIUUU burst */
     .siuuu-layer {
       position: fixed;
@@ -1451,10 +1487,17 @@
       return `https://flagcdn.com/w40/${iso2}.png`;
     }
 
+    const FRA_EASTER_IMG = 'assets/fra-easter.png';
+
     function renderFlag(teamId, className) {
       if (!teamId) return '';
       const por = teamId === 'POR' ? ' por-flag-easter' : '';
-      return `<img class="${className}${por}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
+      const fra = teamId === 'FRA' ? ' fra-flag-easter' : '';
+      const img = `<img class="${className}${por}${fra}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
+      if (teamId === 'FRA') {
+        return `<span class="fra-flag-wrap"><img class="fra-secret-img" src="${FRA_EASTER_IMG}" alt="" aria-hidden="true">${img}</span>`;
+      }
+      return img;
     }
 
     const SIUUU_COLORS = ['#006600', '#ff0000', '#ffd700', '#ffffff', '#00a86b', '#e8b923'];
@@ -1520,13 +1563,31 @@
       }
     }
 
-    function wirePorFlagEaster() {
+    function triggerFraReveal(flagEl) {
+      const wrap = flagEl.closest('.fra-flag-wrap');
+      if (!wrap || wrap.classList.contains('fra-busy')) return;
+      wrap.classList.add('fra-busy', 'fra-revealed');
+      setTimeout(() => {
+        wrap.classList.remove('fra-revealed');
+        setTimeout(() => wrap.classList.remove('fra-busy'), 480);
+      }, 3450);
+    }
+
+    function wireFlagEasters() {
       document.addEventListener('click', (e) => {
-        const flag = e.target.closest('.por-flag-easter');
-        if (!flag) return;
-        e.stopPropagation();
-        e.preventDefault();
-        triggerPorSiuuu(flag);
+        const porFlag = e.target.closest('.por-flag-easter');
+        if (porFlag) {
+          e.stopPropagation();
+          e.preventDefault();
+          triggerPorSiuuu(porFlag);
+          return;
+        }
+        const fraFlag = e.target.closest('.fra-flag-easter');
+        if (fraFlag) {
+          e.stopPropagation();
+          e.preventDefault();
+          triggerFraReveal(fraFlag);
+        }
       }, true);
     }
     function fmtDate(iso) {
@@ -2114,7 +2175,7 @@
       }
     }
 
-    wirePorFlagEaster();
+    wireFlagEasters();
     load();
   </script>
 </body>
