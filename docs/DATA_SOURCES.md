@@ -148,6 +148,6 @@ Odds API 422        → skip odds OR use manual_odds.json
 Partial xG          → goals fallback + xG coverage shrink in strength.py
 ```
 
-`strength.py` redistributes missing signal weights **per team**. France doesn't get 33% just because she had xG and Colombia didn't.
+`strength.py` redistributes missing signal weights **per team**. France doesn't get 33% just because they had xG and Colombia didn't.
 
 `update.py` shouldn't die because one source had a bad day. You get a degraded prediction, warnings on stderr, and `_meta.strength_meta` shows what each team actually used.
