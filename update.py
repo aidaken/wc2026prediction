@@ -11,6 +11,7 @@ run this after each round to refresh predictions.
 from __future__ import annotations
 
 import argparse
+import logging
 import shutil
 from datetime import datetime, timezone
 from typing import Any
@@ -39,7 +40,7 @@ from src.strength import compute_strength, shrink_xg_toward_neutral
 from src.teams import TeamRegistry
 from src.utils import DATA_DIR, get_env_int, load_json, normalize_betting_probs, normalize_minmax, setup_logging, write_json
 from src.value import get_squad_values
-from src.xg import calculate_form_ratios
+from src.xg import apply_manual_xg, calculate_form_ratios
 
 MODEL_VERSION = "1.2.0"
 FIXTURES_CACHE_PATH = DATA_DIR / "fixtures_cache.json"
@@ -218,6 +219,9 @@ def combine_strengths(
     # Elo is already set on `teams` by the deterministic replay in run_update.
     elo_norm = normalize_elo(teams)
     xg_form, xg_meta = calculate_form_ratios(fixtures, active)
+    manual_xg_applied = apply_manual_xg(xg_form, xg_meta, active)
+    if manual_xg_applied:
+        logging.getLogger("wc2026").info("xG: %d teams from manual xG table", manual_xg_applied)
     injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
 
     squad_raw = {tid: raw["squad_values"].get(tid, teams[tid].get("squad_value_eur", 0)) for tid in active}

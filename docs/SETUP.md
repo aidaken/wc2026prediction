@@ -69,10 +69,19 @@ Transfermarkt scrape needs no key. It breaks when they change HTML.
 
 ```bash
 cp data/manual_odds.json.example data/manual_odds.json
-# edit decimal odds per team name
+# fill implied win probs per 3-letter team id (1/decimal, or 100/(american+100))
 ```
 
-`update.py` picks this up automatically when the API path fails.
+`update.py` picks this up automatically when the API path fails. Values get renormalized across active teams, so rough is fine.
+
+### Manual xG (no stats API)
+
+```bash
+cp data/manual_xg.json.example data/manual_xg.json
+# per team: xg (for), xga (against), mp (matches). Paste from FotMob's xG table
+```
+
+Overrides the goals fallback so form uses real xG. Any team you skip stays on the fallback.
 
 ---
 

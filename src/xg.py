@@ -5,6 +5,66 @@ from __future__ import annotations
 from typing import Any
 
 import config
+from src.utils import DATA_DIR, load_json
+
+MANUAL_XG_PATH = DATA_DIR / "manual_xg.json"
+
+
+def load_manual_xg() -> dict[str, dict[str, float]]:
+    """
+    Per-team tournament xG totals from data/manual_xg.json (e.g. pasted from FotMob's
+    xG table). Shape: {"TID": {"xg": 9.2, "xga": 3.1, "mp": 4}}. Used to override the
+    goals fallback when the stats API can't serve match xG.
+    """
+    doc = load_json(MANUAL_XG_PATH)
+    raw = doc.get("xg") or doc.get("teams") or {}
+    if not isinstance(raw, dict):
+        return {}
+    out: dict[str, dict[str, float]] = {}
+    for tid, vals in raw.items():
+        if not isinstance(vals, dict):
+            continue
+        try:
+            xg = float(vals["xg"])
+            xga = float(vals["xga"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        entry = {"xg": xg, "xga": xga}
+        mp = vals.get("mp")
+        if mp:
+            try:
+                entry["mp"] = int(mp)
+            except (TypeError, ValueError):
+                pass
+        out[str(tid)] = entry
+    return out
+
+
+def apply_manual_xg(
+    ratios: dict[str, float],
+    meta: dict[str, dict[str, Any]],
+    active: list[str] | None = None,
+) -> int:
+    """Overlay manual per-team xG onto computed form ratios. Returns count applied."""
+    manual = load_manual_xg()
+    applied = 0
+    for tid, vals in manual.items():
+        if active is not None and tid not in active:
+            continue
+        xg, xga = vals["xg"], vals["xga"]
+        denom = xg + xga
+        ratio = xg / denom if denom > 0 else 0.5
+        mp = vals.get("mp") or 0
+        ratios[tid] = round(ratio, 4)
+        meta[tid] = {
+            "has_xg_data": True,
+            "matches_used": mp,
+            "form_source": "xg_table",
+            "avg_xg_for": round(xg / mp, 2) if mp else None,
+            "avg_xg_against": round(xga / mp, 2) if mp else None,
+        }
+        applied += 1
+    return applied
 
 
 def _match_weight(match: dict[str, Any]) -> float:

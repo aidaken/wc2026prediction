@@ -54,7 +54,12 @@ git push
 
 GitHub Pages redeploys from `main`. Site updates in ~1 min.
 
-If you have betting odds from somewhere (sportsbook, aggregator), drop them in `data/manual_odds.json` (copy from `data/manual_odds.json.example`). That fills the 20% odds slot when The Odds API doesn't have a WC 2026 market.
+Missing data? Two manual overrides fill the gaps when the APIs won't serve 2026:
+
+- **Odds:** `data/manual_odds.json` (copy the example) — implied win probs per 3-letter id, `1/decimal` or `100/(american+100)`. Fills the 20% odds slot.
+- **xG:** `data/manual_xg.json` (copy the example) — per team `xg` / `xga` / `mp`, paste straight from FotMob's xG table. Overrides the goals fallback in form.
+
+Both renormalize/merge on their own, so rough or partial is fine.
 
 ---
 

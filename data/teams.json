@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-07-04T01:20:36Z",
+    "last_updated": "2026-07-04T01:32:35Z",
     "round": "Round of 32",
     "teams_remaining": 17,
     "elo_method": "full_replay_from_seed"
@@ -17,7 +17,7 @@
       "group": "A",
       "group_position": 1,
       "elo_change_this_round": 21.7,
-      "team_strength": 0.4374
+      "team_strength": 0.362
     },
     "CZE": {
       "id": "CZE",
@@ -66,7 +66,7 @@
       "group": "B",
       "group_position": 2,
       "elo_change_this_round": 24.7,
-      "team_strength": 0.2771
+      "team_strength": 0.2879
     },
     "BIH": {
       "id": "BIH",
@@ -104,7 +104,7 @@
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 21.4,
-      "team_strength": 0.4038
+      "team_strength": 0.3911
     },
     "BRA": {
       "id": "BRA",
@@ -117,7 +117,7 @@
       "group": "C",
       "group_position": 1,
       "elo_change_this_round": 12.2,
-      "team_strength": 0.627
+      "team_strength": 0.6769
     },
     "HTI": {
       "id": "HTI",
@@ -142,7 +142,7 @@
       "group": "C",
       "group_position": 2,
       "elo_change_this_round": 34.3,
-      "team_strength": 0.3892
+      "team_strength": 0.438
     },
     "SCO": {
       "id": "SCO",
@@ -167,7 +167,7 @@
       "group": "D",
       "group_position": 1,
       "elo_change_this_round": 22.6,
-      "team_strength": 0.3429
+      "team_strength": 0.2919
     },
     "AUS": {
       "id": "AUS",
@@ -193,7 +193,7 @@
       "group": "D",
       "group_position": 3,
       "elo_change_this_round": 43.4,
-      "team_strength": 0.186
+      "team_strength": 0.13
     },
     "TUR": {
       "id": "TUR",
@@ -314,7 +314,7 @@
       "group": "G",
       "group_position": 1,
       "elo_change_this_round": 20.8,
-      "team_strength": 0.4125
+      "team_strength": 0.4026
     },
     "EGY": {
       "id": "EGY",
@@ -327,7 +327,7 @@
       "group": "G",
       "group_position": 2,
       "elo_change_this_round": 28.2,
-      "team_strength": 0.2285
+      "team_strength": 0.1989
     },
     "IRN": {
       "id": "IRN",
@@ -389,7 +389,7 @@
       "group": "H",
       "group_position": 1,
       "elo_change_this_round": 13.0,
-      "team_strength": 0.6288
+      "team_strength": 0.7143
     },
     "URU": {
       "id": "URU",
@@ -414,7 +414,7 @@
       "group": "I",
       "group_position": 1,
       "elo_change_this_round": 11.5,
-      "team_strength": 0.7263
+      "team_strength": 0.7575
     },
     "NOR": {
       "id": "NOR",
@@ -427,7 +427,7 @@
       "group": "I",
       "group_position": 2,
       "elo_change_this_round": 24.9,
-      "team_strength": 0.367
+      "team_strength": 0.3746
     },
     "SEN": {
       "id": "SEN",
@@ -478,7 +478,7 @@
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 8.1,
-      "team_strength": 0.5983
+      "team_strength": 0.6513
     },
     "AUT": {
       "id": "AUT",
@@ -516,7 +516,7 @@
       "group": "K",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3935
+      "team_strength": 0.3547
     },
     "COD": {
       "id": "COD",
@@ -541,7 +541,7 @@
       "group": "K",
       "group_position": 2,
       "elo_change_this_round": 27.8,
-      "team_strength": 0.531
+      "team_strength": 0.4839
     },
     "UZB": {
       "id": "UZB",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 12.2,
-      "team_strength": 0.5486
+      "team_strength": 0.6182
     },
     "CRO": {
       "id": "CRO",
@@ -592,7 +592,7 @@
       "group": "L",
       "group_position": 3,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1579
+      "team_strength": 0.1499
     },
     "PAN": {
       "id": "PAN",

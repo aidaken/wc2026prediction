@@ -1,0 +1,8 @@
+{
+  "_comment": "Copy to manual_xg.json. Per-team tournament xG totals, e.g. from FotMob's xG table (fotmob.com/leagues/77/table/world-cup?filter=xg). xg = xG for, xga = xG against, mp = matches played. Overrides the goals fallback in form.",
+  "xg": {
+    "FRA": { "xg": 9.2, "xga": 3.1, "mp": 4 },
+    "BRA": { "xg": 7.8, "xga": 4.0, "mp": 4 },
+    "ARG": { "xg": 6.5, "xga": 4.2, "mp": 4 }
+  }
+}

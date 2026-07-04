@@ -106,12 +106,15 @@ Copy `data/manual_odds.json.example` → `data/manual_odds.json`:
 
 ```json
 {
-  "Brazil": 5.0,
-  "France": 6.0
+  "odds": {
+    "FRA": 0.31,
+    "BRA": 0.14,
+    "ARG": 0.13
+  }
 }
 ```
 
-Team names must match `teams.json`. `odds.py` normalizes across active teams same as API path.
+Keys are 3-letter team ids (match `teams.json`), values are implied win probs. Convert whatever the book shows: `1 / decimal_odds`, or `100 / (american + 100)`. They don't need to sum to 1, the engine renormalizes across active teams and strips the book vig. Same path as the API odds.
 
 ---
 

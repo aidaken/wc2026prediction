@@ -1260,6 +1260,7 @@
       const src = signals.form_source || 'default';
       const n = signals.matches_used || 0;
       if (src === 'xg') return `Form from xG (${n} matches)`;
+      if (src === 'xg_table') return `Form from xG table (${n} matches)`;
       if (src === 'goals') return `Form from results (${n} matches, xG sparse)`;
       return 'Form default — no recent matches';
     }
