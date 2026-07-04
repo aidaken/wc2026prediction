@@ -309,49 +309,44 @@
     .por-flag-easter:active { transform: scale(1.2) rotate(-4deg); }
     .nor-flag-easter:active { transform: scale(1.2) rotate(4deg); }
 
-    /* Flag reveal easter egg (France everywhere, Brazil only on r16_m91) */
+    /* Flag reveal easter egg — fixed popup (no table/bracket clipping) */
     .reveal-flag-wrap {
       position: relative;
       display: inline-block;
       line-height: 0;
       flex-shrink: 0;
       vertical-align: middle;
-      overflow: hidden;
-      --reveal-mul: 7;
     }
-    .reveal-flag-wrap.reveal-active,
-    .reveal-flag-wrap.reveal-busy {
-      z-index: 200;
-      overflow: visible;
+    .reveal-flag-wrap .reveal-flag-easter {
+      position: relative;
+      z-index: 2;
+      display: block;
+      cursor: pointer;
     }
-    .reveal-spotlight {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      width: calc(100% * var(--reveal-mul));
-      height: calc(100% * var(--reveal-mul));
-      transform: translate(-50%, 100%);
+    .reveal-flag-easter:hover { filter: brightness(1.06); }
+
+    #reveal-popup {
+      position: fixed;
+      z-index: 300;
+      pointer-events: none;
       opacity: 0;
       visibility: hidden;
-      z-index: 0;
-      pointer-events: none;
       transition:
-        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        top 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
         opacity 0.22s ease,
         visibility 0s linear 0.55s;
     }
-    .reveal-flag-wrap.reveal-active .reveal-spotlight {
-      transform: translate(-50%, 0);
+    #reveal-popup.reveal-show {
       opacity: 1;
       visibility: visible;
       transition:
-        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        top 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
         opacity 0.18s ease,
         visibility 0s;
     }
-    .reveal-spotlight-glow {
+    #reveal-popup .reveal-spotlight-glow {
       position: absolute;
-      inset: -18%;
+      inset: -14%;
       border-radius: 50%;
       background: radial-gradient(
         ellipse at center,
@@ -364,40 +359,35 @@
       filter: blur(10px);
       z-index: 0;
       opacity: 0;
-      transform: scale(0.75);
+      transform: scale(0.8);
       transition: opacity 0.3s ease, transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .reveal-flag-wrap.reveal-active .reveal-spotlight-glow {
+    #reveal-popup.reveal-show .reveal-spotlight-glow {
       opacity: 1;
       transform: scale(1);
     }
-    .reveal-secret-img {
+    #reveal-popup .reveal-popup-img {
       position: relative;
       z-index: 1;
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center top;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.55),
         0 10px 36px rgba(0, 0, 0, 0.38),
         0 0 48px rgba(255, 255, 255, 0.45);
-      transform: scale(0.88);
+      transform: scale(0.9);
       transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
     }
-    .reveal-flag-wrap.reveal-active .reveal-secret-img {
+    #reveal-popup.reveal-show .reveal-popup-img {
       transform: scale(1);
     }
-    .reveal-secret-img.bra-nor-secret { object-position: 72% center; }
-    .reveal-flag-wrap .reveal-flag-easter {
-      position: relative;
-      z-index: 2;
-      display: block;
-      cursor: pointer;
+    #reveal-popup .reveal-popup-img.bra-nor-secret {
+      object-position: 72% center;
     }
-    .reveal-flag-easter:hover { filter: brightness(1.06); }
 
     /* iMessage-style dim behind spotlight reveal */
     .reveal-backdrop {
@@ -1564,10 +1554,8 @@
     const FRA_EASTER_IMG = 'assets/fra-easter.png';
     const BRA_NOR_EASTER_IMG = 'assets/bra-nor-easter.png';
     const BRA_NOR_EASTER_MATCH = 'r16_m91';
-
-    function revealSpotlightHtml(src, extraClass = '') {
-      return `<span class="reveal-spotlight" aria-hidden="true"><span class="reveal-spotlight-glow"></span><img class="reveal-secret-img${extraClass ? ' ' + extraClass : ''}" src="${src}" alt="" loading="lazy"></span>`;
-    }
+    const REVEAL_SCALE = 7;
+    const REVEAL_MIN_W = 132;
 
     function renderFlag(teamId, className, opts = {}) {
       if (!teamId) return '';
@@ -1578,10 +1566,10 @@
       const braNor = matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA' ? ' reveal-flag-easter bra-nor-flag-easter' : '';
       const img = `<img class="${className}${por}${nor}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
       if (teamId === 'FRA') {
-        return `<span class="reveal-flag-wrap">${revealSpotlightHtml(FRA_EASTER_IMG)}${img}</span>`;
+        return `<span class="reveal-flag-wrap" data-reveal-src="${FRA_EASTER_IMG}" data-reveal-aspect="0.72">${img}</span>`;
       }
       if (matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA') {
-        return `<span class="reveal-flag-wrap">${revealSpotlightHtml(BRA_NOR_EASTER_IMG, 'bra-nor-secret')}${img}</span>`;
+        return `<span class="reveal-flag-wrap" data-reveal-src="${BRA_NOR_EASTER_IMG}" data-reveal-aspect="1.9" data-reveal-pos="bra">${img}</span>`;
       }
       return img;
     }
@@ -1668,10 +1656,48 @@
       });
     }
 
+    function ensureRevealPopup() {
+      let popup = document.getElementById('reveal-popup');
+      if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'reveal-popup';
+        popup.innerHTML = '<span class="reveal-spotlight-glow"></span><img class="reveal-popup-img" alt="" aria-hidden="true">';
+        document.body.appendChild(popup);
+      }
+      return popup;
+    }
+
     function triggerFlagReveal(flagEl) {
       const wrap = flagEl.closest('.reveal-flag-wrap');
       if (!wrap || wrap.classList.contains('reveal-busy')) return;
-      wrap.classList.add('reveal-busy', 'reveal-active');
+      const src = wrap.dataset.revealSrc;
+      if (!src) return;
+
+      wrap.classList.add('reveal-busy');
+      const aspect = parseFloat(wrap.dataset.revealAspect || '0.75');
+      const rect = flagEl.getBoundingClientRect();
+      const popW = Math.max(rect.width * REVEAL_SCALE, REVEAL_MIN_W);
+      const popH = popW / aspect;
+
+      let left = rect.left + rect.width / 2 - popW / 2;
+      const margin = 10;
+      left = Math.max(margin, Math.min(left, window.innerWidth - popW - margin));
+
+      const hideTop = rect.bottom;
+      const showTop = rect.bottom - popH;
+      const spotX = left + popW / 2;
+      const spotY = showTop + popH / 2;
+
+      const popup = ensureRevealPopup();
+      const img = popup.querySelector('.reveal-popup-img');
+      img.src = src;
+      img.classList.toggle('bra-nor-secret', wrap.dataset.revealPos === 'bra');
+
+      popup.style.width = `${popW}px`;
+      popup.style.height = `${popH}px`;
+      popup.style.left = `${left}px`;
+      popup.style.top = `${hideTop}px`;
+      popup.classList.remove('reveal-show');
 
       let backdrop = document.getElementById('reveal-backdrop');
       if (!backdrop) {
@@ -1680,13 +1706,20 @@
         backdrop.className = 'reveal-backdrop';
         document.body.appendChild(backdrop);
       }
-      const rect = flagEl.getBoundingClientRect();
-      backdrop.style.setProperty('--spot-x', `${rect.left + rect.width / 2}px`);
-      backdrop.style.setProperty('--spot-y', `${rect.top + rect.height / 2}px`);
-      backdrop.classList.add('on');
+      backdrop.style.setProperty('--spot-x', `${spotX}px`);
+      backdrop.style.setProperty('--spot-y', `${spotY}px`);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          popup.style.top = `${showTop}px`;
+          popup.classList.add('reveal-show');
+          backdrop.classList.add('on');
+        });
+      });
 
       setTimeout(() => {
-        wrap.classList.remove('reveal-active');
+        popup.classList.remove('reveal-show');
+        popup.style.top = `${hideTop}px`;
         backdrop.classList.remove('on');
         setTimeout(() => wrap.classList.remove('reveal-busy'), 580);
       }, 3580);
