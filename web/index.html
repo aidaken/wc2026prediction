@@ -297,14 +297,17 @@
       box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
       flex-shrink: 0;
     }
-    .por-flag-easter {
+    .por-flag-easter,
+    .nor-flag-easter {
       cursor: pointer;
       position: relative;
       z-index: 2;
       transition: transform 0.12s ease, filter 0.12s ease;
     }
-    .por-flag-easter:hover { filter: brightness(1.08) saturate(1.2); }
+    .por-flag-easter:hover,
+    .nor-flag-easter:hover { filter: brightness(1.08) saturate(1.2); }
     .por-flag-easter:active { transform: scale(1.2) rotate(-4deg); }
+    .nor-flag-easter:active { transform: scale(1.2) rotate(4deg); }
 
     /* Flag reveal easter egg (France everywhere, Brazil only on r16_m91) */
     .reveal-flag-wrap {
@@ -1503,9 +1506,10 @@
       if (!teamId) return '';
       const matchId = opts.matchId;
       const por = teamId === 'POR' ? ' por-flag-easter' : '';
+      const nor = teamId === 'NOR' ? ' nor-flag-easter' : '';
       const fra = teamId === 'FRA' ? ' reveal-flag-easter fra-flag-easter' : '';
       const braNor = matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA' ? ' reveal-flag-easter bra-nor-flag-easter' : '';
-      const img = `<img class="${className}${por}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
+      const img = `<img class="${className}${por}${nor}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
       if (teamId === 'FRA') {
         return `<span class="reveal-flag-wrap">${img}<img class="reveal-secret-img" src="${FRA_EASTER_IMG}" alt="" aria-hidden="true" loading="lazy"></span>`;
       }
@@ -1517,8 +1521,10 @@
 
     const SIUUU_COLORS = ['#006600', '#ff0000', '#ffd700', '#ffffff', '#00a86b', '#e8b923'];
     const SIUUU_EMOJIS = ['⚽', '🎉', '🇵🇹', '✨', '🔥'];
+    const ROW_COLORS = ['#ba0c2f', '#00205b', '#ffffff', '#ef2b2d', '#1a3a6e', '#ffd700'];
+    const ROW_EMOJIS = ['🚣', '🥁', '🇳🇴', '⚔️', '🛡️'];
 
-    function triggerPorSiuuu(flagEl) {
+    function triggerFlagBurst(flagEl, { colors, words, emojis, wordColors }) {
       const rect = flagEl.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
@@ -1537,7 +1543,7 @@
         const dist = 40 + Math.random() * 120;
         p.style.left = `${cx}px`;
         p.style.top = `${cy}px`;
-        p.style.background = SIUUU_COLORS[i % SIUUU_COLORS.length];
+        p.style.background = colors[i % colors.length];
         p.style.setProperty('--tx', `${Math.cos(angle) * dist}px`);
         p.style.setProperty('--ty', `${Math.sin(angle) * dist + 30 + Math.random() * 60}px`);
         p.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
@@ -1546,7 +1552,6 @@
         setTimeout(() => p.remove(), 1600);
       }
 
-      const words = ['SIUUU', 'SIUUU!', 'SIIIIIUUU', 'SIUUU'];
       for (let i = 0; i < 6; i++) {
         const w = document.createElement('span');
         w.className = 'siuuu-word';
@@ -1555,7 +1560,7 @@
         w.style.left = `${cx + spread}px`;
         w.style.top = `${cy - 4}px`;
         w.style.fontSize = `${1.1 + Math.random() * 0.9}rem`;
-        w.style.color = i % 2 ? '#006600' : '#c41e3a';
+        w.style.color = wordColors[i % wordColors.length];
         w.style.setProperty('--lift', `${-70 - Math.random() * 90}px`);
         w.style.setProperty('--dur', `${1.1 + Math.random() * 0.5}s`);
         w.style.animationDelay = `${i * 0.05}s`;
@@ -1566,7 +1571,7 @@
       for (let i = 0; i < 5; i++) {
         const e = document.createElement('span');
         e.className = 'siuuu-emoji';
-        e.textContent = SIUUU_EMOJIS[i % SIUUU_EMOJIS.length];
+        e.textContent = emojis[i % emojis.length];
         e.style.left = `${cx + (Math.random() - 0.5) * 80}px`;
         e.style.top = `${cy}px`;
         e.style.setProperty('--size', `${1.2 + Math.random() * 1.2}rem`);
@@ -1576,6 +1581,24 @@
         layer.appendChild(e);
         setTimeout(() => e.remove(), 1600);
       }
+    }
+
+    function triggerPorSiuuu(flagEl) {
+      triggerFlagBurst(flagEl, {
+        colors: SIUUU_COLORS,
+        words: ['SIUUU', 'SIUUU!', 'SIIIIIUUU', 'SIUUU'],
+        emojis: SIUUU_EMOJIS,
+        wordColors: ['#006600', '#c41e3a'],
+      });
+    }
+
+    function triggerNorRow(flagEl) {
+      triggerFlagBurst(flagEl, {
+        colors: ROW_COLORS,
+        words: ['ROW!', 'ROW', 'RO!', 'ROW ROW', 'VIKING ROW'],
+        emojis: ROW_EMOJIS,
+        wordColors: ['#ba0c2f', '#00205b', '#ffffff'],
+      });
     }
 
     function triggerFlagReveal(flagEl) {
@@ -1595,6 +1618,13 @@
           e.stopPropagation();
           e.preventDefault();
           triggerPorSiuuu(porFlag);
+          return;
+        }
+        const norFlag = e.target.closest('.nor-flag-easter');
+        if (norFlag) {
+          e.stopPropagation();
+          e.preventDefault();
+          triggerNorRow(norFlag);
           return;
         }
         const revealFlag = e.target.closest('.reveal-flag-easter');
