@@ -12,9 +12,24 @@ from bs4 import BeautifulSoup
 
 import config
 from src.teams import TM_SLUG_TO_ID
-from src.utils import retry
+from src.utils import DATA_DIR, load_json, retry
 
 logger = logging.getLogger("wc2026")
+
+MANUAL_VALUES_PATH = DATA_DIR / "squad_values.json"
+
+
+def load_manual_values() -> dict[str, int]:
+    """Pinned Transfermarkt values from data/squad_values.json (scrape URL is dead)."""
+    doc = load_json(MANUAL_VALUES_PATH)
+    raw = doc.get("values_eur", {})
+    out: dict[str, int] = {}
+    for tid, val in raw.items():
+        try:
+            out[tid] = int(val)
+        except (TypeError, ValueError):
+            continue
+    return out
 
 HEADERS = {
     "User-Agent": (
@@ -85,7 +100,19 @@ def get_squad_values(
                 values[team_id] = parsed
             time.sleep(config.TRANSFERMARKT_DELAY_S)
     except Exception as exc:
-        logger.warning("Transfermarkt scrape failed: %s — using cached values", exc)
+        logger.warning("Transfermarkt scrape failed: %s — using pinned/cached values", exc)
+
+    # Precedence: live scrape > pinned data/squad_values.json > cached teams.json
+    manual = load_manual_values()
+    filled_manual = 0
+    for tid in teams:
+        if tid in values:
+            continue
+        if tid in manual:
+            values[tid] = manual[tid]
+            filled_manual += 1
+    if filled_manual:
+        logger.info("Squad values: %d pinned from data/squad_values.json", filled_manual)
 
     for tid, team in teams.items():
         if tid in values:

@@ -100,6 +100,43 @@ def update_ratings(
     return changes, newly_processed
 
 
+def recompute_from_seed(
+    seed_elos: dict[str, float],
+    group_fixtures: list[dict[str, Any]],
+    bracket: dict[str, Any],
+    round_order: list[str],
+    round_names: list[str],
+) -> tuple[dict[str, float], dict[str, dict[str, float]]]:
+    """
+    Deterministic Elo: replay group stage then each knockout round from pre-tournament
+    seed ratings. Removes the incremental double-count risk and gives an exact per-round
+    delta for every team (each knockout team plays exactly one match per round).
+
+    Returns (current_elo_per_team, delta_per_round[round_name][team_id]).
+    """
+    work: dict[str, dict[str, Any]] = {tid: {"elo": float(elo)} for tid, elo in seed_elos.items()}
+
+    completed_group = [
+        f for f in group_fixtures
+        if f.get("status") in ("FT", "PEN", "AET")
+        and f.get("team_home") in work and f.get("team_away") in work
+    ]
+    update_ratings(work, completed_group)
+
+    deltas_by_round: dict[str, dict[str, float]] = {}
+    rounds = bracket.get("rounds", {})
+    for round_key, round_name in zip(round_order, round_names):
+        matches = [
+            m for m in rounds.get(round_key, {}).get("matches", [])
+            if m.get("winner") and m.get("team_home") and m.get("team_away")
+        ]
+        changes, _ = update_ratings(work, matches)
+        deltas_by_round[round_name] = {tid: round(d, 1) for tid, d in changes.items()}
+
+    current = {tid: round(work[tid]["elo"], 1) for tid in work}
+    return current, deltas_by_round
+
+
 def normalize_elo(teams: dict[str, dict[str, Any]], active_only: bool = True) -> dict[str, float]:
     ratings = {
         tid: t["elo"]

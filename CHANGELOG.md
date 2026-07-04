@@ -4,6 +4,21 @@ All notable changes to this project. Format loosely follows [Keep a Changelog](h
 
 ---
 
+## [1.2.1] - 2026-07-03
+
+### Added
+- `data/squad_values.json`: pinned Transfermarkt WC 2026 squad values for all 48 teams (scrape URL is dead). `value.py` prefers scrape → pinned → cached
+- `avg_xg_for` / `avg_xg_against` surfaced per team in `predictions.json` signals and shown in the UI detail panel
+
+### Changed
+- **Elo is now deterministic:** full replay from pre-tournament seed each run (group stage → each knockout round) instead of incremental in-place updates. Kills the double-count risk and makes ratings reproducible
+- `elo_change_this_round` is now a correct **per-round** delta for every team (was per-run, so teams that won earlier in a round wrongly showed 0)
+- `N_SIMULATIONS` 10k → 100k (~±0.13pp sampling noise vs ~±0.4pp)
+- Squad values corrected to real figures (France €1.52B, Brazil €0.93B, etc.), shifting win %: France 24.5%, Brazil 15.3%, Argentina 13.8%
+- `teams.json` `_meta` drops the long `elo_processed_matches` list for `elo_method: full_replay_from_seed`
+
+---
+
 ## [1.2.0] - 2026-07-01
 
 ### Added

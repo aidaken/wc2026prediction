@@ -18,7 +18,7 @@ from typing import Any
 import config
 from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures
 from src.bracket_topology import ROUND_ORDER, propagate_winner
-from src.elo import normalize_elo, update_ratings
+from src.elo import normalize_elo, recompute_from_seed
 from src.fetch import (
     DataValidationError,
     FetchError,
@@ -211,12 +211,11 @@ def combine_strengths(
     teams: dict[str, dict[str, Any]],
     raw: dict[str, Any],
     weights: dict[str, float],
-    processed_elo_ids: set[str] | None = None,
-) -> tuple[dict[str, float], dict[str, dict[str, float]], list[str], dict[str, Any]]:
+) -> tuple[dict[str, float], dict[str, dict[str, float]], dict[str, Any]]:
     active = _active_teams(teams)
     fixtures = raw["fixtures"]
 
-    _, newly_processed = update_ratings(teams, fixtures, processed_ids=processed_elo_ids)
+    # Elo is already set on `teams` by the deterministic replay in run_update.
     elo_norm = normalize_elo(teams)
     xg_form, xg_meta = calculate_form_ratios(fixtures, active)
     injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
@@ -275,6 +274,8 @@ def combine_strengths(
                 "has_xg_data": has_xg,
                 "form_source": meta.get("form_source", "default"),
                 "matches_used": meta.get("matches_used", 0),
+                "avg_xg_for": meta.get("avg_xg_for"),
+                "avg_xg_against": meta.get("avg_xg_against"),
                 "effective_weights": eff_weights,
             }
 
@@ -283,7 +284,7 @@ def combine_strengths(
         "betting_available": betting_available,
         "teams_with_xg": xg_with_data,
     }
-    return strengths, signals, newly_processed, strength_meta
+    return strengths, signals, strength_meta
 
 
 def _select_weights(raw: dict[str, Any]) -> dict[str, float]:
@@ -306,7 +307,6 @@ def write_outputs(
     sim_results: dict[str, Any],
     round_name: str,
     n_sims: int,
-    elo_processed_matches: list[str] | None = None,
     *,
     weights: dict[str, float] | None = None,
     data_sources: dict[str, Any] | None = None,
@@ -324,7 +324,7 @@ def write_outputs(
             "last_updated": _utc_now(),
             "round": round_name,
             "teams_remaining": active_count,
-            "elo_processed_matches": elo_processed_matches or [],
+            "elo_method": "full_replay_from_seed",
         },
         "teams": teams,
     }
@@ -415,13 +415,11 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
 
     teams_doc = load_json(DATA_DIR / "teams.json")
     bracket = load_json(DATA_DIR / "bracket.json")
-    processed_elo = set(teams_doc.get("_meta", {}).get("elo_processed_matches", []))
 
     if demo or not teams_doc.get("teams"):
         teams = {tid: dict(t) for tid, t in TEAMS.items()}
         bracket = DEMO_BRACKET
         round_name = round_name or bracket["_meta"]["current_round"]
-        processed_elo = set()
     else:
         teams = teams_doc["teams"]
         round_name = round_name or detect_current_round(bracket)
@@ -443,12 +441,21 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     active_count = len(_active_teams(teams))
     validate_raw_data(raw["fixtures"], active_count)
 
+    # Deterministic Elo: replay group stage + knockouts from pre-tournament seed.
+    seed_elos = {tid: float(TEAMS.get(tid, {}).get("elo", t.get("elo", 1500.0))) for tid, t in teams.items()}
+    group_fixtures = [f for f in raw["fixtures"] if f.get("stage") == "group"]
+    current_elo, elo_round_deltas = recompute_from_seed(
+        seed_elos, group_fixtures, bracket, ROUND_ORDER, config.ROUND_NAMES,
+    )
+    round_deltas = elo_round_deltas.get(round_name, {})
+    for tid in teams:
+        if tid in current_elo:
+            teams[tid]["elo"] = current_elo[tid]
+        teams[tid]["elo_change_this_round"] = round(round_deltas.get(tid, 0.0), 1)
+
     weights = _select_weights(raw)
     logger.info("Calculating team strengths (weights: %s)...", weights)
-    strengths, signals, newly_processed, strength_meta = combine_strengths(
-        teams, raw, weights, processed_elo_ids=processed_elo,
-    )
-    all_processed = sorted(processed_elo | set(newly_processed))
+    strengths, signals, strength_meta = combine_strengths(teams, raw, weights)
 
     for tid, value in raw.get("squad_values", {}).items():
         if tid in teams and value:
@@ -469,7 +476,6 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     logger.info("Writing output files...")
     write_outputs(
         teams, bracket, strengths, signals, sim_results, round_name, n_sims,
-        elo_processed_matches=all_processed,
         weights=weights,
         data_sources=raw.get("data_sources"),
         strength_meta=strength_meta,

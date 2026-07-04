@@ -6,6 +6,9 @@ from typing import Any
 
 # All 48 qualified nations with group-stage metadata
 # Sources: FIFA.com, Wikipedia 2026 WC knockout stage (combination 67)
+# NOTE: squad_value_eur here is only a cold-start default. Authoritative values
+# live in data/squad_values.json (value.py prefers those). Elo here is the
+# pre-tournament seed; update.py replays matches from it deterministically.
 TEAMS: dict[str, dict[str, Any]] = {
     # Group A
     "MEX": {"id": "MEX", "name": "Mexico", "api_football_id": 16, "transfermarkt_id": "mexiko", "elo": 1810.0, "squad_value_eur": 210000000, "eliminated": False, "group": "A", "group_position": 1},

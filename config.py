@@ -57,7 +57,7 @@ XG_FORM_GAMES           = 5
 XG_WC_MATCH_WEIGHT      = 2.0
 XG_LUCK_THRESHOLD       = 1.3
 
-N_SIMULATIONS           = 10_000
+N_SIMULATIONS           = 100_000   # ~±0.13pp sampling noise vs ~±0.4pp at 10k
 DRAW_PROBABILITY        = 0.27   # rough share of knockouts that go to pens (1994-2022)
 
 API_FOOTBALL_BASE       = "https://v3.football.api-sports.io"

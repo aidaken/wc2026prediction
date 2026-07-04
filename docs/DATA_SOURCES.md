@@ -78,7 +78,15 @@ If the call fails: last cached data, stderr warning, pipeline continues.
 
 Scrape squad total €. Map names to our ids. Once per round → `squad_value_eur` in `teams.json`.
 
-If HTML changes: `value.py` keeps last known value and warns. Non-fatal.
+### Reality: the scrape URL is dead
+
+The old `/wettbewerbe/...` URL 404s, so I pin values in **`data/squad_values.json`** (all 48 teams, from the WC 2026 participants page). Precedence in `value.py`:
+
+```
+live scrape  →  data/squad_values.json (pinned)  →  cached teams.json
+```
+
+Refresh the pinned file from `transfermarkt.com/weltmeisterschaft/teilnehmer/pokalwettbewerb/FIWC` each round if you want them current. If everything fails, `value.py` keeps last known value and warns. Non-fatal.
 
 ---
 

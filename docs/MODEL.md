@@ -39,6 +39,8 @@ Chess rating system, adapted for football. Beat someone strong, gain more points
 
 ### Update
 
+Ratings are **replayed deterministically from the pre-tournament seed every run** (group stage, then each knockout round in order). No incremental in-place mutation, so no double-count risk and the numbers are reproducible. Each knockout team plays exactly one match per round, so `elo_change_this_round` is an exact per-round delta.
+
 ```
 E_A = 1 / (1 + 10^((R_B - R_A) / ELO_SCALE))
 
@@ -204,10 +206,12 @@ python scripts/backtest.py --sweep
 
 Pick the scale that minimizes Brier on completed knockouts, update `config.py`, rerun `update.py`.
 
+Sim count is `N_SIMULATIONS = 100_000` (config). Sampling noise ~±0.13pp; bump down to 10k if you want faster local runs.
+
 ### Algorithm (simplified)
 
 ```python
-def simulate_tournament(teams, bracket, n=10_000):
+def simulate_tournament(teams, bracket, n=100_000):
     win_counts = {team_id: 0 for team_id in teams}
     for _ in range(n):
         winner = play_bracket(teams, bracket)

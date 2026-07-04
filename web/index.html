@@ -1447,6 +1447,7 @@
               <div class="detail-stat"><span class="ds-label">Elo rating</span><span class="ds-val">${meta.elo ? Math.round(meta.elo) : '—'}</span></div>
               <div class="detail-stat"><span class="ds-label">Elo Δ round</span><span class="ds-val ${chgCls}">${chgTxt}</span></div>
               <div class="detail-stat"><span class="ds-label">Squad value</span><span class="ds-val">${fmtEur(meta.squad_value_eur)}</span></div>
+              ${s.has_xg_data && s.avg_xg_for != null ? `<div class="detail-stat"><span class="ds-label">xG for / against</span><span class="ds-val">${s.avg_xg_for.toFixed(1)} / ${s.avg_xg_against.toFixed(1)}</span></div>` : ''}
               <div class="detail-stat"><span class="ds-label">Group finish</span><span class="ds-val">${meta.group ? `Group ${meta.group} · ${meta.group_position}${['st','nd','rd'][meta.group_position - 1] || 'th'}` : '—'}</span></div>
             </div>
           </div>
