@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "current_round": "Round of 32",
+    "current_round": "Round of 16",
     "wc_year": 2026,
-    "last_updated": "2026-07-04T01:47:12Z"
+    "last_updated": "2026-07-04T23:08:23Z"
   },
   "rounds": {
     "round_of_32": {
@@ -199,11 +199,13 @@
           "date": "2026-07-04T06:30:00Z",
           "team_home": "COL",
           "team_away": "GHA",
-          "score_home": null,
-          "score_away": null,
-          "winner": null,
-          "status": "NS",
-          "stage": "knockout"
+          "score_home": 1,
+          "score_away": 0,
+          "winner": "COL",
+          "status": "FT",
+          "stage": "knockout",
+          "penalties_home": null,
+          "penalties_away": null
         },
         {
           "match_id": "r32_m88",
@@ -227,15 +229,25 @@
           "match_id": "r16_m89",
           "team_home": "PAR",
           "team_away": "FRA",
-          "winner": null,
-          "status": "NS"
+          "winner": "FRA",
+          "status": "FT",
+          "score_home": 0,
+          "score_away": 1,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "r16_m90",
           "team_home": "CAN",
           "team_away": "MAR",
-          "winner": null,
-          "status": "NS"
+          "winner": "MAR",
+          "status": "FT",
+          "score_home": 0,
+          "score_away": 3,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "r16_m91",
@@ -275,7 +287,7 @@
         {
           "match_id": "r16_m96",
           "team_home": "SUI",
-          "team_away": null,
+          "team_away": "COL",
           "winner": null,
           "status": "NS"
         }
@@ -286,8 +298,8 @@
       "matches": [
         {
           "match_id": "qf_m01",
-          "team_home": null,
-          "team_away": null,
+          "team_home": "FRA",
+          "team_away": "MAR",
           "winner": null,
           "status": "NS"
         },

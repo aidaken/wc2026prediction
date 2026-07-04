@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 87
+    "count": 90
   },
   "fixtures": [
     {
@@ -975,6 +975,42 @@
       "status": "AET",
       "stage": "knockout",
       "round_key": "round_of_32"
+    },
+    {
+      "team_home": "COL",
+      "team_away": "GHA",
+      "score_home": 1,
+      "score_away": 0,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "COL",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_32"
+    },
+    {
+      "team_home": "CAN",
+      "team_away": "MAR",
+      "score_home": 0,
+      "score_away": 3,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "MAR",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_16"
+    },
+    {
+      "team_home": "PAR",
+      "team_away": "FRA",
+      "score_home": 0,
+      "score_away": 1,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "FRA",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_16"
     }
   ]
 }
