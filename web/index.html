@@ -891,6 +891,29 @@
       color: var(--text-soft);
     }
 
+    /* ── Jump nav ── */
+    .jump-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+      flex-wrap: wrap;
+    }
+    .jump-nav a {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text-soft);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.3rem 0.8rem;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .jump-nav a:hover { background: var(--blue); color: #fff; border-color: transparent; }
+    html { scroll-behavior: smooth; }
+    .how-it-works, .glossary { scroll-margin-top: 1rem; }
+
     /* ── Glossary (toggle dictionary) ── */
     .glossary {
       margin-top: 2.5rem;
@@ -1172,6 +1195,10 @@
       <h1>Predictions</h1>
       <p class="subtitle">Monte Carlo win probabilities updated after each knockout round</p>
       <div class="meta" id="meta"></div>
+      <nav class="jump-nav">
+        <a href="#how-it-works">How it works</a>
+        <a href="#glossary">Glossary</a>
+      </nav>
     </header>
     <div id="app"><div class="loading">Loading predictions…</div></div>
 

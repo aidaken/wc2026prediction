@@ -58,8 +58,14 @@ Coverage was thin so most teams used goals-as-xG.
 - Run `fetch_public.py` **before** `update.py`. Order matters, form and Elo read the fixtures the fetch writes.
 - After each round, update `data/manual_xg.json`: add the new knockout game to each surviving team and bump their `mp`. The xG override ignores any match you don't put in the file.
 - Update `data/manual_odds.json` when the market moves. Stale odds quietly drag a team up or down.
-- Commit the `data/*.json` after every run. GitHub Pages serves straight from the repo, so if you don't commit, the site shows old numbers.
+- Commit the `data/*.json` after every run. GitHub Pages deploys via the CI workflow (`pages` job needs `test`), so if you don't commit, the site shows old numbers.
 - The opponent map assumes any two teams meet at most once (true for a World Cup). If the format ever changes, that dedup logic in `build_opponent_map` needs a rethink.
+
+### Pages deploy flaked / site didn't update — **workaround**
+Pages uses the workflow build (`.github/workflows/ci.yml`, `pages` job). Two ways it bites:
+- `deploy-pages` sometimes fails with "Deployment failed, try again later." That's a GitHub infra flake, not your code. Just re-trigger.
+- Don't fix it with `gh run rerun --failed`. Re-running only the `pages` job uploads a *second* `github-pages` artifact and the next attempt dies with "Multiple artifacts named github-pages... count is 2." Re-run the whole workflow (`gh run rerun <id>`) or push an empty commit instead, so there's exactly one artifact.
+- Check what actually broke before assuming the push failed: `git status` (is local == origin?) then `gh run list`. A green push with a red deploy means the code is fine and only the deploy needs a retry.
 
 ---
 
