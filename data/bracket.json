@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Round of 16",
     "wc_year": 2026,
-    "last_updated": "2026-07-05T21:55:10Z"
+    "last_updated": "2026-07-05T21:58:54Z"
   },
   "rounds": {
     "round_of_32": {
@@ -253,8 +253,13 @@
           "match_id": "r16_m91",
           "team_home": "BRA",
           "team_away": "NOR",
-          "winner": null,
-          "status": "NS"
+          "winner": "NOR",
+          "status": "FT",
+          "score_home": 0,
+          "score_away": 2,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "r16_m92",
@@ -312,7 +317,7 @@
         },
         {
           "match_id": "qf_m03",
-          "team_home": null,
+          "team_home": "NOR",
           "team_away": null,
           "winner": null,
           "status": "NS"
