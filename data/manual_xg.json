@@ -1,9 +1,9 @@
 {
-  "_comment": "Per-team tournament xG. Group totals from FotMob xG table, plus each team's R32 game from xgscore.io per-match. Active teams that played R32 = 4 matches, Colombia/Ghana = 3 (R32 not played yet), eliminated = 3 (group only).",
-  "_source": "fotmob.com/leagues/77/table (group) + xgscore.io World Cup 2026 (per match), updated 2026-07-05",
+  "_comment": "Per-team tournament xG. Group totals from FotMob xG table + per-match R32/R16 from FotMob match pages.",
+  "_source": "fotmob.com — updated 2026-07-05 (R16: FRA–PAR, MAR–CAN, BRA–NOR)",
   "xg": {
     "FRA": { "xg": 10.26, "xga": 4.07, "mp": 5 },
-    "BRA": { "xg": 11.27, "xga": 3.74, "mp": 5 },
+    "BRA": { "xg": 12.1, "xga": 3.89, "mp": 5 },
     "ARG": { "xg": 7.98, "xga": 2.36, "mp": 4 },
     "ESP": { "xg": 8.04, "xga": 0.83, "mp": 4 },
     "ENG": { "xg": 8.28, "xga": 2.24, "mp": 4 },
@@ -13,8 +13,8 @@
     "BEL": { "xg": 8.65, "xga": 5.06, "mp": 4 },
     "MAR": { "xg": 9.91, "xga": 3.89, "mp": 5 },
     "USA": { "xg": 5.45, "xga": 4.29, "mp": 4 },
-    "NOR": { "xg": 8.88, "xga": 7.43, "mp": 5 },
-    "CAN": { "xg": 8.95, "xga": 2.53, "mp": 5 },
+    "NOR": { "xg": 9.03, "xga": 8.26, "mp": 5 },
+    "CAN": { "xg": 8.95, "xga": 3.35, "mp": 5 },
     "EGY": { "xg": 5.21, "xga": 5.54, "mp": 4 },
     "PAR": { "xg": 1.58, "xga": 6.35, "mp": 5 },
     "COL": { "xg": 5.42, "xga": 3.28, "mp": 4 },

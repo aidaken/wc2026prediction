@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 90
+    "count": 91
   },
   "fixtures": [
     {
@@ -1008,6 +1008,18 @@
       "penalties_home": null,
       "penalties_away": null,
       "winner": "FRA",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_16"
+    },
+    {
+      "team_home": "BRA",
+      "team_away": "NOR",
+      "score_home": 1,
+      "score_away": 2,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "NOR",
       "status": "FT",
       "stage": "knockout",
       "round_key": "round_of_16"
