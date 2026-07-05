@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>WC 2026 Predictions</title>
   <style>
     :root {
@@ -46,7 +46,10 @@
       color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
+      min-height: 100dvh;
       position: relative;
+      overflow-x: hidden;
+      overflow-x: clip;
     }
 
     /* ── Background watermarks ── */
@@ -302,10 +305,17 @@
       cursor: pointer;
       position: relative;
       z-index: 2;
+      box-sizing: content-box;
+      padding: 10px;
+      margin: -10px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
       transition: transform 0.12s ease, filter 0.12s ease;
     }
-    .por-flag-easter:hover,
-    .nor-flag-easter:hover { filter: brightness(1.08) saturate(1.2); }
+    @media (hover: hover) {
+      .por-flag-easter:hover,
+      .nor-flag-easter:hover { filter: brightness(1.08) saturate(1.2); }
+    }
     .por-flag-easter:active { transform: scale(1.2) rotate(-4deg); }
     .nor-flag-easter:active { transform: scale(1.2) rotate(4deg); }
 
@@ -316,6 +326,11 @@
       line-height: 0;
       flex-shrink: 0;
       vertical-align: middle;
+      box-sizing: content-box;
+      padding: 10px;
+      margin: -10px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     .reveal-flag-wrap .reveal-flag-easter {
       position: relative;
@@ -323,7 +338,9 @@
       display: block;
       cursor: pointer;
     }
-    .reveal-flag-easter:hover { filter: brightness(1.06); }
+    @media (hover: hover) {
+      .reveal-flag-easter:hover { filter: brightness(1.06); }
+    }
 
     #reveal-popup {
       position: fixed;
@@ -331,16 +348,17 @@
       pointer-events: none;
       opacity: 0;
       visibility: hidden;
+      --reveal-dur: 1.2s;
       transition:
-        top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        top var(--reveal-dur) cubic-bezier(0.34, 1.56, 0.64, 1),
         opacity 0.35s ease,
-        visibility 0s linear 1.2s;
+        visibility 0s linear var(--reveal-dur);
     }
     #reveal-popup.reveal-show {
       opacity: 1;
       visibility: visible;
       transition:
-        top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+        top var(--reveal-dur) cubic-bezier(0.34, 1.56, 0.64, 1),
         opacity 0.3s ease,
         visibility 0s;
     }
@@ -360,7 +378,7 @@
       z-index: 0;
       opacity: 0;
       transform: scale(0.8);
-      transition: opacity 0.35s ease, transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.35s ease, transform var(--reveal-dur, 1.2s) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     #reveal-popup.reveal-show .reveal-spotlight-glow {
       opacity: 1;
@@ -380,7 +398,7 @@
         0 10px 36px rgba(0, 0, 0, 0.38),
         0 0 48px rgba(255, 255, 255, 0.45);
       transform: scale(0.9);
-      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform var(--reveal-dur, 1.2s) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     #reveal-popup.reveal-show .reveal-popup-img {
       transform: scale(1);
@@ -402,7 +420,7 @@
         rgba(15, 23, 42, 0.28) 100%
       );
       opacity: 0;
-      transition: opacity 0.35s ease;
+      transition: opacity var(--reveal-dur, 1.2s) ease;
     }
     .reveal-backdrop.on { opacity: 1; }
 
@@ -1065,7 +1083,9 @@
       padding: 0.3rem 0.8rem;
       transition: background 0.15s ease, color 0.15s ease;
     }
-    .jump-nav a:hover { background: var(--blue); color: #fff; border-color: transparent; }
+    @media (hover: hover) {
+      .jump-nav a:hover { background: var(--blue); color: #fff; border-color: transparent; }
+    }
     html { scroll-behavior: smooth; }
     .how-it-works, .glossary { scroll-margin-top: 1rem; }
 
@@ -1110,7 +1130,9 @@
       transition: background 0.15s ease;
     }
     .gl-item summary::-webkit-details-marker { display: none; }
-    .gl-item summary:hover { background: #eef2f7; }
+    @media (hover: hover) {
+      .gl-item summary:hover { background: #eef2f7; }
+    }
     .gl-item .gl-tag { margin-left: auto; }
     .gl-item summary::after {
       content: '+';
@@ -1239,6 +1261,74 @@
       .bk-match { width: 118px; font-size: 0.72rem; }
 
       footer { font-size: 0.72rem; padding: 0 0.5rem; }
+
+      /* Easter eggs — bigger tap targets on phone (Safari / Chrome) */
+      .por-flag-easter,
+      .nor-flag-easter,
+      .reveal-flag-wrap {
+        padding: 14px;
+        margin: -14px;
+      }
+      .table-flag.por-flag-easter,
+      .table-flag.nor-flag-easter,
+      .table-flag.reveal-flag-easter {
+        width: 28px;
+        height: 20px;
+      }
+      .top-pick .champ-flag.por-flag-easter,
+      .top-pick .champ-flag.nor-flag-easter,
+      .top-pick .champ-flag.reveal-flag-easter {
+        width: 40px;
+        height: 28px;
+      }
+      #reveal-popup .reveal-popup-img {
+        border-radius: 10px;
+        max-height: min(55vh, 420px);
+        object-fit: contain;
+        background: #0f172a;
+      }
+      .reveal-backdrop {
+        background: radial-gradient(
+          ellipse min(92vw, 320px) min(45vh, 280px) at var(--spot-x, 50%) var(--spot-y, 50%),
+          transparent 0%,
+          rgba(15, 23, 42, 0.1) 42%,
+          rgba(15, 23, 42, 0.32) 100%
+        );
+      }
+      .siuuu-word { font-size: clamp(1rem, 4.5vw, 1.35rem) !important; }
+
+      /* Jump nav + glossary — touch-friendly */
+      .jump-nav a {
+        font-size: 0.82rem;
+        padding: 0.55rem 1rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .jump-nav a:active { background: var(--blue-soft); }
+      .how-it-works, .glossary { scroll-margin-top: 0.75rem; }
+      .gl-item summary {
+        flex-wrap: wrap;
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+      }
+      .gl-item .gl-tag {
+        margin-left: 0;
+        margin-top: 0.2rem;
+        font-size: 0.64rem;
+      }
+      .tier-toggle {
+        min-height: 40px;
+        padding: 0.45rem 0.85rem;
+      }
+      .champ-signals { padding: 0 1rem 1rem; gap: 0.35rem; }
+      .champ-chip { font-size: 0.68rem; }
+
+      .container {
+        padding-left: max(0.85rem, env(safe-area-inset-left));
+        padding-right: max(0.85rem, env(safe-area-inset-right));
+        padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
+      }
     }
 
     @media (max-width: 380px) {
@@ -1249,6 +1339,15 @@
 
     @media (prefers-reduced-motion: reduce) {
       .page-watermarks .wm { transform: none !important; }
+      #reveal-popup,
+      #reveal-popup .reveal-spotlight-glow,
+      #reveal-popup .reveal-popup-img,
+      .reveal-backdrop {
+        transition-duration: 0.01ms !important;
+      }
+      .siuuu-confetti,
+      .siuuu-word,
+      .siuuu-emoji { animation-duration: 0.01ms !important; }
     }
   </style>
 </head>
@@ -1556,6 +1655,16 @@
     const BRA_NOR_EASTER_MATCH = 'r16_m91';
     const REVEAL_SCALE = 7;
     const REVEAL_MIN_W = 132;
+    const REVEAL_DUR_MS = 1200;
+    const REVEAL_HOLD_MS = 3000;
+
+    function isMobileViewport() {
+      return window.matchMedia('(max-width: 640px)').matches;
+    }
+
+    function isEasterFlag(el) {
+      return el && el.closest('.por-flag-easter, .nor-flag-easter, .reveal-flag-easter');
+    }
 
     function renderFlag(teamId, className, opts = {}) {
       if (!teamId) return '';
@@ -1565,11 +1674,12 @@
       const fra = teamId === 'FRA' ? ' reveal-flag-easter fra-flag-easter' : '';
       const braNor = matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA' ? ' reveal-flag-easter bra-nor-flag-easter' : '';
       const img = `<img class="${className}${por}${nor}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
+      const revealDur = ' data-reveal-dur="1.2"';
       if (teamId === 'FRA') {
-        return `<span class="reveal-flag-wrap" data-reveal-src="${FRA_EASTER_IMG}" data-reveal-aspect="0.72">${img}</span>`;
+        return `<span class="reveal-flag-wrap"${revealDur} data-reveal-src="${FRA_EASTER_IMG}" data-reveal-aspect="0.72">${img}</span>`;
       }
       if (matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA') {
-        return `<span class="reveal-flag-wrap" data-reveal-src="${BRA_NOR_EASTER_IMG}" data-reveal-aspect="1.9" data-reveal-pos="bra">${img}</span>`;
+        return `<span class="reveal-flag-wrap"${revealDur} data-reveal-src="${BRA_NOR_EASTER_IMG}" data-reveal-aspect="1.9" data-reveal-pos="bra">${img}</span>`;
       }
       return img;
     }
@@ -1674,21 +1784,43 @@
       if (!src) return;
 
       wrap.classList.add('reveal-busy');
+      const durMs = Math.round(parseFloat(wrap.dataset.revealDur || '1.2') * 1000) || REVEAL_DUR_MS;
+      const durCss = `${durMs / 1000}s`;
       const aspect = parseFloat(wrap.dataset.revealAspect || '0.75');
-      const rect = flagEl.getBoundingClientRect();
-      const popW = Math.max(rect.width * REVEAL_SCALE, REVEAL_MIN_W);
-      const popH = popW / aspect;
 
-      let left = rect.left + rect.width / 2 - popW / 2;
-      const margin = 10;
-      left = Math.max(margin, Math.min(left, window.innerWidth - popW - margin));
+      const flagRect = flagEl.getBoundingClientRect();
+      const box = flagEl.closest('.bk-team, .team-cell-wrap, .champ-row') || flagEl;
+      const boxRect = box.getBoundingClientRect();
 
-      const hideTop = rect.bottom;
-      const showTop = rect.bottom - popH;
+      const margin = isMobileViewport() ? 8 : 10;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const maxPopW = vw - margin * 2;
+      const maxPopH = Math.min(vh * 0.55, 420);
+
+      let popW = Math.max(flagRect.width * REVEAL_SCALE, isMobileViewport() ? 120 : REVEAL_MIN_W);
+      popW = Math.min(popW, maxPopW);
+      let popH = popW / aspect;
+      if (popH > maxPopH) {
+        popH = maxPopH;
+        popW = popH * aspect;
+      }
+
+      let left = boxRect.left + boxRect.width / 2 - popW / 2;
+      left = Math.max(margin, Math.min(left, vw - popW - margin));
+
+      const hideTop = flagRect.bottom;
+      let showTop = flagRect.bottom - popH;
+      const minTop = margin + (window.visualViewport?.offsetTop || 0);
+      const maxTop = vh - popH - margin;
+      if (showTop < minTop) showTop = Math.max(minTop, (vh - popH) / 2);
+      showTop = Math.min(showTop, maxTop);
+
       const spotX = left + popW / 2;
       const spotY = showTop + popH / 2;
 
       const popup = ensureRevealPopup();
+      popup.style.setProperty('--reveal-dur', durCss);
       const img = popup.querySelector('.reveal-popup-img');
       img.src = src;
       img.classList.toggle('bra-nor-secret', wrap.dataset.revealPos === 'bra');
@@ -1706,6 +1838,7 @@
         backdrop.className = 'reveal-backdrop';
         document.body.appendChild(backdrop);
       }
+      backdrop.style.setProperty('--reveal-dur', durCss);
       backdrop.style.setProperty('--spot-x', `${spotX}px`);
       backdrop.style.setProperty('--spot-y', `${spotY}px`);
 
@@ -1721,32 +1854,59 @@
         popup.classList.remove('reveal-show');
         popup.style.top = `${hideTop}px`;
         backdrop.classList.remove('on');
-        setTimeout(() => wrap.classList.remove('reveal-busy'), 1250);
-      }, 4200);
+        setTimeout(() => wrap.classList.remove('reveal-busy'), durMs + 50);
+      }, durMs + REVEAL_HOLD_MS);
     }
 
     function wireFlagEasters() {
-      document.addEventListener('click', (e) => {
+      let lastEasterAt = 0;
+      let touchHandled = false;
+
+      function runEaster(e, flagEl, fn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const now = Date.now();
+        if (now - lastEasterAt < 350) return;
+        lastEasterAt = now;
+        fn(flagEl);
+      }
+
+      function handleFlagEaster(e) {
         const porFlag = e.target.closest('.por-flag-easter');
         if (porFlag) {
-          e.stopPropagation();
-          e.preventDefault();
-          triggerPorSiuuu(porFlag);
-          return;
+          runEaster(e, porFlag, triggerPorSiuuu);
+          return true;
         }
         const norFlag = e.target.closest('.nor-flag-easter');
         if (norFlag) {
-          e.stopPropagation();
-          e.preventDefault();
-          triggerNorRow(norFlag);
-          return;
+          runEaster(e, norFlag, triggerNorRow);
+          return true;
         }
         const revealFlag = e.target.closest('.reveal-flag-easter');
         if (revealFlag) {
-          e.stopPropagation();
-          e.preventDefault();
-          triggerFlagReveal(revealFlag);
+          runEaster(e, revealFlag, triggerFlagReveal);
+          return true;
         }
+        return false;
+      }
+
+      document.addEventListener('touchend', (e) => {
+        if (!isEasterFlag(e.target)) return;
+        if (handleFlagEaster(e)) {
+          touchHandled = true;
+          setTimeout(() => { touchHandled = false; }, 450);
+        }
+      }, { capture: true, passive: false });
+
+      document.addEventListener('click', (e) => {
+        if (touchHandled) {
+          if (isEasterFlag(e.target)) {
+            e.stopPropagation();
+            e.preventDefault();
+          }
+          return;
+        }
+        handleFlagEaster(e);
       }, true);
     }
     function fmtDate(iso) {
@@ -2086,7 +2246,10 @@
       }
 
       table.querySelectorAll('tr.team-row').forEach(row => {
-        row.addEventListener('click', () => toggleRow(row));
+        row.addEventListener('click', (e) => {
+          if (isEasterFlag(e.target)) return;
+          toggleRow(row);
+        });
         row.addEventListener('keydown', e => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
