@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 91
+    "count": 92
   },
   "fixtures": [
     {
@@ -1020,6 +1020,18 @@
       "penalties_home": null,
       "penalties_away": null,
       "winner": "NOR",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_16"
+    },
+    {
+      "team_home": "MEX",
+      "team_away": "ENG",
+      "score_home": 2,
+      "score_away": 3,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ENG",
       "status": "FT",
       "stage": "knockout",
       "round_key": "round_of_16"
