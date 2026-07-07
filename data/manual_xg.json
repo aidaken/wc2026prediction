@@ -1,6 +1,6 @@
 {
   "_comment": "Per-team tournament xG. Group totals from FotMob xG table + per-match R32/R16 from FotMob match pages.",
-  "_source": "fotmob.com — updated 2026-07-07 (R16: ARG–EGY 3–2)",
+  "_source": "fotmob.com — updated 2026-07-07 (R16: SUI–COL 0–0, pens 4–3)",
   "xg": {
     "FRA": { "xg": 10.26, "xga": 4.07, "mp": 5 },
     "BRA": { "xg": 12.1, "xga": 3.89, "mp": 5 },
@@ -8,7 +8,7 @@
     "ESP": { "xg": 9.81, "xga": 1.43, "mp": 5 },
     "ENG": { "xg": 9.83, "xga": 3.97, "mp": 5 },
     "POR": { "xg": 6.83, "xga": 5.96, "mp": 5 },
-    "SUI": { "xg": 8.62, "xga": 3.24, "mp": 4 },
+    "SUI": { "xg": 8.97, "xga": 4.27, "mp": 5 },
     "MEX": { "xg": 6.55, "xga": 3.83, "mp": 5 },
     "BEL": { "xg": 10.8, "xga": 5.73, "mp": 5 },
     "MAR": { "xg": 9.91, "xga": 3.89, "mp": 5 },
@@ -17,7 +17,7 @@
     "CAN": { "xg": 8.95, "xga": 3.35, "mp": 5 },
     "EGY": { "xg": 6.18, "xga": 8.44, "mp": 5 },
     "PAR": { "xg": 1.58, "xga": 6.35, "mp": 5 },
-    "COL": { "xg": 5.42, "xga": 3.28, "mp": 4 },
+    "COL": { "xg": 6.45, "xga": 3.63, "mp": 5 },
     "GHA": { "xg": 2.1, "xga": 2.5, "mp": 3 },
 
     "KOR": { "xg": 4.1, "xga": 2.5, "mp": 3 },

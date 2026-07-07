@@ -9,6 +9,11 @@
       "round": "Round of 16",
       "file": "round_16.json",
       "generated_at": "2026-07-07T18:11:18Z"
+    },
+    {
+      "round": "Quarter-finals",
+      "file": "quarter_finals.json",
+      "generated_at": "2026-07-07T22:55:33Z"
     }
   ]
 }

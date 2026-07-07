@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "current_round": "Round of 16",
+    "current_round": "Quarter-finals",
     "wc_year": 2026,
-    "last_updated": "2026-07-07T18:11:18Z"
+    "last_updated": "2026-07-07T22:55:33Z"
   },
   "rounds": {
     "round_of_32": {
@@ -313,8 +313,13 @@
           "match_id": "r16_m96",
           "team_home": "SUI",
           "team_away": "COL",
-          "winner": null,
-          "status": "NS"
+          "winner": "SUI",
+          "status": "PEN",
+          "score_home": 0,
+          "score_away": 0,
+          "penalties_home": 4,
+          "penalties_away": 3,
+          "stage": "knockout"
         }
       ]
     },
@@ -345,7 +350,7 @@
         {
           "match_id": "qf_m04",
           "team_home": "ARG",
-          "team_away": null,
+          "team_away": "SUI",
           "winner": null,
           "status": "NS"
         }
