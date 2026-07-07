@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-06T21:13:35Z",
+    "last_updated": "2026-07-07T02:05:02Z",
     "round": "Round of 16",
-    "teams_remaining": 11,
+    "teams_remaining": 10,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -104,7 +104,7 @@
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3394
+      "team_strength": 0.3398
     },
     "BRA": {
       "id": "BRA",
@@ -142,7 +142,7 @@
       "group": "C",
       "group_position": 2,
       "elo_change_this_round": 18.2,
-      "team_strength": 0.4564
+      "team_strength": 0.4568
     },
     "SCO": {
       "id": "SCO",
@@ -161,12 +161,12 @@
       "name": "USA",
       "api_football_id": 2384,
       "transfermarkt_id": "usa",
-      "elo": 1828.1,
+      "elo": 1804.4,
       "squad_value_eur": 385650000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "D",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -23.7,
       "team_strength": 0.2352
     },
     "AUS": {
@@ -308,13 +308,13 @@
       "name": "Belgium",
       "api_football_id": 1,
       "transfermarkt_id": "belgien",
-      "elo": 1902.6,
+      "elo": 1926.3,
       "squad_value_eur": 547500000,
       "eliminated": false,
       "group": "G",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.364
+      "elo_change_this_round": 23.7,
+      "team_strength": 0.4018
     },
     "EGY": {
       "id": "EGY",
@@ -327,7 +327,7 @@
       "group": "G",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1395
+      "team_strength": 0.1414
     },
     "IRN": {
       "id": "IRN",
@@ -389,7 +389,7 @@
       "group": "H",
       "group_position": 1,
       "elo_change_this_round": 21.4,
-      "team_strength": 0.7346
+      "team_strength": 0.7359
     },
     "URU": {
       "id": "URU",
@@ -414,7 +414,7 @@
       "group": "I",
       "group_position": 1,
       "elo_change_this_round": 10.6,
-      "team_strength": 0.7633
+      "team_strength": 0.7665
     },
     "NOR": {
       "id": "NOR",
@@ -427,7 +427,7 @@
       "group": "I",
       "group_position": 2,
       "elo_change_this_round": 46.2,
-      "team_strength": 0.3907
+      "team_strength": 0.3911
     },
     "SEN": {
       "id": "SEN",
@@ -478,7 +478,7 @@
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.6382
+      "team_strength": 0.64
     },
     "AUT": {
       "id": "AUT",
@@ -516,7 +516,7 @@
       "group": "K",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3265
+      "team_strength": 0.327
     },
     "COD": {
       "id": "COD",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 22.5,
-      "team_strength": 0.6229
+      "team_strength": 0.6237
     },
     "CRO": {
       "id": "CRO",
