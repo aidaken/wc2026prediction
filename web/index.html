@@ -406,6 +406,9 @@
     #reveal-popup .reveal-popup-img.bra-nor-secret {
       object-position: 72% center;
     }
+    #reveal-popup .reveal-popup-img.egy-arg-secret {
+      object-position: 38% center;
+    }
 
     /* iMessage-style dim behind spotlight reveal */
     .reveal-backdrop {
@@ -1652,7 +1655,9 @@
 
     const FRA_EASTER_IMG = 'assets/fra-easter.png';
     const BRA_NOR_EASTER_IMG = 'assets/bra-nor-easter.png';
+    const EGY_EASTER_IMG = 'assets/egy-easter.png';
     const BRA_NOR_EASTER_MATCH = 'r16_m91';
+    const ARG_EGY_EASTER_MATCH = 'r16_m95';
     const REVEAL_SCALE = 7;
     const REVEAL_MIN_W = 132;
     const REVEAL_DUR_MS = 1200;
@@ -1673,13 +1678,17 @@
       const nor = teamId === 'NOR' ? ' nor-flag-easter' : '';
       const fra = teamId === 'FRA' ? ' reveal-flag-easter fra-flag-easter' : '';
       const braNor = matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA' ? ' reveal-flag-easter bra-nor-flag-easter' : '';
-      const img = `<img class="${className}${por}${nor}${fra}${braNor}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
+      const egyArg = matchId === ARG_EGY_EASTER_MATCH && teamId === 'EGY' ? ' reveal-flag-easter egy-flag-easter' : '';
+      const img = `<img class="${className}${por}${nor}${fra}${braNor}${egyArg}" src="${flagUrl(teamId)}" alt="" loading="lazy" data-team-id="${teamId}">`;
       const revealDur = ' data-reveal-dur="1.2"';
       if (teamId === 'FRA') {
         return `<span class="reveal-flag-wrap"${revealDur} data-reveal-src="${FRA_EASTER_IMG}" data-reveal-aspect="0.72">${img}</span>`;
       }
       if (matchId === BRA_NOR_EASTER_MATCH && teamId === 'BRA') {
         return `<span class="reveal-flag-wrap"${revealDur} data-reveal-src="${BRA_NOR_EASTER_IMG}" data-reveal-aspect="1.9" data-reveal-pos="bra">${img}</span>`;
+      }
+      if (matchId === ARG_EGY_EASTER_MATCH && teamId === 'EGY') {
+        return `<span class="reveal-flag-wrap"${revealDur} data-reveal-src="${EGY_EASTER_IMG}" data-reveal-aspect="1.59" data-reveal-pos="egy">${img}</span>`;
       }
       return img;
     }
@@ -1824,6 +1833,7 @@
       const img = popup.querySelector('.reveal-popup-img');
       img.src = src;
       img.classList.toggle('bra-nor-secret', wrap.dataset.revealPos === 'bra');
+      img.classList.toggle('egy-arg-secret', wrap.dataset.revealPos === 'egy');
 
       popup.style.width = `${popW}px`;
       popup.style.height = `${popH}px`;

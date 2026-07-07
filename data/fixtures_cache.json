@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 94
+    "count": 95
   },
   "fixtures": [
     {
@@ -1056,6 +1056,18 @@
       "penalties_home": null,
       "penalties_away": null,
       "winner": "BEL",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "round_of_16"
+    },
+    {
+      "team_home": "ARG",
+      "team_away": "EGY",
+      "score_home": 3,
+      "score_away": 2,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ARG",
       "status": "FT",
       "stage": "knockout",
       "round_key": "round_of_16"

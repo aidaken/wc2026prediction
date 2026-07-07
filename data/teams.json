@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-07T02:05:02Z",
+    "last_updated": "2026-07-07T18:11:18Z",
     "round": "Round of 16",
-    "teams_remaining": 10,
+    "teams_remaining": 9,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -104,7 +104,7 @@
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3398
+      "team_strength": 0.2057
     },
     "BRA": {
       "id": "BRA",
@@ -142,7 +142,7 @@
       "group": "C",
       "group_position": 2,
       "elo_change_this_round": 18.2,
-      "team_strength": 0.4568
+      "team_strength": 0.3605
     },
     "SCO": {
       "id": "SCO",
@@ -314,19 +314,19 @@
       "group": "G",
       "group_position": 1,
       "elo_change_this_round": 23.7,
-      "team_strength": 0.4018
+      "team_strength": 0.2917
     },
     "EGY": {
       "id": "EGY",
       "name": "Egypt",
       "api_football_id": 32,
       "transfermarkt_id": "aegypten",
-      "elo": 1791.8,
+      "elo": 1780.8,
       "squad_value_eur": 116480000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "G",
       "group_position": 2,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -11.0,
       "team_strength": 0.1414
     },
     "IRN": {
@@ -389,7 +389,7 @@
       "group": "H",
       "group_position": 1,
       "elo_change_this_round": 21.4,
-      "team_strength": 0.7359
+      "team_strength": 0.719
     },
     "URU": {
       "id": "URU",
@@ -414,7 +414,7 @@
       "group": "I",
       "group_position": 1,
       "elo_change_this_round": 10.6,
-      "team_strength": 0.7665
+      "team_strength": 0.7672
     },
     "NOR": {
       "id": "NOR",
@@ -427,7 +427,7 @@
       "group": "I",
       "group_position": 2,
       "elo_change_this_round": 46.2,
-      "team_strength": 0.3911
+      "team_strength": 0.2848
     },
     "SEN": {
       "id": "SEN",
@@ -472,13 +472,13 @@
       "name": "Argentina",
       "api_football_id": 26,
       "transfermarkt_id": "argentinien",
-      "elo": 2050.4,
+      "elo": 2061.4,
       "squad_value_eur": 807500000,
       "eliminated": false,
       "group": "J",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.64
+      "elo_change_this_round": 11.0,
+      "team_strength": 0.631
     },
     "AUT": {
       "id": "AUT",
@@ -516,7 +516,7 @@
       "group": "K",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.327
+      "team_strength": 0.199
     },
     "COD": {
       "id": "COD",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 22.5,
-      "team_strength": 0.6237
+      "team_strength": 0.5704
     },
     "CRO": {
       "id": "CRO",
