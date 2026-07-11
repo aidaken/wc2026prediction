@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-07T22:55:33Z",
+    "last_updated": "2026-07-11T14:03:17Z",
     "round": "Quarter-finals",
-    "teams_remaining": 8,
+    "teams_remaining": 6,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -104,7 +104,7 @@
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.1967
+      "team_strength": 0.1979
     },
     "BRA": {
       "id": "BRA",
@@ -136,12 +136,12 @@
       "name": "Morocco",
       "api_football_id": 31,
       "transfermarkt_id": "marokko",
-      "elo": 1946.6,
+      "elo": 1927.5,
       "squad_value_eur": 447700000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "C",
       "group_position": 2,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -19.1,
       "team_strength": 0.3119
     },
     "SCO": {
@@ -308,12 +308,12 @@
       "name": "Belgium",
       "api_football_id": 1,
       "transfermarkt_id": "belgien",
-      "elo": 1926.3,
+      "elo": 1907.2,
       "squad_value_eur": 547500000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "G",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -19.1,
       "team_strength": 0.2363
     },
     "EGY": {
@@ -383,13 +383,13 @@
       "name": "Spain",
       "api_football_id": 9,
       "transfermarkt_id": "spanien",
-      "elo": 2058.9,
+      "elo": 2078.0,
       "squad_value_eur": 1220000000,
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.7124
+      "elo_change_this_round": 19.1,
+      "team_strength": 0.7209
     },
     "URU": {
       "id": "URU",
@@ -408,13 +408,13 @@
       "name": "France",
       "api_football_id": 2,
       "transfermarkt_id": "frankreich",
-      "elo": 2079.4,
+      "elo": 2098.5,
       "squad_value_eur": 1520000000,
       "eliminated": false,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.7704
+      "elo_change_this_round": 19.1,
+      "team_strength": 0.8001
     },
     "NOR": {
       "id": "NOR",
@@ -427,7 +427,7 @@
       "group": "I",
       "group_position": 2,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.2295
+      "team_strength": 0.2316
     },
     "SEN": {
       "id": "SEN",
@@ -478,7 +478,7 @@
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.6244
+      "team_strength": 0.5951
     },
     "AUT": {
       "id": "AUT",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.5416
+      "team_strength": 0.5257
     },
     "CRO": {
       "id": "CRO",

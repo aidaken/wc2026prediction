@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 96
+    "count": 98
   },
   "fixtures": [
     {
@@ -1083,6 +1083,30 @@
       "status": "PEN",
       "stage": "knockout",
       "round_key": "round_of_16"
+    },
+    {
+      "team_home": "FRA",
+      "team_away": "MAR",
+      "score_home": 2,
+      "score_away": 0,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "FRA",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "quarter_finals"
+    },
+    {
+      "team_home": "ESP",
+      "team_away": "BEL",
+      "score_home": 2,
+      "score_away": 1,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ESP",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "quarter_finals"
     }
   ]
 }

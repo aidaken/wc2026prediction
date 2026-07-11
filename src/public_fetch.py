@@ -22,6 +22,7 @@ GROUP_LETTERS = list("ABCDEFGHIJKL")
 KNOCKOUT_SECTIONS = {
     "round_of_32": ("2026 FIFA World Cup knockout stage", "5"),
     "round_of_16": ("2026 FIFA World Cup knockout stage", "6"),
+    "quarter_finals": ("2026 FIFA World Cup knockout stage", "15"),
 }
 
 SCORE_RE = re.compile(r"(\d+)\s*[–-]\s*(\d+)")

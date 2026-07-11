@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Quarter-finals",
     "wc_year": 2026,
-    "last_updated": "2026-07-07T22:55:33Z"
+    "last_updated": "2026-07-11T14:03:17Z"
   },
   "rounds": {
     "round_of_32": {
@@ -330,15 +330,25 @@
           "match_id": "qf_m01",
           "team_home": "FRA",
           "team_away": "MAR",
-          "winner": null,
-          "status": "NS"
+          "winner": "FRA",
+          "status": "FT",
+          "score_home": 2,
+          "score_away": 0,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "qf_m02",
           "team_home": "ESP",
           "team_away": "BEL",
-          "winner": null,
-          "status": "NS"
+          "winner": "ESP",
+          "status": "FT",
+          "score_home": 2,
+          "score_away": 1,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "qf_m03",
@@ -361,8 +371,8 @@
       "matches": [
         {
           "match_id": "sf_m01",
-          "team_home": null,
-          "team_away": null,
+          "team_home": "FRA",
+          "team_away": "ESP",
           "winner": null,
           "status": "NS"
         },
