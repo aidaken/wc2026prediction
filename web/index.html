@@ -977,15 +977,19 @@
       text-align: center;
       margin-top: 0.15rem;
     }
-    .bk-final-wrap {
-      text-align: center;
-    }
-    .bk-final-wrap .bk-match { width: 140px; margin: 0 auto; }
+    .bk-final-wrap,
     .bk-third-wrap {
       text-align: center;
     }
+    .bk-final-wrap .bk-match,
     .bk-third-wrap .bk-match { width: 140px; margin: 0 auto; }
     .bk-third-wrap .bk-venue { background: #eef2ff; }
+    .bk-decider-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 1.25rem;
+    }
 
     @media (max-width: 1100px) {
       .bracket-panel { padding: 1.25rem 0.5rem; }
@@ -2438,13 +2442,15 @@
           <div class="bracket-center">
             <div class="bk-sf-row">${sf}</div>
             <div class="bk-label-round">Semi-finals</div>
-            <div class="bk-third-wrap">
-              ${thirdMatch}
-              <div class="bk-label-round">3rd place</div>
-            </div>
-            <div class="bk-final-wrap">
-              ${finalMatch}
-              <div class="bk-label-round">Final</div>
+            <div class="bk-decider-row">
+              <div class="bk-third-wrap">
+                ${thirdMatch}
+                <div class="bk-label-round">3rd place</div>
+              </div>
+              <div class="bk-final-wrap">
+                ${finalMatch}
+                <div class="bk-label-round">Final</div>
+              </div>
             </div>
           </div>
           <div class="bracket-half right">${right}</div>
