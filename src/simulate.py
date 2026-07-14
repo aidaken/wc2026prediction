@@ -8,7 +8,7 @@ from copy import deepcopy
 from typing import Any
 
 import config
-from src.bracket_topology import ROUND_ORDER, propagate_winner
+from src.bracket_topology import ROUND_ORDER, propagate_outcome
 from src.utils import win_probability
 
 
@@ -80,7 +80,9 @@ def _play_bracket_once(
                     match_win_counts[match_id][winner] += 1
 
             if match_id:
-                propagate_winner(working, match_id, winner)
+                propagate_outcome(
+                    working, match_id, winner=winner, home=home, away=away,
+                )
 
             if round_key == "final":
                 champion = winner

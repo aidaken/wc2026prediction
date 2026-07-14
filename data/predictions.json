@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-14T21:01:47Z",
+    "generated_at": "2026-07-14T21:16:34Z",
     "round": "Semi-finals",
     "simulations": 100000,
     "model_version": "1.2.0",
@@ -28,7 +28,7 @@
     {
       "team_id": "ESP",
       "team_name": "Spain",
-      "win_probability": 0.7063,
+      "win_probability": 0.708,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
@@ -59,8 +59,8 @@
     {
       "team_id": "ARG",
       "team_name": "Argentina",
-      "win_probability": 0.1933,
-      "reach_final_probability": 0.5956,
+      "win_probability": 0.1908,
+      "reach_final_probability": 0.5951,
       "reach_semis_probability": 1.0,
       "signals": {
         "elo_normalized": 0.6695842450765838,
@@ -90,8 +90,8 @@
     {
       "team_id": "ENG",
       "team_name": "England",
-      "win_probability": 0.1004,
-      "reach_final_probability": 0.4044,
+      "win_probability": 0.1012,
+      "reach_final_probability": 0.4049,
       "reach_semis_probability": 1.0,
       "signals": {
         "elo_normalized": 0.0,
@@ -945,8 +945,8 @@
         "match_id": "sf_m02",
         "team_home": "ENG",
         "team_away": "ARG",
-        "advance_probability_home": 0.4044,
-        "advance_probability_away": 0.5956,
+        "advance_probability_home": 0.4049,
+        "advance_probability_away": 0.5951,
         "winner": null,
         "status": "NS",
         "score_home": null,

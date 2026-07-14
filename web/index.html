@@ -981,6 +981,11 @@
       text-align: center;
     }
     .bk-final-wrap .bk-match { width: 140px; margin: 0 auto; }
+    .bk-third-wrap {
+      text-align: center;
+    }
+    .bk-third-wrap .bk-match { width: 140px; margin: 0 auto; }
+    .bk-third-wrap .bk-venue { background: #eef2ff; }
 
     @media (max-width: 1100px) {
       .bracket-panel { padding: 1.25rem 0.5rem; }
@@ -1639,6 +1644,7 @@
           { id: 'sf_m01', venue: 'Dallas', date: 'July 14' },
           { id: 'sf_m02', venue: 'Atlanta', date: 'July 15' },
         ],
+        third: { id: 'third_m01', venue: 'Miami', date: 'July 18' },
         final: { id: 'final_m01', venue: 'New York', date: 'July 19' },
       },
     };
@@ -2407,6 +2413,12 @@
       const sf = BRACKET_LAYOUT.center.sf.map(s =>
         renderSlotMatch(s.id, { ...s, date: s.date + '<br>Semi-final' }, false)
       ).join('');
+      const third = BRACKET_LAYOUT.center.third;
+      const thirdMatch = renderSlotMatch(
+        third.id,
+        { venue: third.venue, date: third.date + '<br>3rd place' },
+        false,
+      );
       const finalMatch = renderSlotMatch(
         BRACKET_LAYOUT.center.final.id,
         { venue: BRACKET_LAYOUT.center.final.venue, date: BRACKET_LAYOUT.center.final.date + '<br>Final' },
@@ -2426,6 +2438,10 @@
           <div class="bracket-center">
             <div class="bk-sf-row">${sf}</div>
             <div class="bk-label-round">Semi-finals</div>
+            <div class="bk-third-wrap">
+              ${thirdMatch}
+              <div class="bk-label-round">3rd place</div>
+            </div>
             <div class="bk-final-wrap">
               ${finalMatch}
               <div class="bk-label-round">Final</div>

@@ -24,6 +24,7 @@ KNOCKOUT_SECTIONS = {
     "round_of_16": ("2026 FIFA World Cup knockout stage", "6"),
     "quarter_finals": ("2026 FIFA World Cup knockout stage", "15"),
     "semi_finals": ("2026 FIFA World Cup knockout stage", "20"),
+    "third_place": ("2026 FIFA World Cup knockout stage", "23"),
 }
 
 SCORE_RE = re.compile(r"(\d+)\s*[–-]\s*(\d+)")

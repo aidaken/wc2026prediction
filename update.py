@@ -18,7 +18,7 @@ from typing import Any
 
 import config
 from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures
-from src.bracket_topology import ROUND_ORDER, propagate_winner
+from src.bracket_topology import ROUND_ORDER, propagate_outcome
 from src.elo import normalize_elo, recompute_from_seed
 from src.fetch import (
     DataValidationError,
@@ -64,14 +64,15 @@ def _collect_fixtures_from_bracket(bracket: dict[str, Any]) -> list[dict[str, An
 
 
 def _apply_bracket_state(teams: dict[str, dict[str, Any]], bracket: dict[str, Any]) -> list[str]:
-    """Propagate known winners into next-round slots and mark losers eliminated."""
+    """Propagate known winners/losers into next-round slots and mark losers eliminated."""
     rounds = bracket.get("rounds", {})
     for round_key in ROUND_ORDER:
         for match in rounds.get(round_key, {}).get("matches", []):
             winner = match.get("winner")
             match_id = match.get("match_id")
+            home, away = match.get("team_home"), match.get("team_away")
             if winner and match_id:
-                propagate_winner(rounds, match_id, winner)
+                propagate_outcome(rounds, match_id, winner=winner, home=home, away=away)
 
     completed = [
         m

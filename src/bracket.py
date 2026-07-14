@@ -12,6 +12,7 @@ ROUND_KEY_TO_NAME = {
     "quarter_finals": "Quarter-finals",
     "semi_finals": "Semi-finals",
     "final": "Final",
+    "third_place": "Third place",
 }
 
 ROUND_NAME_TO_KEY = {v: k for k, v in ROUND_KEY_TO_NAME.items()}

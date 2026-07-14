@@ -159,5 +159,11 @@ DEMO_BRACKET: dict[str, Any] = {
                 {"match_id": "final_m01", "team_home": None, "team_away": None, "winner": None, "status": "NS"},
             ],
         },
+        "third_place": {
+            "status": "pending",
+            "matches": [
+                {"match_id": "third_m01", "team_home": None, "team_away": None, "winner": None, "status": "NS"},
+            ],
+        },
     },
 }

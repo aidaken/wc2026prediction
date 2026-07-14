@@ -38,9 +38,15 @@ MATCH_FEEDERS: dict[str, Feeder] = {
     "qf_m02": ("sf_m01", "away"),
     "qf_m03": ("sf_m02", "home"),
     "qf_m04": ("sf_m02", "away"),
-    # sf -> final
+    # sf -> final (winners)
     "sf_m01": ("final_m01", "home"),
     "sf_m02": ("final_m01", "away"),
+}
+
+# SF losers play for third place (Match 103, Miami)
+MATCH_LOSER_FEEDERS: dict[str, Feeder] = {
+    "sf_m01": ("third_m01", "home"),
+    "sf_m02": ("third_m01", "away"),
 }
 
 ROUND_ORDER = [
@@ -49,6 +55,7 @@ ROUND_ORDER = [
     "quarter_finals",
     "semi_finals",
     "final",
+    "third_place",
 ]
 
 
@@ -60,13 +67,40 @@ def find_match(working: dict[str, Any], match_id: str) -> dict[str, Any] | None:
     return None
 
 
+def _slot_team(working: dict[str, Any], target_id: str, slot: str, team_id: str) -> None:
+    target = find_match(working, target_id)
+    if target is None:
+        return
+    slot_key = "team_home" if slot == "home" else "team_away"
+    target[slot_key] = team_id
+
+
 def propagate_winner(working: dict[str, Any], source_match_id: str, winner: str) -> None:
     feeder = MATCH_FEEDERS.get(source_match_id)
     if not feeder:
         return
     target_id, slot = feeder
-    target = find_match(working, target_id)
-    if target is None:
+    _slot_team(working, target_id, slot, winner)
+
+
+def propagate_loser(working: dict[str, Any], source_match_id: str, loser: str) -> None:
+    feeder = MATCH_LOSER_FEEDERS.get(source_match_id)
+    if not feeder:
         return
-    slot_key = "team_home" if slot == "home" else "team_away"
-    target[slot_key] = winner
+    target_id, slot = feeder
+    _slot_team(working, target_id, slot, loser)
+
+
+def propagate_outcome(
+    working: dict[str, Any],
+    source_match_id: str,
+    *,
+    winner: str,
+    home: str | None,
+    away: str | None,
+) -> None:
+    """Push winner forward and SF loser into the third-place match."""
+    propagate_winner(working, source_match_id, winner)
+    if home and away and winner in (home, away):
+        loser = away if winner == home else home
+        propagate_loser(working, source_match_id, loser)
