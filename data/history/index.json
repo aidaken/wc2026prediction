@@ -14,6 +14,11 @@
       "round": "Quarter-finals",
       "file": "quarter_finals.json",
       "generated_at": "2026-07-11T14:03:17Z"
+    },
+    {
+      "round": "Semi-finals",
+      "file": "semi_finals.json",
+      "generated_at": "2026-07-14T19:03:09Z"
     }
   ]
 }

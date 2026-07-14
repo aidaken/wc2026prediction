@@ -1636,10 +1636,10 @@
       ],
       center: {
         sf: [
-          { id: 'sf_m01', venue: 'East', date: 'July 14' },
-          { id: 'sf_m02', venue: 'West', date: 'July 15' },
+          { id: 'sf_m01', venue: 'Dallas', date: 'July 14' },
+          { id: 'sf_m02', venue: 'Atlanta', date: 'July 15' },
         ],
-        final: { id: 'final_m01', venue: 'Final', date: 'July 19' },
+        final: { id: 'final_m01', venue: 'New York', date: 'July 19' },
       },
     };
 
@@ -2158,7 +2158,7 @@
             <div class="detail-stats">
               <div class="detail-stat"><span class="ds-label">Win WC</span><span class="ds-val">${pct(p.win_probability)}</span></div>
               <div class="detail-stat"><span class="ds-label">Reach final</span><span class="ds-val">${pct(p.reach_final_probability)}</span></div>
-              <div class="detail-stat"><span class="ds-label">Reach semis</span><span class="ds-val">${pct(p.reach_semis_probability)}</span></div>
+              ${ctx?.showSemis !== false ? `<div class="detail-stat"><span class="ds-label">Reach semis</span><span class="ds-val">${pct(p.reach_semis_probability)}</span></div>` : ''}
               <div class="detail-stat"><span class="ds-label">Simulations</span><span class="ds-val">${(nSims || 10000).toLocaleString()}</span></div>
             </div>
           </div>
@@ -2188,17 +2188,21 @@
           ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
         </td>
         <td class="prob num" data-label="Final">${pct(p.reach_final_probability)}</td>
-        <td class="prob num" data-label="Semis">${pct(p.reach_semis_probability)}</td>
+        ${ctx?.showSemis !== false ? `<td class="prob num" data-label="Semis">${pct(p.reach_semis_probability)}</td>` : ''}
         ${renderStatCells(p)}
       </tr>`;
+      const colSpan = ctx?.colSpan || 9;
       const detailRow = `<tr class="team-detail-row" data-detail-for="${p.team_id}" hidden>
-        <td colspan="9">${renderTeamDetailPanel(p, ctx)}</td>
+        <td colspan="${colSpan}">${renderTeamDetailPanel(p, ctx)}</td>
       </tr>`;
       return mainRow + detailRow;
     }
 
     function renderProbTable(preds, ctx) {
       const indexed = preds.map((p, i) => ({ ...p, displayIndex: i + 1 }));
+      const showSemis = ctx?.showSemis !== false;
+      const colSpan = showSemis ? 9 : 8;
+      const rowCtx = { ...ctx, showSemis, colSpan };
       const toggles = TIERS.map(t =>
         t.open
           ? `<span class="tier-toggle tier-static">Top 10</span>`
@@ -2212,9 +2216,9 @@
         const collapsed = tier.open ? '' : ' collapsed';
         body += `<tbody class="tier-section${collapsed}" data-tier="${tier.id}">`;
         if (!tier.open) {
-          body += `<tr class="tier-divider"><td colspan="9">Ranks ${tier.label}</td></tr>`;
+          body += `<tr class="tier-divider"><td colspan="${colSpan}">Ranks ${tier.label}</td></tr>`;
         }
-        body += teams.map(p => renderTeamRow(p, p.displayIndex, ctx)).join('');
+        body += teams.map(p => renderTeamRow(p, p.displayIndex, rowCtx)).join('');
         body += '</tbody>';
       }
 
@@ -2229,7 +2233,7 @@
               <th class="team-col">Team</th>
               <th class="num">Win</th>
               <th class="num">Final</th>
-              <th class="num">Semis</th>
+              ${showSemis ? '<th class="num">Semis</th>' : ''}
               <th class="num">Strength</th>
               <th class="num">Form</th>
               <th class="num">Elo</th>
@@ -2401,11 +2405,11 @@
       const right = BRACKET_LAYOUT.right.map(q => renderQuarter(q, true)).join('');
 
       const sf = BRACKET_LAYOUT.center.sf.map(s =>
-        renderSlotMatch(s.id, s, false)
+        renderSlotMatch(s.id, { ...s, date: s.date + '<br>Semi-final' }, false)
       ).join('');
       const finalMatch = renderSlotMatch(
         BRACKET_LAYOUT.center.final.id,
-        { venue: 'Final', date: BRACKET_LAYOUT.center.final.date },
+        { venue: BRACKET_LAYOUT.center.final.venue, date: BRACKET_LAYOUT.center.final.date + '<br>Final' },
         false,
       );
 
@@ -2483,6 +2487,7 @@
         const preds = data.predictions || [];
         const active = preds.filter(p => !p.eliminated);
         const top = active[0];
+        const round = data._meta?.round || '';
         const detailCtx = {
           teamsById,
           bracket,
@@ -2490,6 +2495,7 @@
           weights: data._meta?.weights || MODEL_WEIGHTS,
           strengthMeta: data._meta?.strength_meta || {},
           dataSources: data._meta?.data_sources || {},
+          showSemis: !/semi|final/i.test(round),
         };
 
         renderMeta(data._meta || {});

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 98
+    "count": 100
   },
   "fixtures": [
     {
@@ -1105,6 +1105,30 @@
       "penalties_away": null,
       "winner": "ESP",
       "status": "FT",
+      "stage": "knockout",
+      "round_key": "quarter_finals"
+    },
+    {
+      "team_home": "NOR",
+      "team_away": "ENG",
+      "score_home": 1,
+      "score_away": 2,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ENG",
+      "status": "AET",
+      "stage": "knockout",
+      "round_key": "quarter_finals"
+    },
+    {
+      "team_home": "ARG",
+      "team_away": "SUI",
+      "score_home": 3,
+      "score_away": 1,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ARG",
+      "status": "AET",
       "stage": "knockout",
       "round_key": "quarter_finals"
     }

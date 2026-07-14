@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-11T14:03:17Z",
-    "round": "Quarter-finals",
-    "teams_remaining": 6,
+    "last_updated": "2026-07-14T19:03:09Z",
+    "round": "Semi-finals",
+    "teams_remaining": 4,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -98,9 +98,9 @@
       "name": "Switzerland",
       "api_football_id": 15,
       "transfermarkt_id": "schweiz",
-      "elo": 1917.2,
+      "elo": 1899.0,
       "squad_value_eur": 332500000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "B",
       "group_position": 1,
       "elo_change_this_round": 0.0,
@@ -141,7 +141,7 @@
       "eliminated": true,
       "group": "C",
       "group_position": 2,
-      "elo_change_this_round": -19.1,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.3119
     },
     "SCO": {
@@ -313,7 +313,7 @@
       "eliminated": true,
       "group": "G",
       "group_position": 1,
-      "elo_change_this_round": -19.1,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.2363
     },
     "EGY": {
@@ -388,8 +388,8 @@
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 19.1,
-      "team_strength": 0.7209
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.6472
     },
     "URU": {
       "id": "URU",
@@ -413,17 +413,17 @@
       "eliminated": false,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": 19.1,
-      "team_strength": 0.8001
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.8041
     },
     "NOR": {
       "id": "NOR",
       "name": "Norway",
       "api_football_id": 1090,
       "transfermarkt_id": "norwegen",
-      "elo": 1925.7,
+      "elo": 1901.5,
       "squad_value_eur": 589900000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "I",
       "group_position": 2,
       "elo_change_this_round": 0.0,
@@ -472,13 +472,13 @@
       "name": "Argentina",
       "api_football_id": 26,
       "transfermarkt_id": "argentinien",
-      "elo": 2061.4,
+      "elo": 2079.6,
       "squad_value_eur": 807500000,
       "eliminated": false,
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.5951
+      "team_strength": 0.5375
     },
     "AUT": {
       "id": "AUT",
@@ -560,13 +560,13 @@
       "name": "England",
       "api_football_id": 10,
       "transfermarkt_id": "england",
-      "elo": 1994.2,
+      "elo": 2018.4,
       "squad_value_eur": 1360000000,
       "eliminated": false,
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.5257
+      "team_strength": 0.3642
     },
     "CRO": {
       "id": "CRO",
