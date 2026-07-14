@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Semi-finals",
     "wc_year": 2026,
-    "last_updated": "2026-07-14T19:03:09Z"
+    "last_updated": "2026-07-14T21:01:47Z"
   },
   "rounds": {
     "round_of_32": {
@@ -383,8 +383,13 @@
           "match_id": "sf_m01",
           "team_home": "FRA",
           "team_away": "ESP",
-          "winner": null,
-          "status": "NS"
+          "winner": "ESP",
+          "status": "FT",
+          "score_home": 0,
+          "score_away": 2,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         },
         {
           "match_id": "sf_m02",
@@ -400,7 +405,7 @@
       "matches": [
         {
           "match_id": "final_m01",
-          "team_home": null,
+          "team_home": "ESP",
           "team_away": null,
           "winner": null,
           "status": "NS"

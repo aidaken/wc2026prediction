@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-14T19:03:09Z",
+    "last_updated": "2026-07-14T21:01:47Z",
     "round": "Semi-finals",
-    "teams_remaining": 4,
+    "teams_remaining": 3,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -383,13 +383,13 @@
       "name": "Spain",
       "api_football_id": 9,
       "transfermarkt_id": "spanien",
-      "elo": 2078.0,
+      "elo": 2109.8,
       "squad_value_eur": 1220000000,
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.6472
+      "elo_change_this_round": 31.8,
+      "team_strength": 0.7968
     },
     "URU": {
       "id": "URU",
@@ -408,12 +408,12 @@
       "name": "France",
       "api_football_id": 2,
       "transfermarkt_id": "frankreich",
-      "elo": 2098.5,
+      "elo": 2066.7,
       "squad_value_eur": 1520000000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -31.8,
       "team_strength": 0.8041
     },
     "NOR": {
@@ -478,7 +478,7 @@
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.5375
+      "team_strength": 0.5453
     },
     "AUT": {
       "id": "AUT",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.3642
+      "team_strength": 0.4175
     },
     "CRO": {
       "id": "CRO",

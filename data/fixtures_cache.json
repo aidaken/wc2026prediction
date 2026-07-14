@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 100
+    "count": 101
   },
   "fixtures": [
     {
@@ -1131,6 +1131,18 @@
       "status": "AET",
       "stage": "knockout",
       "round_key": "quarter_finals"
+    },
+    {
+      "team_home": "FRA",
+      "team_away": "ESP",
+      "score_home": 0,
+      "score_away": 2,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ESP",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "semi_finals"
     }
   ]
 }
