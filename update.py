@@ -370,6 +370,8 @@ def write_outputs(
     ):
         sim = team_sim.get(tid, {})
         eliminated = team.get("eliminated", False)
+        # Keep live signals for 3rd-place sides (title-out but still playing)
+        still_scoring = tid in signals
         if not eliminated:
             active_rank += 1
         predictions_list.append({
@@ -378,8 +380,8 @@ def write_outputs(
             "win_probability": 0.0 if eliminated else sim.get("win_probability", 0.0),
             "reach_final_probability": 0.0 if eliminated else sim.get("reach_final_probability", 0.0),
             "reach_semis_probability": 0.0 if eliminated else sim.get("reach_semis_probability", 0.0),
-            "signals": None if eliminated else signals.get(tid),
-            "team_strength": None if eliminated else strengths.get(tid),
+            "signals": signals.get(tid) if still_scoring else None,
+            "team_strength": strengths.get(tid) if still_scoring else None,
             "eliminated": eliminated,
             "rank": None if eliminated else active_rank,
         })

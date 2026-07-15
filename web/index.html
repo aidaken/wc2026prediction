@@ -143,6 +143,20 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-md);
       padding: 1rem 1.1rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    .stage-duel:hover, .stage-duel:focus-visible {
+      border-color: var(--blue);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+      outline: none;
+    }
+    .stage-duel:active { transform: scale(0.99); }
+    .stage-duel .duel-hint {
+      margin-top: 0.7rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-weight: 600;
     }
     .stage-duel .duel-label {
       font-size: 0.68rem;
@@ -204,6 +218,241 @@
     }
     @media (max-width: 640px) {
       .stage-duels { grid-template-columns: 1fr; }
+    }
+
+    /* ── Matchup popup ── */
+    .matchup-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 8000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.18s ease;
+    }
+    .matchup-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (min-width: 640px) {
+      .matchup-backdrop {
+        align-items: center;
+        padding: 1.25rem;
+      }
+    }
+    .matchup-modal {
+      background: var(--surface);
+      border-radius: 18px 18px 0 0;
+      width: min(520px, 100%);
+      max-height: min(88vh, 720px);
+      overflow: auto;
+      box-shadow: 0 -8px 40px rgba(15, 23, 42, 0.2);
+      transform: translateY(18px);
+      transition: transform 0.2s ease;
+      padding: 1.15rem 1.2rem 1.4rem;
+    }
+    .matchup-backdrop.open .matchup-modal { transform: translateY(0); }
+    @media (min-width: 640px) {
+      .matchup-modal {
+        border-radius: 16px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+        transform: translateY(10px) scale(0.98);
+      }
+      .matchup-backdrop.open .matchup-modal {
+        transform: translateY(0) scale(1);
+      }
+    }
+    .matchup-modal .mu-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+    }
+    .matchup-modal .mu-kicker {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .matchup-modal .mu-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-top: 0.15rem;
+    }
+    .matchup-modal .mu-close {
+      border: 1px solid var(--border);
+      background: var(--border-soft);
+      border-radius: 999px;
+      width: 2rem;
+      height: 2rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--text-soft);
+      flex-shrink: 0;
+    }
+    .matchup-modal .mu-close:hover { border-color: var(--blue); color: var(--blue); }
+    .matchup-modal .mu-scoreline {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .matchup-modal .mu-side {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: var(--border-soft);
+    }
+    .matchup-modal .mu-side.fav { background: var(--blue-soft); }
+    .matchup-modal .mu-side .mu-team {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      font-weight: 800;
+      margin-bottom: 0.2rem;
+    }
+    .matchup-modal .mu-side .mu-pct {
+      font-size: 1.55rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+    }
+    .matchup-modal .mu-side.fav .mu-pct { color: var(--blue); }
+    .matchup-modal .mu-vs {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .matchup-modal .mu-flag {
+      width: 22px;
+      height: 15px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .matchup-modal .mu-plain {
+      background: #f8fafc;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 0.95rem;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text-soft);
+      margin-bottom: 1rem;
+    }
+    .matchup-modal .mu-plain strong { color: var(--text); font-weight: 700; }
+    .matchup-modal .mu-section {
+      margin-bottom: 1rem;
+    }
+    .matchup-modal .mu-section h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+    }
+    .matchup-modal .mu-compare {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .matchup-modal .mu-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.45rem;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    .matchup-modal .mu-row .mu-lab {
+      grid-column: 1 / -1;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .matchup-modal .mu-row .mu-h,
+    .matchup-modal .mu-row .mu-a {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .matchup-modal .mu-row .mu-a { flex-direction: row-reverse; text-align: right; }
+    .matchup-modal .mu-bar {
+      flex: 1;
+      height: 6px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .matchup-modal .mu-bar > span {
+      display: block;
+      height: 100%;
+      background: #94a3b8;
+      border-radius: 999px;
+    }
+    .matchup-modal .mu-row .win .mu-bar > span { background: var(--blue); }
+    .matchup-modal .mu-row .mu-num {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      min-width: 2.2rem;
+    }
+    .matchup-modal .mu-row .mu-mid {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+    }
+    .matchup-modal .mu-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+    .matchup-modal .mu-bullets li {
+      padding-left: 0.85rem;
+      position: relative;
+    }
+    .matchup-modal .mu-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.45rem;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+    .matchup-modal .mu-foot {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.4;
+      border-top: 1px solid var(--border-soft);
+      padding-top: 0.75rem;
+    }
+
+    .bk-match.bk-clickable {
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .bk-match.bk-clickable:hover,
+    .bk-match.bk-clickable:focus-visible {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px var(--blue-soft);
+      outline: none;
     }
 
     /* ── Full-width prob table ── */
@@ -2101,7 +2350,7 @@
       const ta = thirdP?.advance_probability_away;
 
       return `<div class="stage-duels">
-        <div class="stage-duel">
+        <div class="stage-duel" data-match-id="final_m01" tabindex="0" role="button" aria-label="Open Final matchup details">
           <div class="duel-label">Final · July 19 · New York</div>
           <div class="duel-meta">Who lifts the trophy</div>
           <div class="duel-sides">
@@ -2109,8 +2358,9 @@
             <span class="duel-vs">vs</span>
             ${duelSide(finalM.team_away, finalM.team_away, fa, fa != null && fa > 0.5)}
           </div>
+          <div class="duel-hint">Tap for why · plain English</div>
         </div>
-        <div class="stage-duel">
+        <div class="stage-duel" data-match-id="third_m01" tabindex="0" role="button" aria-label="Open 3rd place matchup details">
           <div class="duel-label">3rd place · July 18 · Miami</div>
           <div class="duel-meta">Bronze match</div>
           <div class="duel-sides">
@@ -2118,6 +2368,7 @@
             <span class="duel-vs">vs</span>
             ${duelSide(thirdM.team_away, thirdM.team_away, ta, ta != null && ta > 0.5)}
           </div>
+          <div class="duel-hint">Tap for why · plain English</div>
         </div>
       </div>`;
     }
@@ -2482,7 +2733,7 @@
       </div>`;
     }
 
-    function renderSlotMatch(matchId, meta, mirror) {
+    function renderSlotMatch(matchId, meta, mirror, opts = {}) {
       const m = byIdGlobal[matchId] || {};
       const pred = predByIdGlobal[matchId];
       const home = m.team_home;
@@ -2490,14 +2741,17 @@
       const header = meta
         ? `<div class="bk-venue"><span class="city">${meta.venue}</span>${meta.date}</div>`
         : '';
+      const clickAttrs = opts.clickable
+        ? ` bk-clickable" data-match-id="${matchId}" tabindex="0" role="button" aria-label="Open ${matchId} details`
+        : '';
       if (!home && !away) {
-        return `<div class="bk-match slot">
+        return `<div class="bk-match slot${clickAttrs}">
           ${header}
           <div class="bk-team tbd"><span class="bk-code">—</span></div>
           <div class="bk-team tbd"><span class="bk-code">—</span></div>
         </div>`;
       }
-      return `<div class="bk-match slot wide">
+      return `<div class="bk-match slot wide${clickAttrs}">
         ${header}
         ${teamRow(home, m, pred, 'home', mirror)}
         ${teamRow(away, m, pred, 'away', mirror)}
@@ -2506,6 +2760,215 @@
 
     let byIdGlobal = {};
     let predByIdGlobal = {};
+    let matchupCtx = null;
+
+    const MATCHUP_INFO = {
+      final_m01: {
+        label: 'Final',
+        venue: 'New York · July 19',
+        stake: 'winner takes the World Cup',
+      },
+      third_m01: {
+        label: '3rd place',
+        venue: 'Miami · July 18',
+        stake: 'bronze medal match',
+      },
+    };
+
+    function predByTeamId(preds, teamId) {
+      return (preds || []).find(p => p.team_id === teamId) || null;
+    }
+
+    function plainSignalBlurb(key, hName, aName, hv, av) {
+      const hWin = hv >= av;
+      const lead = hWin ? hName : aName;
+      const gap = Math.abs(Math.round(hv * 100) - Math.round(av * 100));
+      if (key === 'elo_normalized') {
+        if (gap < 3) return `Long-term level (Elo) is basically even.`;
+        return `${lead} rates higher on long-term level (Elo) — think “who’s been stronger over years,” not just this tournament.`;
+      }
+      if (key === 'xg_form_ratio') {
+        if (gap < 4) return `Recent chance-creation (xG form) looks similar.`;
+        return `${lead} has been creating (and limiting) chances better lately — that’s the “hot form” signal.`;
+      }
+      if (key === 'squad_value_normalized') {
+        if (gap < 5) return `Squad market values are in a similar ballpark.`;
+        return `${lead} has the pricier squad on paper (rough depth/talent proxy — not destiny).`;
+      }
+      if (key === 'betting_implied_prob') {
+        if (gap < 4) return `Betting markets see this one as close.`;
+        return `Bookmakers lean ${lead} — I mix that in so I’m not ignoring what the market prices.`;
+      }
+      return '';
+    }
+
+    function compareRow(label, hVal, aVal, fmt = v => Math.round(v * 100)) {
+      if (hVal == null || aVal == null) return '';
+      const hv = +hVal;
+      const av = +aVal;
+      const hPct = Math.max(0, Math.min(100, Math.round(hv * 100)));
+      const aPct = Math.max(0, Math.min(100, Math.round(av * 100)));
+      return `<div class="mu-row">
+        <span class="mu-lab">${label}</span>
+        <div class="mu-h${hv >= av ? ' win' : ''}">
+          <span class="mu-num">${fmt(hv)}</span>
+          <div class="mu-bar"><span style="width:${hPct}%"></span></div>
+        </div>
+        <span class="mu-mid">vs</span>
+        <div class="mu-a${av > hv ? ' win' : ''}">
+          <span class="mu-num">${fmt(av)}</span>
+          <div class="mu-bar"><span style="width:${aPct}%"></span></div>
+        </div>
+      </div>`;
+    }
+
+    function buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred) {
+      const favName = ph >= pa ? hName : aName;
+      const favPct = pct(Math.max(ph, pa), 0);
+      const underPct = pct(Math.min(ph, pa), 0);
+      const hs = hPred?.team_strength;
+      const as_ = aPred?.team_strength;
+      let edge = '';
+      if (hs != null && as_ != null) {
+        const gap = Math.abs(hs - as_);
+        if (gap < 0.04) edge = ' The strength scores are close, so luck and a bad day can flip it.';
+        else if (gap < 0.12) edge = ' There’s a real edge, but upsets still happen in knockouts.';
+        else edge = ' That’s a clear model edge — still not a lock.';
+      }
+      return `<p class="mu-plain"><strong>${favName}</strong> is favored at about <strong>${favPct}</strong> to win this match`
+        + ` (${underPct} the other way). Those %s are how often each side wins when I replay this game `
+        + `${(matchupCtx?.nSims || 100000).toLocaleString()} times using each team’s strength score.${edge}</p>`;
+    }
+
+    function renderMatchupModalBody(matchId) {
+      const info = MATCHUP_INFO[matchId];
+      const match = byIdGlobal[matchId] || matchupCtx?.byId?.[matchId];
+      const pred = predByIdGlobal[matchId] || matchupCtx?.predById?.[matchId];
+      if (!info || !match?.team_home || !match?.team_away || !pred) {
+        return `<p class="mu-plain">No live odds for this matchup yet.</p>`;
+      }
+      const hid = match.team_home;
+      const aid = match.team_away;
+      const hName = matchupCtx?.teamsById?.[hid]?.name || hid;
+      const aName = matchupCtx?.teamsById?.[aid]?.name || aid;
+      const ph = pred.advance_probability_home ?? 0.5;
+      const pa = pred.advance_probability_away ?? 0.5;
+      const hPred = predByTeamId(matchupCtx?.preds, hid);
+      const aPred = predByTeamId(matchupCtx?.preds, aid);
+      const hs = hPred?.signals;
+      const as_ = aPred?.signals;
+
+      const bullets = [];
+      if (hs && as_) {
+        for (const key of Object.keys(SIGNAL_LABELS)) {
+          const blurb = plainSignalBlurb(key, hName, aName, hs[key] ?? 0, as_[key] ?? 0);
+          if (blurb) bullets.push(blurb);
+        }
+        const hi = hs.injury_multiplier ?? 1;
+        const ai = as_.injury_multiplier ?? 1;
+        if (hi < 0.98 || ai < 0.98) {
+          const hurt = hi <= ai ? hName : aName;
+          bullets.push(`Injury hit is baked in — ${hurt} is dinged a bit for key absences.`);
+        }
+      } else {
+        bullets.push('Strength scores mix Elo, recent xG form, squad value, and betting odds.');
+        bullets.push('Then I sim the matchup many times so the % reflects both the edge and the chaos.');
+      }
+
+      const compare = (hs && as_)
+        ? `<div class="mu-compare">
+            ${compareRow('Strength', hPred.team_strength, aPred.team_strength, v => (v * 100).toFixed(0))}
+            ${compareRow('Elo', hs.elo_normalized, as_.elo_normalized)}
+            ${compareRow('Form (xG)', hs.xg_form_ratio, as_.xg_form_ratio)}
+            ${compareRow('Squad €', hs.squad_value_normalized, as_.squad_value_normalized)}
+            ${compareRow('Odds lean', hs.betting_implied_prob, as_.betting_implied_prob)}
+          </div>`
+        : `<p class="mu-plain" style="margin:0">Detailed signal split isn’t loaded for one side yet — the win % above is still from the live sim.</p>`;
+
+      return `
+        <div class="mu-top">
+          <div>
+            <div class="mu-kicker">${info.label} · ${info.venue}</div>
+            <div class="mu-title">${hName} vs ${aName}</div>
+          </div>
+          <button type="button" class="mu-close" aria-label="Close">×</button>
+        </div>
+        <div class="mu-scoreline">
+          <div class="mu-side${ph >= pa ? ' fav' : ''}">
+            <div class="mu-team">${renderFlag(hid, 'mu-flag')}<span>${hid}</span></div>
+            <div class="mu-pct">${pct(ph, 0)}</div>
+          </div>
+          <span class="mu-vs">vs</span>
+          <div class="mu-side${pa > ph ? ' fav' : ''}">
+            <div class="mu-team">${renderFlag(aid, 'mu-flag')}<span>${aid}</span></div>
+            <div class="mu-pct">${pct(pa, 0)}</div>
+          </div>
+        </div>
+        ${buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred)}
+        <div class="mu-section">
+          <h4>Side-by-side (0–100 scale)</h4>
+          ${compare}
+        </div>
+        <div class="mu-section">
+          <h4>What those numbers mean</h4>
+          <ul class="mu-bullets">${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        </div>
+        <p class="mu-foot">This is the ${info.stake}. Win % here is for <em>this match</em>, not the whole tournament. Recipe: blend Elo + form + squad + odds → strength → ${((matchupCtx?.nSims) || 100000).toLocaleString()} random replays.</p>`;
+    }
+
+    function ensureMatchupModal() {
+      let backdrop = document.getElementById('matchup-backdrop');
+      if (backdrop) return backdrop;
+      backdrop = document.createElement('div');
+      backdrop.id = 'matchup-backdrop';
+      backdrop.className = 'matchup-backdrop';
+      backdrop.innerHTML = `<div class="matchup-modal" role="dialog" aria-modal="true" aria-label="Matchup details"></div>`;
+      document.body.appendChild(backdrop);
+      backdrop.addEventListener('click', e => {
+        if (e.target === backdrop) closeMatchupModal();
+      });
+      backdrop.querySelector('.matchup-modal').addEventListener('click', e => {
+        if (e.target.closest('.mu-close')) closeMatchupModal();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeMatchupModal();
+      });
+      return backdrop;
+    }
+
+    function openMatchupModal(matchId) {
+      if (!MATCHUP_INFO[matchId]) return;
+      const backdrop = ensureMatchupModal();
+      const modal = backdrop.querySelector('.matchup-modal');
+      modal.innerHTML = renderMatchupModalBody(matchId);
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMatchupModal() {
+      const backdrop = document.getElementById('matchup-backdrop');
+      if (!backdrop) return;
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function wireMatchupPopups() {
+      document.querySelectorAll('[data-match-id].stage-duel, .bk-match.bk-clickable[data-match-id]').forEach(el => {
+        const id = el.dataset.matchId;
+        const open = () => openMatchupModal(id);
+        el.addEventListener('click', e => {
+          if (isEasterFlag(e.target)) return;
+          e.preventDefault();
+          open();
+        });
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+    }
 
     function renderFeeder(feeder, mirror) {
       const [id1, id2] = feeder.r32;
@@ -2544,11 +3007,13 @@
         third.id,
         { venue: third.venue, date: third.date + '<br>3rd place' },
         false,
+        { clickable: true },
       );
       const finalMatch = renderSlotMatch(
         BRACKET_LAYOUT.center.final.id,
         { venue: BRACKET_LAYOUT.center.final.venue, date: BRACKET_LAYOUT.center.final.date + '<br>Final' },
         false,
+        { clickable: true },
       );
 
       return `<div class="bracket-panel">
@@ -2651,6 +3116,17 @@
         }
         const historyHtml = await renderHistory(preds);
 
+        const idx = buildMatchIndex(bracket, data.match_predictions);
+        matchupCtx = {
+          preds,
+          teamsById,
+          bracket,
+          nSims: data._meta?.simulations || 100000,
+          weights: data._meta?.weights || MODEL_WEIGHTS,
+          byId: idx.byId,
+          predById: idx.predById,
+        };
+
         app.innerHTML = `
           ${renderChampionHero(top, data._meta)}
           ${renderStageDuels(bracket, data.match_predictions, data._meta || {})}
@@ -2659,6 +3135,7 @@
           ${bracket ? renderBracketTree(bracket, data.match_predictions, data._meta || {}) : ''}`;
         wireTierToggles();
         wireTeamRowToggles();
+        wireMatchupPopups();
       } catch (err) {
         app.innerHTML = `<div class="error card" style="padding:2rem">Could not load data: ${err.message}</div>`;
       }

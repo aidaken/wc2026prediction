@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-15T21:18:22Z",
+    "generated_at": "2026-07-15T21:27:01Z",
     "round": "Final",
     "simulations": 100000,
     "model_version": "1.2.0",
@@ -434,8 +434,27 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": null,
-      "team_strength": null,
+      "signals": {
+        "elo_normalized": 0.9234050115514477,
+        "xg_form_ratio": 0.697,
+        "squad_value_normalized": 1.0,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg_table_adj",
+        "matches_used": 7,
+        "avg_xg_for": 1.95,
+        "avg_xg_against": 0.83,
+        "adj_xg_for": 1.85,
+        "adj_xg_against": 0.81,
+        "sos_multiplier": 0.994,
+        "effective_weights": {
+          "elo": 0.4375,
+          "xg_form": 0.375,
+          "squad_value": 0.1875
+        }
+      },
+      "team_strength": 0.8529,
       "eliminated": true,
       "rank": null
     },
@@ -555,8 +574,27 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": null,
-      "team_strength": null,
+      "signals": {
+        "elo_normalized": 0.7934956459925356,
+        "xg_form_ratio": 0.7156,
+        "squad_value_normalized": 0.775438596491228,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg_table_adj",
+        "matches_used": 7,
+        "avg_xg_for": 1.63,
+        "avg_xg_against": 0.93,
+        "adj_xg_for": 2.2,
+        "adj_xg_against": 0.87,
+        "sos_multiplier": 1.205,
+        "effective_weights": {
+          "elo": 0.4375,
+          "xg_form": 0.375,
+          "squad_value": 0.1875
+        }
+      },
+      "team_strength": 0.7609,
       "eliminated": true,
       "rank": null
     },
