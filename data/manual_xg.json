@@ -1,12 +1,12 @@
 {
   "_comment": "Per-team tournament xG. Group totals from FotMob xG table + per-match R32/R16 from FotMob match pages.",
-  "_source": "fotmob.com — updated 2026-07-14 (SF: FRA 0–2 ESP)",
+  "_source": "fotmob.com — updated 2026-07-15 (SF: ENG 1–2 ARG)",
   "xg": {
     "FRA": { "xg": 13.49, "xga": 5.82, "mp": 7 },
     "BRA": { "xg": 12.1, "xga": 3.89, "mp": 5 },
-    "ARG": { "xg": 12.82, "xga": 3.8, "mp": 6 },
+    "ARG": { "xg": 14.66, "xga": 4.33, "mp": 7 },
     "ESP": { "xg": 13.38, "xga": 1.95, "mp": 7 },
-    "ENG": { "xg": 10.87, "xga": 4.65, "mp": 6 },
+    "ENG": { "xg": 11.4, "xga": 6.49, "mp": 7 },
     "POR": { "xg": 6.83, "xga": 5.96, "mp": 5 },
     "SUI": { "xg": 9.44, "xga": 6.21, "mp": 6 },
     "MEX": { "xg": 6.55, "xga": 3.83, "mp": 5 },

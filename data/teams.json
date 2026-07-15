@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-15T20:35:09Z",
-    "round": "Semi-finals",
-    "teams_remaining": 3,
+    "last_updated": "2026-07-15T21:05:24Z",
+    "round": "Final",
+    "teams_remaining": 2,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -388,8 +388,8 @@
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 31.8,
-      "team_strength": 0.8445
+      "elo_change_this_round": 0.0,
+      "team_strength": 0.8827
     },
     "URU": {
       "id": "URU",
@@ -413,7 +413,7 @@
       "eliminated": true,
       "group": "I",
       "group_position": 1,
-      "elo_change_this_round": -31.8,
+      "elo_change_this_round": 0.0,
       "team_strength": 0.8041
     },
     "NOR": {
@@ -472,13 +472,13 @@
       "name": "Argentina",
       "api_football_id": 26,
       "transfermarkt_id": "argentinien",
-      "elo": 2079.6,
+      "elo": 2104.4,
       "squad_value_eur": 807500000,
       "eliminated": false,
       "group": "J",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.5902
+      "team_strength": 0.6589
     },
     "AUT": {
       "id": "AUT",
@@ -560,9 +560,9 @@
       "name": "England",
       "api_football_id": 10,
       "transfermarkt_id": "england",
-      "elo": 2018.4,
+      "elo": 1993.6,
       "squad_value_eur": 1360000000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 0.0,

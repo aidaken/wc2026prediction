@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "wikipedia",
-    "count": 101
+    "count": 102
   },
   "fixtures": [
     {
@@ -1140,6 +1140,18 @@
       "penalties_home": null,
       "penalties_away": null,
       "winner": "ESP",
+      "status": "FT",
+      "stage": "knockout",
+      "round_key": "semi_finals"
+    },
+    {
+      "team_home": "ENG",
+      "team_away": "ARG",
+      "score_home": 1,
+      "score_away": 2,
+      "penalties_home": null,
+      "penalties_away": null,
+      "winner": "ARG",
       "status": "FT",
       "stage": "knockout",
       "round_key": "semi_finals"

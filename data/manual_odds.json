@@ -1,10 +1,10 @@
 {
-  "_comment": "Tournament winner implied probs. Engine renormalizes across active teams, so the overround is stripped automatically.",
-  "_source": "SI / sportsbooks after FRA–ESP SF, 2026-07-15. American: -156 ESP, +300 ENG, +400 ARG.",
+  "_comment": "Tournament winner implied probs. Engine renormalizes across active teams.",
+  "_source": "Lookahead ESP vs ARG final after ENG SF exit, 2026-07-15. ESP ~58%, ARG ~42%.",
   "odds": {
-    "ESP": 0.6094,
-    "ENG": 0.25,
-    "ARG": 0.2,
+    "ESP": 0.58,
+    "ARG": 0.42,
+    "ENG": 0.0,
     "FRA": 0.0,
     "BRA": 0.0,
     "POR": 0.0,
