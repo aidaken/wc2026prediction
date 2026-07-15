@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-07-15T21:14:38Z",
+    "last_updated": "2026-07-15T21:18:22Z",
     "round": "Final",
     "teams_remaining": 2,
     "elo_method": "full_replay_from_seed"
@@ -389,7 +389,7 @@
       "group": "H",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.8808
+      "team_strength": 0.8177
     },
     "URU": {
       "id": "URU",
@@ -414,7 +414,7 @@
       "group": "I",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.8041
+      "team_strength": 0.8529
     },
     "NOR": {
       "id": "NOR",
@@ -566,7 +566,7 @@
       "group": "L",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.715
+      "team_strength": 0.7609
     },
     "CRO": {
       "id": "CRO",

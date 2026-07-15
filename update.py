@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import config
-from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures
+from src.bracket import detect_current_round, mark_eliminations, sync_bracket_from_fixtures, FINISHED
 from src.bracket_topology import ROUND_ORDER, propagate_outcome
 from src.elo import normalize_elo, recompute_from_seed
 from src.fetch import (
@@ -52,6 +52,19 @@ def _utc_now() -> str:
 
 def _active_teams(teams: dict[str, dict[str, Any]]) -> list[str]:
     return [tid for tid, t in teams.items() if not t.get("eliminated", False)]
+
+
+def _teams_in_unfinished_matches(bracket: dict[str, Any]) -> set[str]:
+    """Teams still scheduled (e.g. 3rd place) even if out of title contention."""
+    ids: set[str] = set()
+    for round_data in bracket.get("rounds", {}).values():
+        for match in round_data.get("matches", []):
+            if match.get("winner") or match.get("status") in FINISHED:
+                continue
+            for tid in (match.get("team_home"), match.get("team_away")):
+                if tid:
+                    ids.add(tid)
+    return ids
 
 
 def _collect_fixtures_from_bracket(bracket: dict[str, Any]) -> list[dict[str, Any]]:
@@ -216,35 +229,37 @@ def combine_strengths(
     bracket: dict[str, Any] | None = None,
 ) -> tuple[dict[str, float], dict[str, dict[str, float]], dict[str, Any]]:
     active = _active_teams(teams)
+    # 3rd-place sides are "eliminated" for the title but still need live strengths
+    playing = set(active) | (_teams_in_unfinished_matches(bracket) if bracket else set())
     fixtures = raw["fixtures"]
 
     # Normalize Elo over the full field (not just active). With 3 teams left,
     # active-only min-max maps the lowest to 0 and overstates gaps.
     elo_norm = normalize_elo(teams, active_only=False)
-    xg_form, xg_meta = calculate_form_ratios(fixtures, active)
+    xg_form, xg_meta = calculate_form_ratios(fixtures, list(playing))
     opponents = build_opponent_map(fixtures, bracket)
-    manual_xg_applied = apply_manual_xg(xg_form, xg_meta, active, opponents)
+    manual_xg_applied = apply_manual_xg(xg_form, xg_meta, list(playing), opponents)
     if manual_xg_applied:
         logging.getLogger("wc2026").info("xG: %d teams from manual xG table", manual_xg_applied)
-    injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], active)
+    injury_mult = calculate_multipliers(raw["injuries"], raw["player_stats"], list(playing))
 
-    squad_raw = {tid: raw["squad_values"].get(tid, teams[tid].get("squad_value_eur", 0)) for tid in active}
+    squad_raw = {tid: raw["squad_values"].get(tid, teams[tid].get("squad_value_eur", 0)) for tid in playing}
     squad_raw = {tid: v for tid, v in squad_raw.items() if v}
     squad_norm = normalize_minmax({tid: float(v) for tid, v in squad_raw.items()})
 
     betting_raw = raw.get("betting_probs") or {}
     betting_available = bool(betting_raw)
-    betting_active = normalize_betting_probs(betting_raw, active) if betting_available else {}
+    betting_active = normalize_betting_probs(betting_raw, list(playing)) if betting_available else {}
 
-    xg_with_data = sum(1 for tid in active if xg_meta.get(tid, {}).get("has_xg_data"))
-    xg_coverage = xg_with_data / len(active) if active else 0.0
+    xg_with_data = sum(1 for tid in playing if xg_meta.get(tid, {}).get("has_xg_data"))
+    xg_coverage = xg_with_data / len(playing) if playing else 0.0
 
     strengths: dict[str, float] = {}
     signals: dict[str, dict[str, float]] = {}
 
     strength_ids = list(teams.keys())
     for tid in strength_ids:
-        if teams[tid].get("eliminated") and tid not in active:
+        if tid not in playing and teams[tid].get("eliminated"):
             if teams[tid].get("team_strength") is not None:
                 strengths[tid] = teams[tid]["team_strength"]
             continue
@@ -276,7 +291,7 @@ def combine_strengths(
             has_betting=has_team_odds,
         )
         strengths[tid] = strength
-        if tid in active:
+        if tid in playing:
             signals[tid] = {
                 **components,
                 "has_xg_data": has_xg,
@@ -481,8 +496,9 @@ def run_update(round_name: str | None = None, demo: bool = False) -> None:
     )
 
     logger.info("Running %s Monte Carlo simulations...", f"{n_sims:,}")
-    active_strengths = {tid: s for tid, s in strengths.items() if tid in _active_teams(teams)}
-    sim_results = run_simulation(active_strengths, bracket, n=n_sims)
+    playing = set(_active_teams(teams)) | _teams_in_unfinished_matches(bracket)
+    sim_strengths = {tid: s for tid, s in strengths.items() if tid in playing}
+    sim_results = run_simulation(sim_strengths, bracket, n=n_sims)
 
     logger.info("Writing output files...")
     write_outputs(
