@@ -131,6 +131,81 @@
     }
     .champ-chip b { color: var(--blue); font-variant-numeric: tabular-nums; }
 
+    .stage-duels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .stage-duel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 1rem 1.1rem 1.1rem;
+    }
+    .stage-duel .duel-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+    .stage-duel .duel-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.85rem;
+    }
+    .stage-duel .duel-sides {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+    .stage-duel .duel-side {
+      flex: 1;
+      text-align: center;
+      padding: 0.65rem 0.4rem;
+      border-radius: var(--radius-sm);
+      background: var(--border-soft);
+    }
+    .stage-duel .duel-side.fav {
+      background: var(--blue-soft);
+    }
+    .stage-duel .duel-side .duel-team {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .stage-duel .duel-side .duel-pct {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .stage-duel .duel-side.fav .duel-pct { color: var(--blue); }
+    .stage-duel .duel-vs {
+      align-self: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .stage-duel .duel-flag {
+      width: 20px;
+      height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    @media (max-width: 640px) {
+      .stage-duels { grid-template-columns: 1fr; }
+    }
+
     /* ── Full-width prob table ── */
     .prob-card { margin-bottom: 1.25rem; }
     .prob-card .card-header {
@@ -1493,11 +1568,11 @@
         </div>
         <div class="hiw-card">
           <h3>Win % vs bracket %</h3>
-          <p>The table is tournament win chance. The bracket shows advance % for each knockout game (blue = favorite in that matchup, green check = already won). A team can be likely to beat their R32 opponent but still have a lower trophy % if the path ahead is brutal.</p>
+          <p>The table is tournament win chance. The bracket shows advance % for each knockout game (blue = favorite in that matchup, green check = already won). Up front, Final and 3rd place cards show the live matchup odds from the same sims.</p>
         </div>
         <div class="hiw-card">
           <h3>The sim</h3>
-          <p>I don't pick one fixed path. I play out the bracket 100,000 times with randomness baked in (including some draw/pen vibes). Stronger teams win more often, but upsets still happen. That's why Brazil can top the table without being a lock.</p>
+          <p>I don't pick one fixed path. I play out the bracket 100,000 times with randomness baked in (including some draw/pen vibes). Stronger teams win more often, but upsets still happen. That's why favoritism never means locked in.</p>
         </div>
         <div class="hiw-card">
           <h3>When it updates</h3>
@@ -1987,11 +2062,13 @@
       ).join('');
     }
 
-    function renderChampionHero(top) {
+    function renderChampionHero(top, meta) {
       if (!top) return '';
+      const round = meta?.round || '';
+      const label = /final/i.test(round) ? 'Favorite to win the final' : 'Most likely champion';
       return `<div class="champion-hero card">
         <div class="top-pick">
-          <div class="label">Most likely champion</div>
+          <div class="label">${label}</div>
           <div class="champ-row">
             ${top.team_id ? renderFlag(top.team_id, 'champ-flag') : ''}
             <div class="name">${top.team_name}</div>
@@ -1999,6 +2076,49 @@
           <div class="pct">${pct(top.win_probability)}</div>
         </div>
         <div class="champ-signals">${renderChampionChips(top.signals)}</div>
+      </div>`;
+    }
+
+    function duelSide(teamId, name, prob, fav) {
+      return `<div class="duel-side${fav ? ' fav' : ''}">
+        <div class="duel-team">${teamId ? renderFlag(teamId, 'duel-flag') : ''}<span>${teamId || 'TBD'}</span></div>
+        <div class="duel-pct">${prob != null ? pct(prob, 0) : '—'}</div>
+      </div>`;
+    }
+
+    function renderStageDuels(bracket, matchPredictions, meta) {
+      if (!bracket || !/final/i.test(meta?.round || '')) return '';
+      const idx = buildMatchIndex(bracket, matchPredictions);
+      const finalM = idx.byId.final_m01 || {};
+      const thirdM = idx.byId.third_m01 || {};
+      const finalP = idx.predById.final_m01;
+      const thirdP = idx.predById.third_m01;
+      if (!finalM.team_home || !finalM.team_away) return '';
+
+      const fh = finalP?.advance_probability_home;
+      const fa = finalP?.advance_probability_away;
+      const th = thirdP?.advance_probability_home;
+      const ta = thirdP?.advance_probability_away;
+
+      return `<div class="stage-duels">
+        <div class="stage-duel">
+          <div class="duel-label">Final · July 19 · New York</div>
+          <div class="duel-meta">Who lifts the trophy</div>
+          <div class="duel-sides">
+            ${duelSide(finalM.team_home, finalM.team_home, fh, fh != null && fh >= 0.5)}
+            <span class="duel-vs">vs</span>
+            ${duelSide(finalM.team_away, finalM.team_away, fa, fa != null && fa > 0.5)}
+          </div>
+        </div>
+        <div class="stage-duel">
+          <div class="duel-label">3rd place · July 18 · Miami</div>
+          <div class="duel-meta">Bronze match</div>
+          <div class="duel-sides">
+            ${duelSide(thirdM.team_home, thirdM.team_home, th, th != null && th >= 0.5)}
+            <span class="duel-vs">vs</span>
+            ${duelSide(thirdM.team_away, thirdM.team_away, ta, ta != null && ta > 0.5)}
+          </div>
+        </div>
       </div>`;
     }
 
@@ -2167,7 +2287,7 @@
             <h4>Sim outcomes</h4>
             <div class="detail-stats">
               <div class="detail-stat"><span class="ds-label">Win WC</span><span class="ds-val">${pct(p.win_probability)}</span></div>
-              <div class="detail-stat"><span class="ds-label">Reach final</span><span class="ds-val">${pct(p.reach_final_probability)}</span></div>
+              ${ctx?.showFinal !== false ? `<div class="detail-stat"><span class="ds-label">Reach final</span><span class="ds-val">${pct(p.reach_final_probability)}</span></div>` : ''}
               ${ctx?.showSemis !== false ? `<div class="detail-stat"><span class="ds-label">Reach semis</span><span class="ds-val">${pct(p.reach_semis_probability)}</span></div>` : ''}
               <div class="detail-stat"><span class="ds-label">Simulations</span><span class="ds-val">${(nSims || 10000).toLocaleString()}</span></div>
             </div>
@@ -2197,7 +2317,7 @@
           <div class="prob">${pct(p.win_probability)}</div>
           ${!p.eliminated ? `<div class="prob-bar-wrap"><div class="prob-bar" style="width:${pctBar(p.win_probability)}%"></div></div>` : ''}
         </td>
-        <td class="prob num" data-label="Final">${pct(p.reach_final_probability)}</td>
+        ${ctx?.showFinal !== false ? `<td class="prob num" data-label="Final">${pct(p.reach_final_probability)}</td>` : ''}
         ${ctx?.showSemis !== false ? `<td class="prob num" data-label="Semis">${pct(p.reach_semis_probability)}</td>` : ''}
         ${renderStatCells(p)}
       </tr>`;
@@ -2211,11 +2331,13 @@
     function renderProbTable(preds, ctx) {
       const indexed = preds.map((p, i) => ({ ...p, displayIndex: i + 1 }));
       const showSemis = ctx?.showSemis !== false;
-      const colSpan = showSemis ? 9 : 8;
-      const rowCtx = { ...ctx, showSemis, colSpan };
+      const showFinal = ctx?.showFinal !== false;
+      const colSpan = 7 + (showFinal ? 1 : 0) + (showSemis ? 1 : 0);
+      const rowCtx = { ...ctx, showSemis, showFinal, colSpan };
+      const activeCount = indexed.filter(p => !p.eliminated).length;
       const toggles = TIERS.map(t =>
         t.open
-          ? `<span class="tier-toggle tier-static">Top 10</span>`
+          ? `<span class="tier-toggle tier-static">${activeCount <= 4 ? 'Still in' : 'Top 10'}</span>`
           : `<button type="button" class="tier-toggle" data-tier="${t.id}" data-label="${t.label}">Show ${t.label}</button>`
       ).join('');
 
@@ -2233,7 +2355,7 @@
       }
 
       return `<div class="card prob-card">
-        <div class="card-header"><span>Win probabilities</span><span style="font-weight:500;text-transform:none;letter-spacing:0">${indexed.filter(p => !p.eliminated).length} teams left</span></div>
+        <div class="card-header"><span>Win probabilities</span><span style="font-weight:500;text-transform:none;letter-spacing:0">${activeCount <= 2 ? `${activeCount} finalists` : `${activeCount} teams left`}</span></div>
         <div class="tier-toggles">${toggles}</div>
         <p class="prob-table-hint">Tap any team for strength breakdown, formula, and recent results</p>
         <div class="prob-table-wrap">
@@ -2242,7 +2364,7 @@
               <th>#</th>
               <th class="team-col">Team</th>
               <th class="num">Win</th>
-              <th class="num">Final</th>
+              ${showFinal ? '<th class="num">Final</th>' : ''}
               ${showSemis ? '<th class="num">Semis</th>' : ''}
               <th class="num">Strength</th>
               <th class="num">Form</th>
@@ -2510,6 +2632,7 @@
         const active = preds.filter(p => !p.eliminated);
         const top = active[0];
         const round = data._meta?.round || '';
+        const isFinal = /^final$/i.test(round);
         const detailCtx = {
           teamsById,
           bracket,
@@ -2518,13 +2641,19 @@
           strengthMeta: data._meta?.strength_meta || {},
           dataSources: data._meta?.data_sources || {},
           showSemis: !/semi|final/i.test(round),
+          showFinal: !isFinal,
         };
 
         renderMeta(data._meta || {});
+        const subtitle = document.querySelector('.subtitle');
+        if (subtitle && isFinal) {
+          subtitle.textContent = 'Final set · Spain vs Argentina · 3rd place France vs England';
+        }
         const historyHtml = await renderHistory(preds);
 
         app.innerHTML = `
-          ${renderChampionHero(top)}
+          ${renderChampionHero(top, data._meta)}
+          ${renderStageDuels(bracket, data.match_predictions, data._meta || {})}
           ${renderProbTable(preds, detailCtx)}
           ${historyHtml}
           ${bracket ? renderBracketTree(bracket, data.match_predictions, data._meta || {}) : ''}`;
