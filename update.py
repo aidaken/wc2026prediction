@@ -218,8 +218,9 @@ def combine_strengths(
     active = _active_teams(teams)
     fixtures = raw["fixtures"]
 
-    # Elo is already set on `teams` by the deterministic replay in run_update.
-    elo_norm = normalize_elo(teams)
+    # Normalize Elo over the full field (not just active). With 3 teams left,
+    # active-only min-max maps the lowest to 0 and overstates gaps.
+    elo_norm = normalize_elo(teams, active_only=False)
     xg_form, xg_meta = calculate_form_ratios(fixtures, active)
     opponents = build_opponent_map(fixtures, bracket)
     manual_xg_applied = apply_manual_xg(xg_form, xg_meta, active, opponents)
