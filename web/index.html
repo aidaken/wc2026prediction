@@ -2358,7 +2358,7 @@
             <span class="duel-vs">vs</span>
             ${duelSide(finalM.team_away, finalM.team_away, fa, fa != null && fa > 0.5)}
           </div>
-          <div class="duel-hint">Tap for why · plain English</div>
+          <div class="duel-hint">Tap for my read</div>
         </div>
         <div class="stage-duel" data-match-id="third_m01" tabindex="0" role="button" aria-label="Open 3rd place matchup details">
           <div class="duel-label">3rd place · July 18 · Miami</div>
@@ -2368,7 +2368,7 @@
             <span class="duel-vs">vs</span>
             ${duelSide(thirdM.team_away, thirdM.team_away, ta, ta != null && ta > 0.5)}
           </div>
-          <div class="duel-hint">Tap for why · plain English</div>
+          <div class="duel-hint">Tap for my read</div>
         </div>
       </div>`;
     }
@@ -2766,12 +2766,12 @@
       final_m01: {
         label: 'Final',
         venue: 'New York · July 19',
-        stake: 'winner takes the World Cup',
+        stake: 'who lifts the trophy',
       },
       third_m01: {
         label: '3rd place',
         venue: 'Miami · July 18',
-        stake: 'bronze medal match',
+        stake: 'bronze medal game',
       },
     };
 
@@ -2780,24 +2780,23 @@
     }
 
     function plainSignalBlurb(key, hName, aName, hv, av) {
-      const hWin = hv >= av;
-      const lead = hWin ? hName : aName;
+      const lead = hv >= av ? hName : aName;
       const gap = Math.abs(Math.round(hv * 100) - Math.round(av * 100));
       if (key === 'elo_normalized') {
-        if (gap < 3) return `Long-term level (Elo) is basically even.`;
-        return `${lead} rates higher on long-term level (Elo) — think “who’s been stronger over years,” not just this tournament.`;
+        if (gap < 3) return `Elo is basically a wash between them`;
+        return `I rate ${lead} higher on Elo (long-term level, not just this tournament)`;
       }
       if (key === 'xg_form_ratio') {
-        if (gap < 4) return `Recent chance-creation (xG form) looks similar.`;
-        return `${lead} has been creating (and limiting) chances better lately — that’s the “hot form” signal.`;
+        if (gap < 4) return `Recent xG form looks pretty even`;
+        return `${lead} has been creating and limiting chances better lately (that's the form signal)`;
       }
       if (key === 'squad_value_normalized') {
-        if (gap < 5) return `Squad market values are in a similar ballpark.`;
-        return `${lead} has the pricier squad on paper (rough depth/talent proxy — not destiny).`;
+        if (gap < 5) return `Squad values sit in the same ballpark`;
+        return `${lead} has the pricier squad on paper (rough depth/talent proxy, not destiny)`;
       }
       if (key === 'betting_implied_prob') {
-        if (gap < 4) return `Betting markets see this one as close.`;
-        return `Bookmakers lean ${lead} — I mix that in so I’m not ignoring what the market prices.`;
+        if (gap < 4) return `Books have this as close`;
+        return `Market leans ${lead}. I mix that in so I'm not ignoring what people actually bet`;
       }
       return '';
     }
@@ -2828,16 +2827,17 @@
       const underPct = pct(Math.min(ph, pa), 0);
       const hs = hPred?.team_strength;
       const as_ = aPred?.team_strength;
+      const nSims = (matchupCtx?.nSims || 100000).toLocaleString();
       let edge = '';
       if (hs != null && as_ != null) {
         const gap = Math.abs(hs - as_);
-        if (gap < 0.04) edge = ' The strength scores are close, so luck and a bad day can flip it.';
-        else if (gap < 0.12) edge = ' There’s a real edge, but upsets still happen in knockouts.';
-        else edge = ' That’s a clear model edge — still not a lock.';
+        if (gap < 0.04) edge = ` Strength scores are close tho, so a bad day can flip it`;
+        else if (gap < 0.12) edge = ` Real edge here, but knockouts are still chaos`;
+        else edge = ` Clear edge in my model, still not a lock`;
       }
-      return `<p class="mu-plain"><strong>${favName}</strong> is favored at about <strong>${favPct}</strong> to win this match`
-        + ` (${underPct} the other way). Those %s are how often each side wins when I replay this game `
-        + `${(matchupCtx?.nSims || 100000).toLocaleString()} times using each team’s strength score.${edge}</p>`;
+      return `<p class="mu-plain">I have <strong>${favName}</strong> at about <strong>${favPct}</strong> to win this one`
+        + ` (${underPct} the other way). That's how often each side wins when I replay the match `
+        + `${nSims} times off their strength scores.${edge}</p>`;
     }
 
     function renderMatchupModalBody(matchId) {
@@ -2845,7 +2845,7 @@
       const match = byIdGlobal[matchId] || matchupCtx?.byId?.[matchId];
       const pred = predByIdGlobal[matchId] || matchupCtx?.predById?.[matchId];
       if (!info || !match?.team_home || !match?.team_away || !pred) {
-        return `<p class="mu-plain">No live odds for this matchup yet.</p>`;
+        return `<p class="mu-plain">Nothing live for this matchup yet</p>`;
       }
       const hid = match.team_home;
       const aid = match.team_away;
@@ -2857,6 +2857,7 @@
       const aPred = predByTeamId(matchupCtx?.preds, aid);
       const hs = hPred?.signals;
       const as_ = aPred?.signals;
+      const nSims = ((matchupCtx?.nSims) || 100000).toLocaleString();
 
       const bullets = [];
       if (hs && as_) {
@@ -2868,11 +2869,11 @@
         const ai = as_.injury_multiplier ?? 1;
         if (hi < 0.98 || ai < 0.98) {
           const hurt = hi <= ai ? hName : aName;
-          bullets.push(`Injury hit is baked in — ${hurt} is dinged a bit for key absences.`);
+          bullets.push(`I ding ${hurt} a bit for key absences`);
         }
       } else {
-        bullets.push('Strength scores mix Elo, recent xG form, squad value, and betting odds.');
-        bullets.push('Then I sim the matchup many times so the % reflects both the edge and the chaos.');
+        bullets.push(`I score each side from Elo, recent xG form, squad value, and betting odds`);
+        bullets.push(`Then I sim the match a ton so the % has room for the edge and the chaos`);
       }
 
       const compare = (hs && as_)
@@ -2883,7 +2884,7 @@
             ${compareRow('Squad €', hs.squad_value_normalized, as_.squad_value_normalized)}
             ${compareRow('Odds lean', hs.betting_implied_prob, as_.betting_implied_prob)}
           </div>`
-        : `<p class="mu-plain" style="margin:0">Detailed signal split isn’t loaded for one side yet — the win % above is still from the live sim.</p>`;
+        : `<p class="mu-plain" style="margin:0">Don't have the full signal split for one side yet. The win % above is still from the live sim</p>`;
 
       return `
         <div class="mu-top">
@@ -2906,14 +2907,14 @@
         </div>
         ${buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred)}
         <div class="mu-section">
-          <h4>Side-by-side (0–100 scale)</h4>
+          <h4>How they stack up</h4>
           ${compare}
         </div>
         <div class="mu-section">
-          <h4>What those numbers mean</h4>
+          <h4>Why I lean that way</h4>
           <ul class="mu-bullets">${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
         </div>
-        <p class="mu-foot">This is the ${info.stake}. Win % here is for <em>this match</em>, not the whole tournament. Recipe: blend Elo + form + squad + odds → strength → ${((matchupCtx?.nSims) || 100000).toLocaleString()} random replays.</p>`;
+        <p class="mu-foot">This is ${info.stake}. These %s are for this match only, not the whole tournament. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays</p>`;
     }
 
     function ensureMatchupModal() {
