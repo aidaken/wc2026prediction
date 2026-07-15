@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "last_updated": "2026-07-15T21:05:24Z",
+    "last_updated": "2026-07-15T21:14:38Z",
     "round": "Final",
     "teams_remaining": 2,
     "elo_method": "full_replay_from_seed"
@@ -389,7 +389,7 @@
       "group": "H",
       "group_position": 1,
       "elo_change_this_round": 0.0,
-      "team_strength": 0.8827
+      "team_strength": 0.8808
     },
     "URU": {
       "id": "URU",

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-15T21:05:24Z",
+    "generated_at": "2026-07-15T21:14:38Z",
     "round": "Final",
     "simulations": 100000,
     "model_version": "1.2.0",
@@ -28,12 +28,12 @@
     {
       "team_id": "ESP",
       "team_name": "Spain",
-      "win_probability": 0.6616,
+      "win_probability": 0.6602,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
         "elo_normalized": 1.0,
-        "xg_form_ratio": 0.889,
+        "xg_form_ratio": 0.8827,
         "squad_value_normalized": 1.0,
         "betting_implied_prob": 0.58,
         "injury_multiplier": 1.0,
@@ -41,10 +41,10 @@
         "form_source": "xg_table_adj",
         "matches_used": 7,
         "avg_xg_for": 1.91,
-        "avg_xg_against": 0.28,
+        "avg_xg_against": 0.3,
         "adj_xg_for": 2.04,
-        "adj_xg_against": 0.25,
-        "sos_multiplier": 1.08,
+        "adj_xg_against": 0.27,
+        "sos_multiplier": 1.081,
         "effective_weights": {
           "elo": 0.35,
           "xg_form": 0.3,
@@ -52,14 +52,14 @@
           "betting_odds": 0.2
         }
       },
-      "team_strength": 0.8827,
+      "team_strength": 0.8808,
       "eliminated": false,
       "rank": 1
     },
     {
       "team_id": "ARG",
       "team_name": "Argentina",
-      "win_probability": 0.3384,
+      "win_probability": 0.3398,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
@@ -938,8 +938,8 @@
         "match_id": "final_m01",
         "team_home": "ESP",
         "team_away": "ARG",
-        "advance_probability_home": 0.6616,
-        "advance_probability_away": 0.3384,
+        "advance_probability_home": 0.6602,
+        "advance_probability_away": 0.3398,
         "winner": null,
         "status": "NS",
         "score_home": null,
