@@ -9,6 +9,7 @@ from typing import Any
 
 import config
 from src.bracket_topology import ROUND_ORDER, propagate_outcome
+from src.live import live_win_probability_from_match
 from src.utils import win_probability
 
 
@@ -123,9 +124,14 @@ def _build_match_predictions(
             winner = match.get("winner")
             status = match.get("status", "NS")
 
+            live_probs = live_win_probability_from_match(match, strengths)
+
             if winner:
                 prob_home = 1.0 if winner == home else 0.0
                 prob_away = 1.0 if winner == away else 0.0
+            elif live_probs is not None:
+                # match in progress: roll the current score forward, not pre-match odds
+                prob_home, prob_away = live_probs
             elif match_id and match_id in match_win_counts:
                 counts = match_win_counts[match_id]
                 prob_home = counts.get(home, 0) / simulations
@@ -143,6 +149,7 @@ def _build_match_predictions(
                 "status": status,
                 "score_home": match.get("score_home"),
                 "score_away": match.get("score_away"),
+                "minute": match.get("minute"),
             })
 
         if round_preds:

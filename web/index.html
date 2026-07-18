@@ -208,6 +208,26 @@
     .stage-duel .duel-side.won .duel-pct { color: var(--bk-winner); }
     .stage-duel .duel-side.out { opacity: 0.6; }
     .stage-duel.done .duel-hint { color: var(--bk-winner); }
+    .stage-duel.live { border-color: rgba(220, 38, 38, 0.45); }
+    .stage-duel.live .duel-hint { color: #dc2626; }
+    .stage-duel .duel-vs.duel-score {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #dc2626;
+      margin-right: 3px;
+      vertical-align: middle;
+      animation: live-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
     .stage-duel .duel-vs {
       align-self: center;
       font-size: 0.7rem;
@@ -2332,6 +2352,10 @@
       </div>`;
     }
 
+    const LIVE_STATUSES = new Set(['LIVE', '1H', '2H', 'HT', 'ET', 'BT', 'P', 'INT']);
+    function isLiveStatus(s) { return LIVE_STATUSES.has(s); }
+    function minuteLabel(m) { return m.minute ? `${m.minute}'` : 'LIVE'; }
+
     function duelSide(teamId, name, prob, fav, opts = {}) {
       const { done = false, isWinner = false, score = null } = opts;
       const cls = done ? (isWinner ? ' won' : ' out') : (fav ? ' fav' : '');
@@ -2346,22 +2370,34 @@
 
     function renderDuelCard(matchId, m, pred, labelLine, metaLine, liveHint) {
       const done = !!m.winner;
+      const live = !done && isLiveStatus(m.status);
       const ph = pred?.advance_probability_home;
       const pa = pred?.advance_probability_away;
       let sides;
+      let labelExtra = '';
+      let hint = liveHint;
       if (done) {
         const sep = m.status === 'PEN' ? 'pens' : '–';
         sides = `${duelSide(m.team_home, m.team_home, null, false, { done: true, isWinner: m.winner === m.team_home, score: m.score_home })}
           <span class="duel-vs">${sep}</span>
           ${duelSide(m.team_away, m.team_away, null, false, { done: true, isWinner: m.winner === m.team_away, score: m.score_away })}`;
+        hint = 'Full time · tap for my read';
+      } else if (live) {
+        const sh = m.score_home ?? 0;
+        const sa = m.score_away ?? 0;
+        sides = `${duelSide(m.team_home, m.team_home, ph, ph != null && ph >= 0.5)}
+          <span class="duel-vs duel-score">${sh}–${sa}</span>
+          ${duelSide(m.team_away, m.team_away, pa, pa != null && pa > 0.5)}`;
+        labelExtra = ` · <span class="live-dot"></span>LIVE ${minuteLabel(m)}`;
+        hint = 'Live win % · tap for my read';
       } else {
         sides = `${duelSide(m.team_home, m.team_home, ph, ph != null && ph >= 0.5)}
           <span class="duel-vs">vs</span>
           ${duelSide(m.team_away, m.team_away, pa, pa != null && pa > 0.5)}`;
       }
-      const hint = done ? 'Full time · tap for my read' : liveHint;
-      return `<div class="stage-duel${done ? ' done' : ''}" data-match-id="${matchId}" tabindex="0" role="button" aria-label="Open ${matchId} matchup details">
-          <div class="duel-label">${labelLine}</div>
+      const cls = done ? ' done' : (live ? ' live' : '');
+      return `<div class="stage-duel${cls}" data-match-id="${matchId}" tabindex="0" role="button" aria-label="Open ${matchId} matchup details">
+          <div class="duel-label">${labelLine}${labelExtra}</div>
           <div class="duel-meta">${metaLine}</div>
           <div class="duel-sides">${sides}</div>
           <div class="duel-hint">${hint}</div>
@@ -2832,6 +2868,20 @@
     }
 
     function buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred, match) {
+      if (match && !match.winner && isLiveStatus(match.status)) {
+        const sh = match.score_home ?? 0;
+        const sa = match.score_away ?? 0;
+        const lead = sh === sa
+          ? `Level at ${sh}–${sa}`
+          : (sh > sa ? `${hName} lead ${sh}–${sa}` : `${aName} lead ${sa}–${sh}`);
+        const favName = ph >= pa ? hName : aName;
+        const favPct = pct(Math.max(ph, pa), 0);
+        const underPct = pct(Math.min(ph, pa), 0);
+        const min = match.minute ? `${match.minute}'` : 'the run-in';
+        return `<p class="mu-plain"><strong>Live · ${min}.</strong> ${lead}. From here I make it `
+          + `<strong>${favName} ${favPct}</strong> to win, ${underPct} the other way. I roll the current `
+          + `score forward off each side's live xG pace; level at the whistle goes to pens.</p>`;
+      }
       if (match?.winner) {
         const winName = match.winner === match.team_home ? hName : aName;
         const loseName = match.winner === match.team_home ? aName : hName;
@@ -2874,12 +2924,16 @@
       const hName = matchupCtx?.teamsById?.[hid]?.name || hid;
       const aName = matchupCtx?.teamsById?.[aid]?.name || aid;
       const done = !!match.winner;
+      const live = !done && isLiveStatus(match.status);
       const ph = pred.advance_probability_home ?? 0.5;
       const pa = pred.advance_probability_away ?? 0.5;
       const hWon = done && match.winner === hid;
       const aWon = done && match.winner === aid;
       const hVal = done ? `${match.score_home != null ? match.score_home : '–'}${hWon ? ' ✓' : ''}` : pct(ph, 0);
       const aVal = done ? `${match.score_away != null ? match.score_away : '–'}${aWon ? ' ✓' : ''}` : pct(pa, 0);
+      const kicker = live
+        ? `${info.label} · <span class="live-dot"></span>LIVE ${match.minute ? match.minute + "'" : ''} · ${(match.score_home ?? 0)}–${(match.score_away ?? 0)}`
+        : `${info.label} · ${info.venue}`;
       const hPred = predByTeamId(matchupCtx?.preds, hid);
       const aPred = predByTeamId(matchupCtx?.preds, aid);
       const hs = hPred?.signals;
@@ -2916,7 +2970,7 @@
       return `
         <div class="mu-top">
           <div>
-            <div class="mu-kicker">${info.label} · ${info.venue}</div>
+            <div class="mu-kicker">${kicker}</div>
             <div class="mu-title">${hName} vs ${aName}</div>
           </div>
           <button type="button" class="mu-close" aria-label="Close">×</button>
@@ -2941,7 +2995,11 @@
           <h4>${done ? 'What the model saw' : 'Why I lean that way'}</h4>
           <ul class="mu-bullets">${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
         </div>
-        <p class="mu-foot">${done ? `This was ${info.stake}. Numbers below are the pre-match read` : `This is ${info.stake}. These %s are for this match only, not the whole tournament`}. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays</p>`;
+        <p class="mu-foot">${live
+          ? `This is ${info.stake}, in progress. The %s are live: I take the score on the board and roll the rest of the game forward off each side's xG pace, pens if it ends level`
+          : (done
+            ? `This was ${info.stake}. Numbers below are the pre-match read. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays`
+            : `This is ${info.stake}. These %s are for this match only, not the whole tournament. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays`)}</p>`;
     }
 
     function ensureMatchupModal() {

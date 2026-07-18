@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-18T21:53:56Z",
+    "generated_at": "2026-07-18T22:52:36Z",
     "round": "Final",
     "simulations": 100000,
     "model_version": "1.2.0",
@@ -21,20 +21,20 @@
     "strength_meta": {
       "xg_coverage": 1.0,
       "betting_available": true,
-      "teams_with_xg": 2
+      "teams_with_xg": 4
     }
   },
   "predictions": [
     {
       "team_id": "ESP",
       "team_name": "Spain",
-      "win_probability": 0.6578,
+      "win_probability": 0.6165,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
         "elo_normalized": 1.0,
         "xg_form_ratio": 0.8827,
-        "squad_value_normalized": 1.0,
+        "squad_value_normalized": 0.5789473684210527,
         "betting_implied_prob": 0.58,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
@@ -52,14 +52,14 @@
           "betting_odds": 0.2
         }
       },
-      "team_strength": 0.8808,
+      "team_strength": 0.8177,
       "eliminated": false,
       "rank": 1
     },
     {
       "team_id": "ARG",
       "team_name": "Argentina",
-      "win_probability": 0.3422,
+      "win_probability": 0.3835,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
@@ -434,8 +434,27 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": null,
-      "team_strength": null,
+      "signals": {
+        "elo_normalized": 0.9234050115514477,
+        "xg_form_ratio": 0.697,
+        "squad_value_normalized": 1.0,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg_table_adj",
+        "matches_used": 7,
+        "avg_xg_for": 1.95,
+        "avg_xg_against": 0.83,
+        "adj_xg_for": 1.85,
+        "adj_xg_against": 0.81,
+        "sos_multiplier": 0.994,
+        "effective_weights": {
+          "elo": 0.4375,
+          "xg_form": 0.375,
+          "squad_value": 0.1875
+        }
+      },
+      "team_strength": 0.8529,
       "eliminated": true,
       "rank": null
     },
@@ -555,8 +574,27 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": null,
-      "team_strength": null,
+      "signals": {
+        "elo_normalized": 0.7934956459925356,
+        "xg_form_ratio": 0.7156,
+        "squad_value_normalized": 0.775438596491228,
+        "betting_implied_prob": 0.0,
+        "injury_multiplier": 1.0,
+        "has_xg_data": true,
+        "form_source": "xg_table_adj",
+        "matches_used": 7,
+        "avg_xg_for": 1.63,
+        "avg_xg_against": 0.93,
+        "adj_xg_for": 2.2,
+        "adj_xg_against": 0.87,
+        "sos_multiplier": 1.205,
+        "effective_weights": {
+          "elo": 0.4375,
+          "xg_form": 0.375,
+          "squad_value": 0.1875
+        }
+      },
+      "team_strength": 0.7609,
       "eliminated": true,
       "rank": null
     },
@@ -605,7 +643,8 @@
         "winner": "CAN",
         "status": "FT",
         "score_home": 0,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m74",
@@ -616,7 +655,8 @@
         "winner": "PAR",
         "status": "PEN",
         "score_home": 1,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m75",
@@ -627,7 +667,8 @@
         "winner": "MAR",
         "status": "PEN",
         "score_home": 1,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m76",
@@ -638,7 +679,8 @@
         "winner": "BRA",
         "status": "FT",
         "score_home": 2,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m77",
@@ -649,7 +691,8 @@
         "winner": "FRA",
         "status": "FT",
         "score_home": 3,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m78",
@@ -660,7 +703,8 @@
         "winner": "NOR",
         "status": "FT",
         "score_home": 1,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "r32_m79",
@@ -671,7 +715,8 @@
         "winner": "MEX",
         "status": "FT",
         "score_home": 2,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m80",
@@ -682,7 +727,8 @@
         "winner": "ENG",
         "status": "FT",
         "score_home": 2,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m81",
@@ -693,7 +739,8 @@
         "winner": "USA",
         "status": "FT",
         "score_home": 2,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m82",
@@ -704,7 +751,8 @@
         "winner": "BEL",
         "status": "AET",
         "score_home": 3,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "r32_m83",
@@ -715,7 +763,8 @@
         "winner": "POR",
         "status": "FT",
         "score_home": 2,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r32_m84",
@@ -726,7 +775,8 @@
         "winner": "ESP",
         "status": "FT",
         "score_home": 3,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m85",
@@ -737,7 +787,8 @@
         "winner": "SUI",
         "status": "FT",
         "score_home": 2,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m86",
@@ -748,7 +799,8 @@
         "winner": "ARG",
         "status": "AET",
         "score_home": 3,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "r32_m87",
@@ -759,7 +811,8 @@
         "winner": "COL",
         "status": "FT",
         "score_home": 1,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "r32_m88",
@@ -770,7 +823,8 @@
         "winner": "EGY",
         "status": "PEN",
         "score_home": 1,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       }
     ],
     "round_of_16": [
@@ -783,7 +837,8 @@
         "winner": "FRA",
         "status": "FT",
         "score_home": 0,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r16_m90",
@@ -794,7 +849,8 @@
         "winner": "MAR",
         "status": "FT",
         "score_home": 0,
-        "score_away": 3
+        "score_away": 3,
+        "minute": null
       },
       {
         "match_id": "r16_m91",
@@ -805,7 +861,8 @@
         "winner": "NOR",
         "status": "FT",
         "score_home": 1,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "r16_m92",
@@ -816,7 +873,8 @@
         "winner": "ENG",
         "status": "FT",
         "score_home": 2,
-        "score_away": 3
+        "score_away": 3,
+        "minute": null
       },
       {
         "match_id": "r16_m93",
@@ -827,7 +885,8 @@
         "winner": "ESP",
         "status": "FT",
         "score_home": 0,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "r16_m94",
@@ -838,7 +897,8 @@
         "winner": "BEL",
         "status": "FT",
         "score_home": 1,
-        "score_away": 4
+        "score_away": 4,
+        "minute": null
       },
       {
         "match_id": "r16_m95",
@@ -849,7 +909,8 @@
         "winner": "ARG",
         "status": "FT",
         "score_home": 3,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "r16_m96",
@@ -860,7 +921,8 @@
         "winner": "SUI",
         "status": "PEN",
         "score_home": 0,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       }
     ],
     "quarter_finals": [
@@ -873,7 +935,8 @@
         "winner": "FRA",
         "status": "FT",
         "score_home": 2,
-        "score_away": 0
+        "score_away": 0,
+        "minute": null
       },
       {
         "match_id": "qf_m02",
@@ -884,7 +947,8 @@
         "winner": "ESP",
         "status": "FT",
         "score_home": 2,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       },
       {
         "match_id": "qf_m03",
@@ -895,7 +959,8 @@
         "winner": "ENG",
         "status": "AET",
         "score_home": 1,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "qf_m04",
@@ -906,7 +971,8 @@
         "winner": "ARG",
         "status": "AET",
         "score_home": 3,
-        "score_away": 1
+        "score_away": 1,
+        "minute": null
       }
     ],
     "semi_finals": [
@@ -919,7 +985,8 @@
         "winner": "ESP",
         "status": "FT",
         "score_home": 0,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       },
       {
         "match_id": "sf_m02",
@@ -930,7 +997,8 @@
         "winner": "ARG",
         "status": "FT",
         "score_home": 1,
-        "score_away": 2
+        "score_away": 2,
+        "minute": null
       }
     ],
     "final": [
@@ -938,12 +1006,13 @@
         "match_id": "final_m01",
         "team_home": "ESP",
         "team_away": "ARG",
-        "advance_probability_home": 0.6578,
-        "advance_probability_away": 0.3422,
+        "advance_probability_home": 0.6165,
+        "advance_probability_away": 0.3835,
         "winner": null,
         "status": "NS",
         "score_home": null,
-        "score_away": null
+        "score_away": null,
+        "minute": null
       }
     ],
     "third_place": [
@@ -951,12 +1020,13 @@
         "match_id": "third_m01",
         "team_home": "FRA",
         "team_away": "ENG",
-        "advance_probability_home": 0.0,
-        "advance_probability_away": 1.0,
-        "winner": "ENG",
-        "status": "FT",
-        "score_home": 1,
-        "score_away": 2
+        "advance_probability_home": 0.2032,
+        "advance_probability_away": 0.7968,
+        "winner": null,
+        "status": "LIVE",
+        "score_home": 3,
+        "score_away": 4,
+        "minute": 76
       }
     ]
   }

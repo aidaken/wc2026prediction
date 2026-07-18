@@ -327,7 +327,10 @@ def validate_raw_data(
     if teams_remaining < 2:
         raise DataValidationError(f"Expected at least 2 teams remaining, got {teams_remaining}")
 
-    incomplete = [f for f in fixtures if f.get("status") not in ("FT", "PEN", "AET", "NS")]
+    from src.live import LIVE_STATUSES
+
+    expected = {"FT", "PEN", "AET", "NS"} | set(LIVE_STATUSES)
+    incomplete = [f for f in fixtures if f.get("status") not in expected]
     if incomplete:
         logger.warning("%d fixtures have unexpected status", len(incomplete))
 

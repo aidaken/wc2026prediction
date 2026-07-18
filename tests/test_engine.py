@@ -5,6 +5,7 @@ import unittest
 from src.bracket import detect_current_round, mark_eliminations
 from src.bracket_topology import MATCH_FEEDERS, propagate_winner
 from src.elo import update_ratings
+from src.live import live_win_probability, live_win_probability_from_match
 from src.seed import DEMO_BRACKET, TEAMS
 from src.simulate import match_win_probability, run
 from src.teams import ODDS_NAME_TO_ID, TM_SLUG_TO_ID, TeamRegistry
@@ -158,6 +159,44 @@ class TestSimulate(unittest.TestCase):
         prob_home, _ = match_win_probability("BRA", "FRA", {"BRA": 0.78, "FRA": 0.64})
         self.assertGreater(prob_home, 0.55)
         self.assertLess(prob_home, 0.85)
+
+
+class TestLiveWinProbability(unittest.TestCase):
+    def test_probs_sum_to_one(self):
+        ph, pa = live_win_probability(3, 4, 70, 0.03, 0.023)
+        self.assertAlmostEqual(ph + pa, 1.0, places=6)
+
+    def test_leading_team_favored(self):
+        # away side up a goal late should be the clear favorite
+        ph, pa = live_win_probability(3, 4, 70, 0.03, 0.023)
+        self.assertGreater(pa, ph)
+        self.assertGreater(pa, 0.6)
+
+    def test_lead_hardens_as_clock_runs(self):
+        # same one-goal lead is worth more with less time left
+        _, pa_70 = live_win_probability(3, 4, 70, 0.03, 0.023)
+        _, pa_85 = live_win_probability(3, 4, 85, 0.03, 0.023)
+        self.assertGreater(pa_85, pa_70)
+
+    def test_level_game_near_coin_flip(self):
+        ph, pa = live_win_probability(2, 2, 80, 0.02, 0.02)
+        self.assertAlmostEqual(ph, pa, delta=0.05)
+
+    def test_only_reads_live_statuses(self):
+        self.assertIsNone(
+            live_win_probability_from_match({"status": "NS", "minute": 70}, {})
+        )
+        probs = live_win_probability_from_match(
+            {
+                "status": "LIVE", "minute": 70,
+                "team_home": "FRA", "team_away": "ENG",
+                "score_home": 3, "score_away": 4,
+                "xg_home": 2.10, "xg_away": 1.61,
+            },
+            {"FRA": 0.85, "ENG": 0.76},
+        )
+        self.assertIsNotNone(probs)
+        self.assertAlmostEqual(sum(probs), 1.0, places=6)
 
 
 if __name__ == "__main__":
