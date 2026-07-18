@@ -204,6 +204,10 @@
       color: var(--text);
     }
     .stage-duel .duel-side.fav .duel-pct { color: var(--blue); }
+    .stage-duel .duel-side.won { background: rgba(21, 128, 61, 0.12); }
+    .stage-duel .duel-side.won .duel-pct { color: var(--bk-winner); }
+    .stage-duel .duel-side.out { opacity: 0.6; }
+    .stage-duel.done .duel-hint { color: var(--bk-winner); }
     .stage-duel .duel-vs {
       align-self: center;
       font-size: 0.7rem;
@@ -2328,11 +2332,40 @@
       </div>`;
     }
 
-    function duelSide(teamId, name, prob, fav) {
-      return `<div class="duel-side${fav ? ' fav' : ''}">
+    function duelSide(teamId, name, prob, fav, opts = {}) {
+      const { done = false, isWinner = false, score = null } = opts;
+      const cls = done ? (isWinner ? ' won' : ' out') : (fav ? ' fav' : '');
+      const val = done
+        ? `${score != null ? score : '–'}${isWinner ? ' ✓' : ''}`
+        : (prob != null ? pct(prob, 0) : '—');
+      return `<div class="duel-side${cls}">
         <div class="duel-team">${teamId ? renderFlag(teamId, 'duel-flag') : ''}<span>${teamId || 'TBD'}</span></div>
-        <div class="duel-pct">${prob != null ? pct(prob, 0) : '—'}</div>
+        <div class="duel-pct">${val}</div>
       </div>`;
+    }
+
+    function renderDuelCard(matchId, m, pred, labelLine, metaLine, liveHint) {
+      const done = !!m.winner;
+      const ph = pred?.advance_probability_home;
+      const pa = pred?.advance_probability_away;
+      let sides;
+      if (done) {
+        const sep = m.status === 'PEN' ? 'pens' : '–';
+        sides = `${duelSide(m.team_home, m.team_home, null, false, { done: true, isWinner: m.winner === m.team_home, score: m.score_home })}
+          <span class="duel-vs">${sep}</span>
+          ${duelSide(m.team_away, m.team_away, null, false, { done: true, isWinner: m.winner === m.team_away, score: m.score_away })}`;
+      } else {
+        sides = `${duelSide(m.team_home, m.team_home, ph, ph != null && ph >= 0.5)}
+          <span class="duel-vs">vs</span>
+          ${duelSide(m.team_away, m.team_away, pa, pa != null && pa > 0.5)}`;
+      }
+      const hint = done ? 'Full time · tap for my read' : liveHint;
+      return `<div class="stage-duel${done ? ' done' : ''}" data-match-id="${matchId}" tabindex="0" role="button" aria-label="Open ${matchId} matchup details">
+          <div class="duel-label">${labelLine}</div>
+          <div class="duel-meta">${metaLine}</div>
+          <div class="duel-sides">${sides}</div>
+          <div class="duel-hint">${hint}</div>
+        </div>`;
     }
 
     function renderStageDuels(bracket, matchPredictions, meta) {
@@ -2344,32 +2377,9 @@
       const thirdP = idx.predById.third_m01;
       if (!finalM.team_home || !finalM.team_away) return '';
 
-      const fh = finalP?.advance_probability_home;
-      const fa = finalP?.advance_probability_away;
-      const th = thirdP?.advance_probability_home;
-      const ta = thirdP?.advance_probability_away;
-
       return `<div class="stage-duels">
-        <div class="stage-duel" data-match-id="final_m01" tabindex="0" role="button" aria-label="Open Final matchup details">
-          <div class="duel-label">Final · July 19 · New York</div>
-          <div class="duel-meta">Who lifts the trophy</div>
-          <div class="duel-sides">
-            ${duelSide(finalM.team_home, finalM.team_home, fh, fh != null && fh >= 0.5)}
-            <span class="duel-vs">vs</span>
-            ${duelSide(finalM.team_away, finalM.team_away, fa, fa != null && fa > 0.5)}
-          </div>
-          <div class="duel-hint">Tap for my read</div>
-        </div>
-        <div class="stage-duel" data-match-id="third_m01" tabindex="0" role="button" aria-label="Open 3rd place matchup details">
-          <div class="duel-label">3rd place · July 18 · Miami</div>
-          <div class="duel-meta">Bronze match</div>
-          <div class="duel-sides">
-            ${duelSide(thirdM.team_home, thirdM.team_home, th, th != null && th >= 0.5)}
-            <span class="duel-vs">vs</span>
-            ${duelSide(thirdM.team_away, thirdM.team_away, ta, ta != null && ta > 0.5)}
-          </div>
-          <div class="duel-hint">Tap for my read</div>
-        </div>
+        ${renderDuelCard('final_m01', finalM, finalP, 'Final · July 19 · New York', 'Who lifts the trophy', 'Tap for my read')}
+        ${renderDuelCard('third_m01', thirdM, thirdP, '3rd place · July 18 · Miami', 'Bronze match', 'Tap for my read')}
       </div>`;
     }
 
@@ -2821,7 +2831,19 @@
       </div>`;
     }
 
-    function buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred) {
+    function buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred, match) {
+      if (match?.winner) {
+        const winName = match.winner === match.team_home ? hName : aName;
+        const loseName = match.winner === match.team_home ? aName : hName;
+        const ws = match.winner === match.team_home ? match.score_home : match.score_away;
+        const ls = match.winner === match.team_home ? match.score_away : match.score_home;
+        const line = (ws != null && ls != null) ? ` ${ws}–${ls}` : '';
+        const pens = match.status === 'PEN' ? ' on penalties' : '';
+        const called = (ph >= pa ? hName : aName) === winName
+          ? `My model had them ahead here, so this one landed.`
+          : `My model leaned the other way, so ${winName} bucked the numbers.`;
+        return `<p class="mu-plain"><strong>${winName}</strong> won${line}${pens}, ${loseName} out. ${called}</p>`;
+      }
       const favName = ph >= pa ? hName : aName;
       const favPct = pct(Math.max(ph, pa), 0);
       const underPct = pct(Math.min(ph, pa), 0);
@@ -2851,8 +2873,13 @@
       const aid = match.team_away;
       const hName = matchupCtx?.teamsById?.[hid]?.name || hid;
       const aName = matchupCtx?.teamsById?.[aid]?.name || aid;
+      const done = !!match.winner;
       const ph = pred.advance_probability_home ?? 0.5;
       const pa = pred.advance_probability_away ?? 0.5;
+      const hWon = done && match.winner === hid;
+      const aWon = done && match.winner === aid;
+      const hVal = done ? `${match.score_home != null ? match.score_home : '–'}${hWon ? ' ✓' : ''}` : pct(ph, 0);
+      const aVal = done ? `${match.score_away != null ? match.score_away : '–'}${aWon ? ' ✓' : ''}` : pct(pa, 0);
       const hPred = predByTeamId(matchupCtx?.preds, hid);
       const aPred = predByTeamId(matchupCtx?.preds, aid);
       const hs = hPred?.signals;
@@ -2884,7 +2911,7 @@
             ${compareRow('Squad €', hs.squad_value_normalized, as_.squad_value_normalized)}
             ${compareRow('Odds lean', hs.betting_implied_prob, as_.betting_implied_prob)}
           </div>`
-        : `<p class="mu-plain" style="margin:0">Don't have the full signal split for one side yet. The win % above is still from the live sim</p>`;
+        : `<p class="mu-plain" style="margin:0">${done ? "Both sides are out now, so I've dropped their live signal split. The result up top is what counts" : "Don't have the full signal split for one side yet. The win % above is still from the live sim"}</p>`;
 
       return `
         <div class="mu-top">
@@ -2895,26 +2922,26 @@
           <button type="button" class="mu-close" aria-label="Close">×</button>
         </div>
         <div class="mu-scoreline">
-          <div class="mu-side${ph >= pa ? ' fav' : ''}">
+          <div class="mu-side${done ? (hWon ? ' fav' : '') : (ph >= pa ? ' fav' : '')}">
             <div class="mu-team">${renderFlag(hid, 'mu-flag')}<span>${hid}</span></div>
-            <div class="mu-pct">${pct(ph, 0)}</div>
+            <div class="mu-pct">${hVal}</div>
           </div>
-          <span class="mu-vs">vs</span>
-          <div class="mu-side${pa > ph ? ' fav' : ''}">
+          <span class="mu-vs">${done && match.status === 'PEN' ? 'pens' : 'vs'}</span>
+          <div class="mu-side${done ? (aWon ? ' fav' : '') : (pa > ph ? ' fav' : '')}">
             <div class="mu-team">${renderFlag(aid, 'mu-flag')}<span>${aid}</span></div>
-            <div class="mu-pct">${pct(pa, 0)}</div>
+            <div class="mu-pct">${aVal}</div>
           </div>
         </div>
-        ${buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred)}
+        ${buildMatchupPlain(info, hName, aName, ph, pa, hPred, aPred, match)}
         <div class="mu-section">
           <h4>How they stack up</h4>
           ${compare}
         </div>
         <div class="mu-section">
-          <h4>Why I lean that way</h4>
+          <h4>${done ? 'What the model saw' : 'Why I lean that way'}</h4>
           <ul class="mu-bullets">${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
         </div>
-        <p class="mu-foot">This is ${info.stake}. These %s are for this match only, not the whole tournament. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays</p>`;
+        <p class="mu-foot">${done ? `This was ${info.stake}. Numbers below are the pre-match read` : `This is ${info.stake}. These %s are for this match only, not the whole tournament`}. I blend Elo + form + squad + odds into strength, then run ${nSims} random replays</p>`;
     }
 
     function ensureMatchupModal() {
