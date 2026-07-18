@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Final",
     "wc_year": 2026,
-    "last_updated": "2026-07-15T21:27:01Z"
+    "last_updated": "2026-07-18T21:53:56Z"
   },
   "rounds": {
     "round_of_32": {
@@ -424,8 +424,13 @@
           "match_id": "third_m01",
           "team_home": "FRA",
           "team_away": "ENG",
-          "winner": null,
-          "status": "NS"
+          "winner": "ENG",
+          "status": "FT",
+          "score_home": 1,
+          "score_away": 2,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         }
       ]
     }
