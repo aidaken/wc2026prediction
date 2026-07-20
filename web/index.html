@@ -114,6 +114,23 @@
       border-bottom: none;
       padding-bottom: 0.75rem;
     }
+    .champion-hero.crowned .top-pick {
+      background: linear-gradient(180deg, #ecfdf5 0%, #f0fdf4 40%, #ffffff 100%);
+    }
+    .champion-hero.crowned .top-pick .label {
+      color: var(--bk-winner);
+    }
+    .champion-hero.crowned .top-pick .pct {
+      color: var(--bk-winner);
+      font-size: 1.65rem;
+      letter-spacing: 0.04em;
+    }
+    .champion-hero .champ-sub {
+      margin-top: 0.45rem;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      font-weight: 600;
+    }
     .champ-signals {
       display: flex;
       flex-wrap: wrap;
@@ -2335,18 +2352,26 @@
       ).join('');
     }
 
-    function renderChampionHero(top, meta) {
+    function renderChampionHero(top, meta, finalMatch) {
       if (!top) return '';
+      const crowned = finalMatch?.winner && finalMatch.winner === top.team_id;
       const round = meta?.round || '';
-      const label = /final/i.test(round) ? 'Favorite to win the final' : 'Most likely champion';
-      return `<div class="champion-hero card">
+      const label = crowned
+        ? 'World champions'
+        : (/final/i.test(round) ? 'Favorite to win the final' : 'Most likely champion');
+      const scoreLine = crowned && finalMatch
+        ? `${finalMatch.team_home} ${finalMatch.score_home ?? '–'}–${finalMatch.score_away ?? '–'} ${finalMatch.team_away}${finalMatch.status === 'AET' ? ' · AET' : (finalMatch.status === 'PEN' ? ' · pens' : '')}`
+        : '';
+      const pctLine = crowned ? 'CHAMPIONS' : pct(top.win_probability);
+      return `<div class="champion-hero card${crowned ? ' crowned' : ''}">
         <div class="top-pick">
           <div class="label">${label}</div>
           <div class="champ-row">
             ${top.team_id ? renderFlag(top.team_id, 'champ-flag') : ''}
             <div class="name">${top.team_name}</div>
           </div>
-          <div class="pct">${pct(top.win_probability)}</div>
+          <div class="pct">${pctLine}</div>
+          ${scoreLine ? `<div class="champ-sub">${scoreLine}</div>` : ''}
         </div>
         <div class="champ-signals">${renderChampionChips(top.signals)}</div>
       </div>`;
@@ -2381,7 +2406,9 @@
         sides = `${duelSide(m.team_home, m.team_home, null, false, { done: true, isWinner: m.winner === m.team_home, score: m.score_home })}
           <span class="duel-vs">${sep}</span>
           ${duelSide(m.team_away, m.team_away, null, false, { done: true, isWinner: m.winner === m.team_away, score: m.score_away })}`;
-        hint = 'Full time · tap for my read';
+        hint = m.status === 'AET'
+          ? 'After extra time · tap for my read'
+          : (m.status === 'PEN' ? 'Penalties · tap for my read' : 'Full time · tap for my read');
       } else if (live) {
         const sh = m.score_home ?? 0;
         const sa = m.score_away ?? 0;
@@ -2413,9 +2440,15 @@
       const thirdP = idx.predById.third_m01;
       if (!finalM.team_home || !finalM.team_away) return '';
 
+      const finalMeta = finalM.winner === 'ESP'
+        ? 'Spain lift the trophy'
+        : (finalM.winner ? `${finalM.winner} lift the trophy` : 'Who lifts the trophy');
+      const thirdMeta = thirdM.winner === 'ENG'
+        ? 'England take bronze'
+        : (thirdM.winner ? `${thirdM.winner} take bronze` : 'Bronze match');
       return `<div class="stage-duels">
-        ${renderDuelCard('final_m01', finalM, finalP, 'Final · July 19 · New York', 'Who lifts the trophy', 'Tap for my read')}
-        ${renderDuelCard('third_m01', thirdM, thirdP, '3rd place · July 18 · Miami', 'Bronze match', 'Tap for my read')}
+        ${renderDuelCard('final_m01', finalM, finalP, 'Final · July 19 · New York', finalMeta, 'Tap for my read')}
+        ${renderDuelCard('third_m01', thirdM, thirdP, '3rd place · July 18 · Miami', thirdMeta, 'Tap for my read')}
       </div>`;
     }
 
@@ -3106,7 +3139,9 @@
         <div class="bracket-title">
           <div class="badge-wc">WORLD CUP</div>
           <h2>Knockout Bracket</h2>
-          <p>${meta.round || 'Tournament'} · advancement % from ${(meta.simulations || 10000).toLocaleString()} simulations</p>
+          <p>${(byIdGlobal.final_m01 && byIdGlobal.final_m01.winner)
+            ? `Tournament complete · Spain world champions · ${(meta.simulations || 10000).toLocaleString()} simulations`
+            : `${meta.round || 'Tournament'} · advancement % from ${(meta.simulations || 10000).toLocaleString()} simulations`}</p>
         </div>
         <p class="bracket-scroll-hint">Swipe sideways to see the full bracket</p>
         <div class="bracket-scroll-wrap">
@@ -3196,13 +3231,19 @@
         };
 
         renderMeta(data._meta || {});
+        const idx = buildMatchIndex(bracket, data.match_predictions);
+        const finalMatch = idx.byId.final_m01 || null;
+        const spainCrowned = finalMatch?.winner === 'ESP';
         const subtitle = document.querySelector('.subtitle');
-        if (subtitle && isFinal) {
-          subtitle.textContent = 'Final set · Spain vs Argentina · 3rd place France vs England';
+        if (subtitle) {
+          if (spainCrowned) {
+            subtitle.textContent = 'Spain are world champions · beat Argentina 1–0 after extra time';
+          } else if (isFinal) {
+            subtitle.textContent = 'Final set · Spain vs Argentina · 3rd place France vs England';
+          }
         }
         const historyHtml = await renderHistory(preds);
 
-        const idx = buildMatchIndex(bracket, data.match_predictions);
         matchupCtx = {
           preds,
           teamsById,
@@ -3214,7 +3255,7 @@
         };
 
         app.innerHTML = `
-          ${renderChampionHero(top, data._meta)}
+          ${renderChampionHero(top, data._meta, finalMatch)}
           ${renderStageDuels(bracket, data.match_predictions, data._meta || {})}
           ${renderProbTable(preds, detailCtx)}
           ${historyHtml}

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-07-18T22:52:36Z",
+    "generated_at": "2026-07-20T00:00:31Z",
     "round": "Final",
     "simulations": 100000,
     "model_version": "1.2.0",
@@ -21,30 +21,30 @@
     "strength_meta": {
       "xg_coverage": 1.0,
       "betting_available": true,
-      "teams_with_xg": 4
+      "teams_with_xg": 1
     }
   },
   "predictions": [
     {
       "team_id": "ESP",
       "team_name": "Spain",
-      "win_probability": 0.6165,
+      "win_probability": 1.0,
       "reach_final_probability": 1.0,
       "reach_semis_probability": 1.0,
       "signals": {
         "elo_normalized": 1.0,
-        "xg_form_ratio": 0.8827,
-        "squad_value_normalized": 0.5789473684210527,
-        "betting_implied_prob": 0.58,
+        "xg_form_ratio": 0.8945,
+        "squad_value_normalized": 0.5,
+        "betting_implied_prob": 1.0,
         "injury_multiplier": 1.0,
         "has_xg_data": true,
         "form_source": "xg_table_adj",
         "matches_used": 7,
         "avg_xg_for": 1.91,
         "avg_xg_against": 0.3,
-        "adj_xg_for": 2.04,
-        "adj_xg_against": 0.27,
-        "sos_multiplier": 1.081,
+        "adj_xg_for": 2.16,
+        "adj_xg_against": 0.26,
+        "sos_multiplier": 1.147,
         "effective_weights": {
           "elo": 0.35,
           "xg_form": 0.3,
@@ -52,40 +52,9 @@
           "betting_odds": 0.2
         }
       },
-      "team_strength": 0.8177,
+      "team_strength": 0.8933,
       "eliminated": false,
       "rank": 1
-    },
-    {
-      "team_id": "ARG",
-      "team_name": "Argentina",
-      "win_probability": 0.3835,
-      "reach_final_probability": 1.0,
-      "reach_semis_probability": 1.0,
-      "signals": {
-        "elo_normalized": 0.9904034121201349,
-        "xg_form_ratio": 0.7607,
-        "squad_value_normalized": 0.0,
-        "betting_implied_prob": 0.42,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg_table_adj",
-        "matches_used": 7,
-        "avg_xg_for": 2.09,
-        "avg_xg_against": 0.62,
-        "adj_xg_for": 1.99,
-        "adj_xg_against": 0.62,
-        "sos_multiplier": 0.969,
-        "effective_weights": {
-          "elo": 0.35,
-          "xg_form": 0.3,
-          "squad_value": 0.15,
-          "betting_odds": 0.2
-        }
-      },
-      "team_strength": 0.6589,
-      "eliminated": false,
-      "rank": 2
     },
     {
       "team_id": "MEX",
@@ -434,27 +403,8 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": {
-        "elo_normalized": 0.9234050115514477,
-        "xg_form_ratio": 0.697,
-        "squad_value_normalized": 1.0,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg_table_adj",
-        "matches_used": 7,
-        "avg_xg_for": 1.95,
-        "avg_xg_against": 0.83,
-        "adj_xg_for": 1.85,
-        "adj_xg_against": 0.81,
-        "sos_multiplier": 0.994,
-        "effective_weights": {
-          "elo": 0.4375,
-          "xg_form": 0.375,
-          "squad_value": 0.1875
-        }
-      },
-      "team_strength": 0.8529,
+      "signals": null,
+      "team_strength": null,
       "eliminated": true,
       "rank": null
     },
@@ -494,6 +444,17 @@
     {
       "team_id": "ALG",
       "team_name": "Algeria",
+      "win_probability": 0.0,
+      "reach_final_probability": 0.0,
+      "reach_semis_probability": 0.0,
+      "signals": null,
+      "team_strength": null,
+      "eliminated": true,
+      "rank": null
+    },
+    {
+      "team_id": "ARG",
+      "team_name": "Argentina",
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
@@ -574,27 +535,8 @@
       "win_probability": 0.0,
       "reach_final_probability": 0.0,
       "reach_semis_probability": 0.0,
-      "signals": {
-        "elo_normalized": 0.7934956459925356,
-        "xg_form_ratio": 0.7156,
-        "squad_value_normalized": 0.775438596491228,
-        "betting_implied_prob": 0.0,
-        "injury_multiplier": 1.0,
-        "has_xg_data": true,
-        "form_source": "xg_table_adj",
-        "matches_used": 7,
-        "avg_xg_for": 1.63,
-        "avg_xg_against": 0.93,
-        "adj_xg_for": 2.2,
-        "adj_xg_against": 0.87,
-        "sos_multiplier": 1.205,
-        "effective_weights": {
-          "elo": 0.4375,
-          "xg_form": 0.375,
-          "squad_value": 0.1875
-        }
-      },
-      "team_strength": 0.7609,
+      "signals": null,
+      "team_strength": null,
       "eliminated": true,
       "rank": null
     },
@@ -1006,12 +948,12 @@
         "match_id": "final_m01",
         "team_home": "ESP",
         "team_away": "ARG",
-        "advance_probability_home": 0.6165,
-        "advance_probability_away": 0.3835,
-        "winner": null,
-        "status": "NS",
-        "score_home": null,
-        "score_away": null,
+        "advance_probability_home": 1.0,
+        "advance_probability_away": 0.0,
+        "winner": "ESP",
+        "status": "AET",
+        "score_home": 1,
+        "score_away": 0,
         "minute": null
       }
     ],
@@ -1020,13 +962,13 @@
         "match_id": "third_m01",
         "team_home": "FRA",
         "team_away": "ENG",
-        "advance_probability_home": 0.2032,
-        "advance_probability_away": 0.7968,
-        "winner": null,
-        "status": "LIVE",
-        "score_home": 3,
-        "score_away": 4,
-        "minute": 76
+        "advance_probability_home": 0.0,
+        "advance_probability_away": 1.0,
+        "winner": "ENG",
+        "status": "FT",
+        "score_home": 4,
+        "score_away": 6,
+        "minute": null
       }
     ]
   }
