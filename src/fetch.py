@@ -324,8 +324,9 @@ def validate_raw_data(
     teams_remaining: int,
     require_complete: bool = False,
 ) -> None:
-    if teams_remaining < 2:
-        raise DataValidationError(f"Expected at least 2 teams remaining, got {teams_remaining}")
+    # 1 team left = champion crowned; 0 is never valid mid/post tournament
+    if teams_remaining < 1:
+        raise DataValidationError(f"Expected at least 1 team remaining, got {teams_remaining}")
 
     from src.live import LIVE_STATUSES
 
