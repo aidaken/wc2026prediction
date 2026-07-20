@@ -2,7 +2,7 @@
   "_meta": {
     "current_round": "Final",
     "wc_year": 2026,
-    "last_updated": "2026-07-18T22:52:36Z"
+    "last_updated": "2026-07-20T14:51:06Z"
   },
   "rounds": {
     "round_of_32": {
@@ -406,31 +406,37 @@
       ]
     },
     "final": {
-      "status": "pending",
+      "status": "complete",
       "matches": [
         {
           "match_id": "final_m01",
           "team_home": "ESP",
           "team_away": "ARG",
-          "winner": null,
-          "status": "NS"
+          "winner": "ESP",
+          "status": "AET",
+          "score_home": 1,
+          "score_away": 0,
+          "xg_home": 1.94,
+          "xg_away": 0.2,
+          "penalties_home": null,
+          "penalties_away": null,
+          "stage": "knockout"
         }
       ]
     },
     "third_place": {
-      "status": "pending",
+      "status": "complete",
       "matches": [
         {
           "match_id": "third_m01",
           "team_home": "FRA",
           "team_away": "ENG",
-          "winner": null,
-          "status": "LIVE",
-          "minute": 76,
-          "score_home": 3,
-          "score_away": 4,
-          "xg_home": 2.2,
-          "xg_away": 1.61,
+          "winner": "ENG",
+          "status": "FT",
+          "score_home": 4,
+          "score_away": 6,
+          "xg_home": 2.88,
+          "xg_away": 2.88,
           "penalties_home": null,
           "penalties_away": null,
           "stage": "knockout"

@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "last_updated": "2026-07-18T22:40:09Z",
+    "last_updated": "2026-07-20T14:51:06Z",
     "round": "Final",
-    "teams_remaining": 2,
+    "teams_remaining": 1,
     "elo_method": "full_replay_from_seed"
   },
   "teams": {
@@ -383,13 +383,13 @@
       "name": "Spain",
       "api_football_id": 9,
       "transfermarkt_id": "spanien",
-      "elo": 2109.8,
+      "elo": 2139.3,
       "squad_value_eur": 1220000000,
       "eliminated": false,
       "group": "H",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
-      "team_strength": 0.8177
+      "elo_change_this_round": 29.5,
+      "team_strength": 0.8933
     },
     "URU": {
       "id": "URU",
@@ -472,12 +472,12 @@
       "name": "Argentina",
       "api_football_id": 26,
       "transfermarkt_id": "argentinien",
-      "elo": 2104.4,
+      "elo": 2074.9,
       "squad_value_eur": 807500000,
-      "eliminated": false,
+      "eliminated": true,
       "group": "J",
       "group_position": 1,
-      "elo_change_this_round": 0.0,
+      "elo_change_this_round": -29.5,
       "team_strength": 0.6589
     },
     "AUT": {
